@@ -162,6 +162,8 @@ class MobilitySim:
         # Define the filter string to keep only motorways and primary roads
         filter_string = '["highway"!~"^(service|track|residential)$"]'
 
+        ox.config(use_cache=False)
+
         # Check if the GraphML file exists
         if os.path.exists(graphml_file):
             # Load the graph from the GraphML file
@@ -170,12 +172,14 @@ class MobilitySim:
             # Extract the bounding box from the loaded graph
             loaded_north, loaded_south, loaded_east, loaded_west = hlp.get_graph_bbox(G)
 
-            # Round to 4 decimal places to ignore small differences
-            loaded_bbox = (round(loaded_north, 4), round(loaded_south, 4),
-                   round(loaded_east, 4), round(loaded_west, 4))
+            # Round to decimal places to ignore small differences
+            decimals = 3
 
-            bbox = (round(north, 4), round(south, 4),
-                   round(east, 4), round(west, 4))
+            loaded_bbox = (round(loaded_north, decimals), round(loaded_south, decimals),
+                   round(loaded_east, decimals), round(loaded_west, decimals))
+
+            bbox = (round(north, decimals), round(south, decimals),
+                   round(east, decimals), round(west, decimals))
             
             # Compare the bounding boxes
             if bbox == loaded_bbox:
