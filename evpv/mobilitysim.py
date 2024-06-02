@@ -41,10 +41,13 @@ class MobilitySim:
     centroid_coords = list()
     simulation_bbox = list()
 
-    # Input data
+    # Raw input data
 
     population_density = None
     road_network = None
+
+    # Mobility zones - features 
+    mobility_zones = pd.DataFrame()
 
     #######################################
     ############### METHODS ###############
@@ -53,7 +56,7 @@ class MobilitySim:
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, target_area_shapefile, population_density, buffer_distance = .0):
+    def __init__(self, target_area_shapefile, population_density, buffer_distance = .0, n_subdivisions = 10):
         print(f"INFO \t Initializing a new MobilitySim object.")
     
         self.set_target_area_shapefile(target_area_shapefile)
@@ -63,6 +66,8 @@ class MobilitySim:
 
         self.set_population_density(population_density)
         self.set_road_network()
+
+        self.set_mobility_zones(n_subdivisions)
         
         print("INFO \t MobilitySim object created.")
         print("\t -")
@@ -183,7 +188,7 @@ class MobilitySim:
             
             # Compare the bounding boxes
             if bbox == loaded_bbox:
-                print("Found a graphml file with road network. Reusing data.")
+                print("Found a graphml file with road network. Reusing existing data.")
             else:
                 print("Found a graphml file with road network but the bounding box does not match. Downloading new data.")
                 G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
@@ -197,3 +202,41 @@ class MobilitySim:
             ox.save_graphml(G, graphml_file)
 
         self.road_network = G
+
+    def set_mobility_zones(self, num_squares):
+        """ Setter for the mobility_zones attribute.
+        """
+
+        # 1. Split the area into num_squares x num_squares zones 
+
+        minx, miny, maxx, maxy = self.simulation_bbox
+    
+        # Calculate the width and height of each zone
+        width = (maxx - minx) / num_squares
+        height = (maxy - miny) / num_squares
+        
+        grid_data = []
+        
+        # Loop to create grid and calculate center of each square
+        for i in range(num_squares):
+            for j in range(num_squares):
+                # Latitude and longitude of the geometric center 
+                center_lat = minx + (i + 0.5) * width
+                center_lon = miny + (j + 0.5) * height
+
+                # Bounding box 
+
+                lower_left_x = minx + j * width
+                lower_left_y = miny + i * height
+                upper_right_x = lower_left_x + width
+                upper_right_y = lower_left_y + height
+
+                bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)
+
+                # Append everything
+
+                grid_data.append({'geometric_center': (center_lat, center_lon), 'bbox': bbox_geom})
+
+        self.mobility_zones = pd.DataFrame(grid_data)
+
+        #print(mobility_zones)

@@ -2,7 +2,7 @@
 
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry import LineString, Point, box
+from shapely.geometry import LineString, Point, box, Polygon
 from shapely.ops import transform
 import pyproj
 import matplotlib.pyplot as plt
@@ -45,10 +45,10 @@ Mobility simulation
 """
 
 # Initialize mobility simulation
-mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0)
+mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0, n_subdivisions = 5)
 
-print(mobsim.centroid_coords)
-print(mobsim.simulation_bbox)
+# print(mobsim.centroid_coords)
+# print(mobsim.simulation_bbox)
 
 
 
@@ -96,6 +96,31 @@ gdf = ox.graph_to_gdfs(mobsim.road_network, nodes=False, edges=True)
 # Add the road network to the map /!\ Heavy process
 folium.GeoJson(gdf, name='Road Network').add_to(mymap)
 
+# Add the subdivisions
+
+
+# Function to add rectangles to the map
+def add_rectangle(row):
+    # Parse the WKT string to create a Polygon object
+    bbox_polygon = row['bbox']
+    bbox_coords = bbox_polygon.bounds
+    
+    # Add rectangle to map
+    folium.Rectangle(
+        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+        color='blue',
+        fill=True,
+        fill_color='blue',
+        fill_opacity=0.2
+    ).add_to(mymap)
+
+
+# Apply the function to each row in the DataFrame
+mobsim.mobility_zones.apply(add_rectangle, axis=1)
+
+
 # Display the map
 folium.LayerControl().add_to(mymap)
 mymap.save(OUTPUT_PATH / "map.html")	
+
+
