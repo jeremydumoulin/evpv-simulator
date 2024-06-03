@@ -61,6 +61,8 @@ class MobilitySim:
     ####################################### 
 
     def __init__(self, target_area_shapefile, population_density, buffer_distance = .0, n_subdivisions = 10):
+        print("\t -")
+
         print(f"INFO \t Initializing a new MobilitySim object.")
     
         self.set_target_area_shapefile(target_area_shapefile)
@@ -162,7 +164,8 @@ class MobilitySim:
 
     def set_road_network(self):
         """ Setter for the road_network attribute.
-        """
+        """     
+
         # Convert to the format required by osmnx: north, south, east, west
         minx, miny, maxx, maxy = self.simulation_bbox
         north, south, east, west = maxy, miny, maxx, minx
@@ -171,6 +174,8 @@ class MobilitySim:
 
         # Define the filter string to keep only motorways and primary roads
         filter_string = '["highway"!~"^(service|track|residential)$"]'
+
+        print(f"INFO \t Getting the road network from OSM. Applied filter: {filter_string}")
 
         ox.settings.use_cache=False
         #ox.config(use_cache=False)
@@ -194,9 +199,9 @@ class MobilitySim:
             
             # Compare the bounding boxes
             if bbox == loaded_bbox:
-                print("Found a graphml file with road network. Reusing existing data.")
+                print(f"\t -> Found a graphml file with road network. Reusing existing data.")
             else:
-                print("Found a graphml file with road network but the bounding box does not match. Downloading new data.")
+                print(f"\t -> Found a graphml file with road network but the bounding box does not match. Downloading new data.")
                 #G = ox.graph_from_bbox(north, south, east, west, network_type='drive')
                 G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
 
@@ -215,7 +220,8 @@ class MobilitySim:
 
     def set_workplaces(self):
         """ Setter for the workplaces
-        """
+        """       
+
         # Extract the coordinates of the bounding box vertices
         minx, miny, maxx, maxy = self.simulation_bbox
         bbox_coords = [maxy, miny, maxx, minx]
@@ -229,6 +235,8 @@ class MobilitySim:
             "office": ["company", "government"],
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
+
+        print(f"INFO \t Getting the workplaces from OSM. Tags: {tags}")
 
         mypois = ox.features.features_from_bbox(bbox=bbox_coords, tags=tags) # the table
 
@@ -249,6 +257,8 @@ class MobilitySim:
     def set_mobility_zones(self, num_squares):
         """ Setter for the mobility_zones attribute.
         """
+
+        print(f"INFO \t Initialization of mobility zones and associated features")
 
         # Split the area into num_squares x num_squares zones 
 
