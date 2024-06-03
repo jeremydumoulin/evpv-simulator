@@ -10,8 +10,10 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import json
+import warnings
 import os
 import rasterio
+from rasterio.mask import mask
 from pathlib import Path
 from shapely.geometry import shape, LineString, Point, Polygon, box, MultiPoint
 from shapely.ops import transform, nearest_points, snap
@@ -20,6 +22,7 @@ from pyproj import Geod
 from dotenv import load_dotenv
 from geopy.distance import geodesic
 import osmnx as ox
+
 
 from evpv import helpers as hlp
 
@@ -194,12 +197,16 @@ class MobilitySim:
                 print("Found a graphml file with road network. Reusing existing data.")
             else:
                 print("Found a graphml file with road network but the bounding box does not match. Downloading new data.")
+                #G = ox.graph_from_bbox(north, south, east, west, network_type='drive')
                 G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
+
                 ox.save_graphml(G, graphml_file)
 
         else:
             # Download and extract the road network within the bounding box
-            G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive', custom_filter=filter_string)
+            #G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive')
+            G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
+
 
             # Save the graph to a GraphML file
             ox.save_graphml(G, graphml_file)
@@ -225,18 +232,15 @@ class MobilitySim:
 
         mypois = ox.features.features_from_bbox(bbox=bbox_coords, tags=tags) # the table
 
-        # print(len(mypois))
-        # mypois.head(5)
-
         # Convert ways into nodes and get the coordinates of the center point - Do not store the relations
         center_points = []
-        for element_type, osmid in mypois.index:
-            if element_type == 'way':
-                shapefile = mypois.loc[(element_type, osmid), 'geometry']
+        for index, row in mypois.iterrows():
+            if index[0] == 'way':
+                shapefile = row['geometry']
                 center_point = shapefile.centroid
                 center_points.append((center_point.x, center_point.y))
-            if element_type == 'node':
-                center_points.append((mypois.loc[(element_type, osmid), 'geometry'].x, mypois.loc[(element_type, osmid), 'geometry'].y))
+            if index[0] == 'node':
+                center_points.append((row['geometry'].x, row['geometry'].y))
             else:
                 break
 
@@ -246,7 +250,7 @@ class MobilitySim:
         """ Setter for the mobility_zones attribute.
         """
 
-        # 1. Split the area into num_squares x num_squares zones 
+        # Split the area into num_squares x num_squares zones 
 
         minx, miny, maxx, maxy = self.simulation_bbox
     
@@ -259,23 +263,52 @@ class MobilitySim:
         # Loop to create grid and calculate center of each square
         for i in range(num_squares):
             for j in range(num_squares):
-                # Latitude and longitude of the geometric center 
+                # 1. Latitude and longitude of the geometric center 
                 center_lat = minx + (i + 0.5) * width
                 center_lon = miny + (j + 0.5) * height
 
-                # Bounding box 
+                # 2. Nearest node in the road network
 
-                lower_left_x = minx + j * width
-                lower_left_y = miny + i * height
+                nearest_node = ox.distance.nearest_nodes(self.road_network, center_lat, center_lon)
+
+                # 3. Bounding box 
+
+                lower_left_x = minx + i * width
+                lower_left_y = miny + j * height
                 upper_right_x = lower_left_x + width
                 upper_right_y = lower_left_y + height
 
                 bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)
 
-                # Append everything
+                # 4. Population within the bounding box
 
-                grid_data.append({'geometric_center': (center_lat, center_lon), 'bbox': bbox_geom})
+                # GeoDataFrame
+                bbox_gdf = gpd.GeoDataFrame({'geometry': [bbox_geom]}, crs="EPSG:4326")
+
+                # Path to the population raster file
+                population_raster_path = self.population_density
+
+                # Read the population raster
+                with rasterio.open(population_raster_path) as src:
+                    # Clip the raster using the bounding box
+                    out_image, out_transform = mask(src, [bbox_gdf.geometry.values[0]], crop=True)
+                    out_meta = src.meta
+
+                # Calculate the total population within the bounding box
+                total_population = np.sum(out_image[out_image > 0])  # assuming no data values are <= 0
+
+                # 5. Number of workplaces
+
+                # Convert the list of center points to shapely Point objects
+                points = [Point(lon, lat) for lon, lat in self.workplaces]
+
+                # Count how many points are within the bounding box
+                points_within_bbox = [point for point in points if point.within(bbox_geom)]
+                n_workplaces = len(points_within_bbox)
+
+
+                # 6. Append everything
+
+                grid_data.append({'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'workplaces': n_workplaces})
 
         self.mobility_zones = pd.DataFrame(grid_data)
-
-        #print(mobility_zones)

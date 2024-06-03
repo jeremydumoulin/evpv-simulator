@@ -50,6 +50,8 @@ mobsim = MobilitySim(shapefile_path, population_density = population_density_pat
 # print(mobsim.centroid_coords)
 # print(mobsim.simulation_bbox)
 
+print(mobsim.mobility_zones)
+print(mobsim.mobility_zones['population'].sum())
 
 
 # Plot the boundaries on a folium map
@@ -87,20 +89,30 @@ rectangle.add_to(mymap)
 mymap = hlp.add_raster_to_folium(mobsim.population_density, mymap)
 
 
-
 # Add road network
 
 # Convert the network to a GeoDataFrame
 gdf = ox.graph_to_gdfs(mobsim.road_network, nodes=False, edges=True)
 
 # Add the road network to the map /!\ Heavy process
-folium.GeoJson(gdf, name='Road Network').add_to(mymap)
+folium.GeoJson(gdf, name='Road Network', style_function=lambda x:{'fillColor': '#000000', 'color': '#000000'}).add_to(mymap)
 
 
 # Add workplaces
 # Add markers for each center point
-for point in mobsim.workplaces:
-    folium.Marker(location=[point[1], point[0]], popup="Center point").add_to(mymap)
+# for point in mobsim.workplaces:
+#     folium.Marker(location=[point[1], point[0]], popup="Center point").add_to(mymap)
+
+
+# Add markers for the nearest nodes
+for idx, row in mobsim.mobility_zones.iterrows():
+    nearest_node_lat, nearest_node_lon = row['nearest_node']
+    folium.Marker(
+        location=[nearest_node_lon, nearest_node_lat],
+        icon=folium.Icon(color='red'),
+        popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
+    ).add_to(mymap)
+
 
 # Add the subdivisions
 
@@ -113,10 +125,10 @@ def add_rectangle(row):
     # Add rectangle to map
     folium.Rectangle(
         bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color='blue',
+        color='grey',
         fill=True,
-        fill_color='blue',
-        fill_opacity=0.2
+        fill_color='grey',
+        fill_opacity=0.0
     ).add_to(mymap)
 
 

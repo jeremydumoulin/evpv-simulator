@@ -42,7 +42,7 @@ repository = https://gitlab.epfl.ch/PVLAB/SYSTEM/openmod4africa/gtfs4ev
 
 ### Open tasks
 
-- [ ] Lorem
+- [ ] Find out why the OSMNX function to find the nearest road shows a warning 
 
 ### Backlog
 
@@ -50,7 +50,7 @@ repository = https://gitlab.epfl.ch/PVLAB/SYSTEM/openmod4africa/gtfs4ev
 
 ### Done
 
-- [x] Lorem
+- [x] Find out why the OSMNX function to find the nearest road shows a warning 
 
 ## License
 
