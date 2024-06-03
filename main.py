@@ -96,8 +96,13 @@ gdf = ox.graph_to_gdfs(mobsim.road_network, nodes=False, edges=True)
 # Add the road network to the map /!\ Heavy process
 folium.GeoJson(gdf, name='Road Network').add_to(mymap)
 
-# Add the subdivisions
 
+# Add workplaces
+# Add markers for each center point
+for point in mobsim.workplaces:
+    folium.Marker(location=[point[1], point[0]], popup="Center point").add_to(mymap)
+
+# Add the subdivisions
 
 # Function to add rectangles to the map
 def add_rectangle(row):

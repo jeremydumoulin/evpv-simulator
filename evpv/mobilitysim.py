@@ -45,6 +45,7 @@ class MobilitySim:
 
     population_density = None
     road_network = None
+    workplaces = None
 
     # Mobility zones - features 
     mobility_zones = pd.DataFrame()
@@ -66,6 +67,7 @@ class MobilitySim:
 
         self.set_population_density(population_density)
         self.set_road_network()
+        self.set_workplaces()
 
         self.set_mobility_zones(n_subdivisions)
         
@@ -167,7 +169,8 @@ class MobilitySim:
         # Define the filter string to keep only motorways and primary roads
         filter_string = '["highway"!~"^(service|track|residential)$"]'
 
-        ox.config(use_cache=False)
+        ox.settings.use_cache=False
+        #ox.config(use_cache=False)
 
         # Check if the GraphML file exists
         if os.path.exists(graphml_file):
@@ -202,6 +205,42 @@ class MobilitySim:
             ox.save_graphml(G, graphml_file)
 
         self.road_network = G
+
+    def set_workplaces(self):
+        """ Setter for the workplaces
+        """
+        # Extract the coordinates of the bounding box vertices
+        minx, miny, maxx, maxy = self.simulation_bbox
+        bbox_coords = [maxy, miny, maxx, minx]
+
+        # Amenities to extract
+        tags = {
+            "building": ["industrial", "office"],
+            "company": [],
+            "landuse": ["industrial"],
+            "industrial": [],
+            "office": ["company", "government"],
+            "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
+        }
+
+        mypois = ox.features.features_from_bbox(bbox=bbox_coords, tags=tags) # the table
+
+        # print(len(mypois))
+        # mypois.head(5)
+
+        # Convert ways into nodes and get the coordinates of the center point - Do not store the relations
+        center_points = []
+        for element_type, osmid in mypois.index:
+            if element_type == 'way':
+                shapefile = mypois.loc[(element_type, osmid), 'geometry']
+                center_point = shapefile.centroid
+                center_points.append((center_point.x, center_point.y))
+            if element_type == 'node':
+                center_points.append((mypois.loc[(element_type, osmid), 'geometry'].x, mypois.loc[(element_type, osmid), 'geometry'].y))
+            else:
+                break
+
+        self.workplaces = center_points
 
     def set_mobility_zones(self, num_squares):
         """ Setter for the mobility_zones attribute.
