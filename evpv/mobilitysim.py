@@ -322,3 +322,41 @@ class MobilitySim:
                 grid_data.append({'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'workplaces': n_workplaces})
 
         self.mobility_zones = pd.DataFrame(grid_data)
+
+
+    ############# Trip Generation #############
+    ###########################################
+
+    def trip_generation(self, share_active, share_unemployed, share_home_office, mode_split_car, car_occupancy, mode_split_motorbike, motorbike_occupancy):
+        print(f"INFO \t Generating the number of trips in each zone")
+
+        # Check the values 
+
+        params = [
+        share_active, share_unemployed, share_home_office, 
+        mode_split_car, mode_split_motorbike
+        ]
+    
+        if not all(0.0 <= param <= 1.0 for param in params):
+            print(f"ERROR \t All parameters must be between 0 and 1.")
+            return
+
+        if not (mode_split_car + mode_split_motorbike) <= 1.0:
+            print(f"ERROR \t The sum of car and motorbike mode splits must be less or equal than 1.")
+            return
+
+        # Load the mobility_zones dataframe
+
+        df = self.mobility_zones
+
+        # Calculate the number of trips, the modal share and append them to the df
+
+        df['n_commuters'] = df['population'].apply( lambda x: int(x * share_active * (1 - share_unemployed) * (1 - share_home_office)) )
+
+        df['n_car_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_car / car_occupancy) )
+        df['n_motorbike_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_motorbike / motorbike_occupancy) )
+        df['n_public_trips'] = df['n_commuters'].apply( lambda x: int(x * (1 - mode_split_car + mode_split_motorbike)) )
+
+        self.mobility_zones = df
+
+        print(f"INFO \t Trip generation done. Data has been appended to the mobility_zones attribute.")

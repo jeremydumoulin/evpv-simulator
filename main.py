@@ -14,6 +14,7 @@ import folium
 from dotenv import load_dotenv
 from pathlib import Path
 import osmnx as ox
+import branca.colormap as cm
 
 from evpv.mobilitysim import MobilitySim
 from evpv import helpers as hlp
@@ -44,14 +45,18 @@ Pre-processing
 Mobility simulation
 """
 
+"""
+Initialisation
+"""
+
 # Initialize mobility simulation
-mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0, n_subdivisions = 5)
+mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0, n_subdivisions = 15)
 
 # print(mobsim.centroid_coords)
 # print(mobsim.simulation_bbox)
 
-print(mobsim.mobility_zones)
-print(mobsim.mobility_zones['population'].sum())
+#print(mobsim.mobility_zones)
+#print(mobsim.mobility_zones['population'].sum())
 
 
 # Plot the boundaries on a folium map
@@ -135,9 +140,49 @@ def add_rectangle(row):
 # Apply the function to each row in the DataFrame
 mobsim.mobility_zones.apply(add_rectangle, axis=1)
 
-
 # Display the map
 folium.LayerControl().add_to(mymap)
-mymap.save(OUTPUT_PATH / "map.html")	
+mymap.save(OUTPUT_PATH / "map.html")
 
+
+"""
+Trip generation
+"""	
+mobsim.trip_generation(
+    share_active = 0.76, 
+    share_unemployed = 0.227, 
+    share_home_office = 0.0, 
+    mode_split_car = 1.0, 
+    car_occupancy = 1.0, 
+    mode_split_motorbike = 0.0,
+    motorbike_occupancy = 1.0
+)
+
+print(mobsim.mobility_zones)
+
+
+df = mobsim.mobility_zones 
+
+m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
+
+# Normalize population data for color scaling
+linear = cm.LinearColormap(["green", "yellow", "red"], vmin=df['n_commuters'].min(), vmax=df['n_commuters'].max())
+
+# Add polygons to the map
+for idx, row in df.iterrows():
+
+    bbox_polygon = row['bbox']
+    bbox_coords = bbox_polygon.bounds
+
+    folium.Rectangle(
+        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+        color=None,
+        fill=True,
+        fill_color=linear(row.n_commuters),
+        fill_opacity=0.7,
+        tooltip=f'Commuters: {row.n_commuters} - Car trips: {row.n_car_trips} - Motorbike trips: {row.n_motorbike_trips} - Public trips: {row.n_motorbike_trips}'
+    ).add_to(m)
+
+# Display the map
+m.save('n_commuters.html')
 
