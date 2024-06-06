@@ -22,6 +22,7 @@ from pyproj import Geod
 from dotenv import load_dotenv
 from geopy.distance import geodesic
 import osmnx as ox
+import openrouteservice
 
 
 from evpv import helpers as hlp
@@ -43,6 +44,7 @@ class MobilitySim:
     buffer_distance = .0
     centroid_coords = list()
     simulation_bbox = list()
+    n_subdivisions = 0
 
     # Raw input data
 
@@ -50,8 +52,13 @@ class MobilitySim:
     road_network = None
     workplaces = None
 
-    # Mobility zones - features 
-    mobility_zones = pd.DataFrame()
+    # Traffic analysis zones and associated properties 
+    traffic_zones = pd.DataFrame()
+
+    # Origin-desitnation flows by commuting type 
+    flows_car = pd.DataFrame()
+    flows_motorbike = pd.DataFrame()
+    flows_public = pd.DataFrame()
 
     #######################################
     ############### METHODS ###############
@@ -67,6 +74,7 @@ class MobilitySim:
     
         self.set_target_area_shapefile(target_area_shapefile)
         self.set_buffer_distance(buffer_distance)
+        self.set_n_subdivisions(n_subdivisions)
         self.set_centroid_coords()
         self.set_simulation_bbox()
 
@@ -74,7 +82,7 @@ class MobilitySim:
         self.set_road_network()
         self.set_workplaces()
 
-        self.set_mobility_zones(n_subdivisions)
+        self.set_traffic_zones(n_subdivisions)
         
         print("INFO \t MobilitySim object created.")
         print("\t -")
@@ -105,9 +113,20 @@ class MobilitySim:
         try:       
             buffer_distance = float(buffer_distance)
         except Exception as e:
-            print(f"ERROR \t Impossible to convert the specified ev consumption into a float. - {e}")
+            print(f"ERROR \t Impossible to convert the specified buffer distance into a float. - {e}")
         else:            
             self.buffer_distance = buffer_distance
+
+    def set_n_subdivisions(self, n_subdivisions):
+        """ Setter for n_subdivision attribute.
+        Converts the value into an int
+        """
+        try:       
+            n_subdivisions = int(n_subdivisions)
+        except Exception as e:
+            print(f"ERROR \t Impossible to convert the specified subdivisions into a int. - {e}")
+        else:            
+            self.n_subdivisions = n_subdivisions
 
     def set_centroid_coords(self):
         geometry = self.target_area_shapefile['features'][0]['geometry']
@@ -189,7 +208,7 @@ class MobilitySim:
             loaded_north, loaded_south, loaded_east, loaded_west = hlp.get_graph_bbox(G)
 
             # Round to decimal places to ignore small differences
-            decimals = 3
+            decimals = 2
 
             loaded_bbox = (round(loaded_north, decimals), round(loaded_south, decimals),
                    round(loaded_east, decimals), round(loaded_west, decimals))
@@ -254,8 +273,8 @@ class MobilitySim:
 
         self.workplaces = center_points
 
-    def set_mobility_zones(self, num_squares):
-        """ Setter for the mobility_zones attribute.
+    def set_traffic_zones(self, num_squares):
+        """ Setter for the traffic_zones attribute.
         """
 
         print(f"INFO \t Initialization of mobility zones and associated features")
@@ -273,6 +292,9 @@ class MobilitySim:
         # Loop to create grid and calculate center of each square
         for i in range(num_squares):
             for j in range(num_squares):
+                # 0. ID 
+                zone_id = f"{i}_{j}"
+
                 # 1. Latitude and longitude of the geometric center 
                 center_lat = minx + (i + 0.5) * width
                 center_lon = miny + (j + 0.5) * height
@@ -319,9 +341,9 @@ class MobilitySim:
 
                 # 6. Append everything
 
-                grid_data.append({'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'workplaces': n_workplaces})
+                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'workplaces': n_workplaces})
 
-        self.mobility_zones = pd.DataFrame(grid_data)
+        self.traffic_zones = pd.DataFrame(grid_data)
 
 
     ############# Trip Generation #############
@@ -345,9 +367,9 @@ class MobilitySim:
             print(f"ERROR \t The sum of car and motorbike mode splits must be less or equal than 1.")
             return
 
-        # Load the mobility_zones dataframe
+        # Load the traffic_zones dataframe
 
-        df = self.mobility_zones
+        df = self.traffic_zones
 
         # Calculate the number of trips, the modal share and append them to the df
 
@@ -357,6 +379,123 @@ class MobilitySim:
         df['n_motorbike_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_motorbike / motorbike_occupancy) )
         df['n_public_trips'] = df['n_commuters'].apply( lambda x: int(x * (1 - mode_split_car + mode_split_motorbike)) )
 
-        self.mobility_zones = df
+        self.traffic_zones = df
 
-        print(f"INFO \t Trip generation done. Data has been appended to the mobility_zones attribute.")
+        print(f"INFO \t Trip generation done. Data has been appended to the traffic_zones attribute.")
+
+    ############ Trip Distribution ############
+    ###########################################
+
+    def trip_distribution(self, mode, model = "radiation"):
+        df = self.traffic_zones
+
+        # Extract coordinates
+        coordinates = [list(coord) for coord in df['nearest_node']]
+
+        # Initialize ORS client
+        client = openrouteservice.Client(key=str(os.getenv("ORS_KEY")))  # Replace with your ORS API key
+
+        # Make the matrix request to ORS
+        matrix = client.distance_matrix(
+            locations=coordinates,
+            profile='driving-car',
+            metrics=['duration', 'distance'],
+            resolve_locations=True
+        )
+
+        # Extract travel times from the response
+        durations = matrix['durations']
+        distances = matrix['distances']
+
+        # Define constants for distance and time within two points located in the same zone
+        minx, miny, maxx, maxy = self.simulation_bbox
+
+        a = geodesic((miny, minx), (miny, maxx)).kilometers / self.n_subdivisions # size of the square in km
+        d_avg = a * 0.52  # average distance between two randomy distributed points in a square
+        speed_kmh = 50  # speed in km/h
+        t = d_avg / speed_kmh * 60 # Travel time in minutes
+
+        # Prepare lists to hold the data
+        origin_ids = []
+        destination_ids = []
+        flows = []
+        travel_times = []
+        travel_distances = []
+
+        # Populate the data based on the matrix response
+        for i, origin_id in enumerate(df['id']):
+            for j, destination_id in enumerate(df['id']):
+                origin_ids.append(origin_id)
+                destination_ids.append(destination_id)
+                flows.append(0.0)  # Placeholded for the flow for all origin-destination pairs
+
+                if origin_id == destination_id:
+                    travel_distances.append(d_avg)  # average distance in the same zone
+                    travel_times.append(t)  # time in minutes
+                else:
+                    travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometers
+                    travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
+
+        # Create the resulting DataFrame
+        flow_data = {
+            'Origin': origin_ids,
+            'Destination': destination_ids,
+            'Flow': flows,
+            'Travel Time (min)': travel_times,
+            'Travel Distance (km)': travel_distances
+        }
+
+        flows_df = pd.DataFrame(flow_data)
+
+        # Iterate over each origin and apply the model
+        for origin in flows_df['Origin'].unique():
+            # Filter rows for the current origin
+            origin_rows = flows_df[flows_df['Origin'] == origin]
+
+            # Sort the DataFrame by the value of travel distance
+            origin_rows = origin_rows.sort_values(by='Travel Distance (km)')
+            # origin_rows = origin_rows.sort_values(by='Travel Time (min)')
+
+            # Get the population of the origin
+            origin_id = origin_rows.iloc[0]['Origin']
+            pop_origin = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'population'].values[0]
+            departures = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'n_car_trips'].values[0]
+
+            # Initialize the population counter of the intervening opportunities
+            pop_intervening = 0
+            flow_value_sum = .0
+
+            print(pop_origin)
+
+            # Iterate over each destination in the sorted DataFrame
+            j = 0
+            for index, row in origin_rows.iterrows():
+                # Get the destination population and distance 
+                destination_id = row['Destination']
+                pop_destination = self.traffic_zones.loc[self.traffic_zones['id'] == destination_id, 'population'].values[0]
+
+                # Compute the flows using a radiation model 
+                num = pop_origin * pop_destination
+                den = (pop_origin + pop_intervening) * (pop_origin + pop_destination + pop_intervening)
+
+                flow_value = num / den
+
+                print(flow_value)
+
+                flow_value_sum += flow_value
+
+                if j >= 2:
+                    pop_intervening += pop_destination # Adding the intervening opportunity population, skipping the population at the origin
+
+                j += 1
+
+                # Update the Flow value in the original DataFrame
+                flows_df.loc[index, 'Flow'] = flow_value
+
+            # Normalisation and number of trips affectation
+            pop_tot = 0
+            for index, row in origin_rows.iterrows():
+                flows_df.loc[index, 'Flow'] = int( flows_df.loc[index, 'Flow'] / flow_value_sum * pop_origin )
+
+            # Calculate and print the sum of flows for the current origin
+            self.flows_car = flows_df

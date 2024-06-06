@@ -11,6 +11,7 @@ import numpy as np
 import math
 import os
 import folium
+from folium.plugins import AntPath
 from dotenv import load_dotenv
 from pathlib import Path
 import osmnx as ox
@@ -50,13 +51,13 @@ Initialisation
 """
 
 # Initialize mobility simulation
-mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0, n_subdivisions = 15)
+mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 50, n_subdivisions = 4)
 
 # print(mobsim.centroid_coords)
 # print(mobsim.simulation_bbox)
 
-#print(mobsim.mobility_zones)
-#print(mobsim.mobility_zones['population'].sum())
+#print(mobsim.traffic_zones)
+#print(mobsim.traffic_zones['population'].sum())
 
 
 # Plot the boundaries on a folium map
@@ -110,7 +111,7 @@ folium.GeoJson(gdf, name='Road Network', style_function=lambda x:{'fillColor': '
 
 
 # Add markers for the nearest nodes
-for idx, row in mobsim.mobility_zones.iterrows():
+for idx, row in mobsim.traffic_zones.iterrows():
     nearest_node_lat, nearest_node_lon = row['nearest_node']
     folium.Marker(
         location=[nearest_node_lon, nearest_node_lat],
@@ -138,7 +139,7 @@ def add_rectangle(row):
 
 
 # Apply the function to each row in the DataFrame
-mobsim.mobility_zones.apply(add_rectangle, axis=1)
+mobsim.traffic_zones.apply(add_rectangle, axis=1)
 
 # Display the map
 folium.LayerControl().add_to(mymap)
@@ -158,10 +159,9 @@ mobsim.trip_generation(
     motorbike_occupancy = 1.0
 )
 
-print(mobsim.mobility_zones)
+# print(mobsim.traffic_zones)
 
-
-df = mobsim.mobility_zones 
+df = mobsim.traffic_zones 
 
 m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
 
@@ -184,5 +184,72 @@ for idx, row in df.iterrows():
     ).add_to(m)
 
 # Display the map
-m.save('n_commuters.html')
+m.save(OUTPUT_PATH / 'n_commuters.html')
+
+"""
+Trip distribution
+""" 
+
+mobsim.trip_distribution(mode = "car", model = "radiation")
+
+df = mobsim.flows_car
+print(mobsim.flows_car)
+
+# Calculate flow-weighted average travel time and distance
+flow_weighted_avg_time = np.average(df['Travel Time (min)'], weights=df['Flow'])
+flow_weighted_avg_distance = np.average(df['Travel Distance (km)'], weights=df['Flow'])
+
+print("Flow-weighted average travel time:", flow_weighted_avg_time)
+print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
+
+# Plot histogram of total flow for each bin of travel time
+plt.hist(df['Travel Time (min)'], bins=100, weights=df['Flow'], color='blue', edgecolor='black')
+plt.xlabel('Travel Time (min)')
+plt.ylabel('Total Flow')
+plt.title('Total Flow as a function of Travel Time')
+plt.grid(True)
+plt.show()
+
+
+#df.to_csv('flow_distanc.csv', index=False) 
+
+# Expand coordinates_df into separate latitude and longitude columns
+# mobsim.traffic_zones[['longitude', 'latitude']] = pd.DataFrame(mobsim.traffic_zones['geometric_center'].tolist(), index=mobsim.traffic_zones.index) 
+
+# # Merge flows_df with coordinates_df to get coordinates for origins and destinations
+# merged_df = mobsim.flows_car.merge(mobsim.traffic_zones, left_on='Origin', right_on='id').rename(columns={'latitude': 'origin_lat', 'longitude': 'origin_lon'})
+# merged_df = merged_df.merge(mobsim.traffic_zones, left_on='Destination', right_on='id').rename(columns={'latitude': 'dest_lat', 'longitude': 'dest_lon'})
+
+# # Create a folium map centered around the average coordinates
+# mymap = folium.Map(location=[merged_df['origin_lat'].mean(), merged_df['origin_lon'].mean()], zoom_start=13)
+
+# # Apply the function to each row in the DataFrame
+# mobsim.traffic_zones.apply(add_rectangle, axis=1)
+
+# # Function to add lines to the map
+# # Function to add lines to the map
+# def add_flow_line(row):
+#     if row['Flow'] > 1000:  # Only add flows with non-zero value
+#         origin = (row['origin_lat'], row['origin_lon'])
+#         destination = (row['dest_lat'], row['dest_lon'])
+#         # Create polyline with arrows at the end
+#         folium.plugins.AntPath(
+#             locations=[origin, destination],
+#             color='red',
+#             use_arrows=True,  # Display arrows at the end
+#             delay=1000000000,  # Delay between each arrow
+#             dash_array=[10, 20],  # Dash pattern to make the arrow part dashed
+#             weight=20,
+#             opacity=0.6
+#         ).add_to(mymap)
+
+
+# # Apply the function to each row in the DataFrame
+# merged_df.apply(add_flow_line, axis=1)
+
+
+
+# Save the map to an HTML file
+#mymap.save('flow_map.html')
+
 
