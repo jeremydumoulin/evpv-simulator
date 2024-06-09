@@ -98,3 +98,28 @@ def get_graph_bbox(G):
     east, west = max(x_values), min(x_values)
 
     return north, south, east, west 
+
+
+# Function to estimate flows using the radiation model
+def radiation(T, dist_matrix, pop_matrix, pop_origin):
+
+    def from_origin():
+        # Sort destinations by distance from origin
+        didxs = np.argsort(dist_matrix)
+        pop_matrix_sorted =  pop_matrix[didxs]
+        pop_in_radius = 0
+        flows_proba = np.zeros(T.shape)
+        for j in range(T.shape[0]):
+            num = pop_origin*pop_matrix_sorted[j]
+            denom = (pop_origin + pop_in_radius)*(pop_origin + pop_matrix_sorted[j] + pop_in_radius)
+            flows_proba[j] = num/denom
+            pop_in_radius += pop_matrix_sorted[j]
+        # Unsort list
+
+        return flows_proba[didxs.argsort()]
+
+    # Builds the OD matrix T from the input data
+    T_norm_p = np.zeros(T.shape)
+    T_norm_p = from_origin()
+    
+    return T_norm_p

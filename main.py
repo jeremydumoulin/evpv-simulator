@@ -12,6 +12,7 @@ import math
 import os
 import folium
 from folium.plugins import AntPath
+
 from dotenv import load_dotenv
 from pathlib import Path
 import osmnx as ox
@@ -51,13 +52,13 @@ Initialisation
 """
 
 # Initialize mobility simulation
-mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 50, n_subdivisions = 4)
+mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0, n_subdivisions = 9)
 
 # print(mobsim.centroid_coords)
 # print(mobsim.simulation_bbox)
 
 #print(mobsim.traffic_zones)
-#print(mobsim.traffic_zones['population'].sum())
+print(mobsim.traffic_zones['population'].sum())
 
 
 # Plot the boundaries on a folium map
@@ -70,7 +71,7 @@ def style_function(feature):
         'fillColor': 'none',  # Set fill color to 'none'
     }
 
-mymap = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
+mymap = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
 
 
 # Add GeoJSON layer to the map, specifying style function
@@ -82,7 +83,7 @@ minx, miny, maxx, maxy = mobsim.simulation_bbox
 rectangle = folium.Rectangle(
     bounds=[[miny, minx], [maxy, maxx]],
     fill=True,  # Fill the rectangle
-    fill_opacity=0.2,  # Set the opacity of the fill color
+    fill_opacity=0,  # Set the opacity of the fill color
     color='blue',  # Border color
     weight=2,  # Border width
 )
@@ -104,23 +105,29 @@ gdf = ox.graph_to_gdfs(mobsim.road_network, nodes=False, edges=True)
 folium.GeoJson(gdf, name='Road Network', style_function=lambda x:{'fillColor': '#000000', 'color': '#000000'}).add_to(mymap)
 
 
+# folium.LayerControl().add_to(mymap)
+# mymap.save(OUTPUT_PATH / "map.html")
+
+
 # Add workplaces
 # Add markers for each center point
 # for point in mobsim.workplaces:
 #     folium.Marker(location=[point[1], point[0]], popup="Center point").add_to(mymap)
 
 
-# Add markers for the nearest nodes
-for idx, row in mobsim.traffic_zones.iterrows():
-    nearest_node_lat, nearest_node_lon = row['nearest_node']
-    folium.Marker(
-        location=[nearest_node_lon, nearest_node_lat],
-        icon=folium.Icon(color='red'),
-        popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
-    ).add_to(mymap)
 
 
-# Add the subdivisions
+# # Add markers for the nearest nodes
+# for idx, row in mobsim.traffic_zones.iterrows():
+#     nearest_node_lat, nearest_node_lon = row['nearest_node']
+#     folium.Marker(
+#         location=[nearest_node_lon, nearest_node_lat],
+#         icon=folium.Icon(color='red'),
+#         popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
+#     ).add_to(mymap)
+
+
+# # Add the subdivisions
 
 # Function to add rectangles to the map
 def add_rectangle(row):
@@ -138,17 +145,18 @@ def add_rectangle(row):
     ).add_to(mymap)
 
 
-# Apply the function to each row in the DataFrame
+# # Apply the function to each row in the DataFrame
 mobsim.traffic_zones.apply(add_rectangle, axis=1)
 
-# Display the map
+# # Display the map
 folium.LayerControl().add_to(mymap)
 mymap.save(OUTPUT_PATH / "map.html")
 
 
-"""
-Trip generation
-"""	
+# """
+# Trip generation
+# """	
+
 mobsim.trip_generation(
     share_active = 0.76, 
     share_unemployed = 0.227, 
@@ -203,15 +211,15 @@ print("Flow-weighted average travel time:", flow_weighted_avg_time)
 print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
 
 # Plot histogram of total flow for each bin of travel time
-plt.hist(df['Travel Time (min)'], bins=100, weights=df['Flow'], color='blue', edgecolor='black')
-plt.xlabel('Travel Time (min)')
+plt.hist(df['Travel Distance (km)'], bins=200, weights=df['Flow'], color='blue', edgecolor='black')
+plt.xlabel('Travel Distance (km)')
 plt.ylabel('Total Flow')
-plt.title('Total Flow as a function of Travel Time')
+plt.title('Total Flow as a function of Travel Distance')
 plt.grid(True)
 plt.show()
 
 
-#df.to_csv('flow_distanc.csv', index=False) 
+# df.to_csv('flow_distanc.csv', index=False) 
 
 # Expand coordinates_df into separate latitude and longitude columns
 # mobsim.traffic_zones[['longitude', 'latitude']] = pd.DataFrame(mobsim.traffic_zones['geometric_center'].tolist(), index=mobsim.traffic_zones.index) 
@@ -250,6 +258,6 @@ plt.show()
 
 
 # Save the map to an HTML file
-#mymap.save('flow_map.html')
+# mymap.save('flow_map.html')
 
 

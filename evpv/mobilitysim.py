@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from geopy.distance import geodesic
 import osmnx as ox
 import openrouteservice
-
+import time
 
 from evpv import helpers as hlp
 
@@ -386,33 +386,57 @@ class MobilitySim:
     ############ Trip Distribution ############
     ###########################################
 
-    def trip_distribution(self, mode, model = "radiation"):
+    def trip_distribution(self, mode, model = "radiation", min_distance = 10, batch_size = 49):
         df = self.traffic_zones
 
         # Extract coordinates
         coordinates = [list(coord) for coord in df['nearest_node']]
+        num_coordinates = len(coordinates)
+
+        if num_coordinates > batch_size:
+            print(f"ALERT \t {num_coordinates} origin-destination pairs: this number is greater than the batch size set at {batch_size}. Multiple ORS requests are needed.")
 
         # Initialize ORS client
         client = openrouteservice.Client(key=str(os.getenv("ORS_KEY")))  # Replace with your ORS API key
 
-        # Make the matrix request to ORS
-        matrix = client.distance_matrix(
-            locations=coordinates,
-            profile='driving-car',
-            metrics=['duration', 'distance'],
-            resolve_locations=True
-        )
+        # Split the coordinates into manageable batches
+        coordinate_batches = [coordinates[i:i+batch_size] for i in range(0, len(coordinates), batch_size)]
 
-        # Extract travel times from the response
-        durations = matrix['durations']
-        distances = matrix['distances']
+        # Initialize the full matrices
+        durations = np.zeros((num_coordinates, num_coordinates))
+        distances = np.zeros((num_coordinates, num_coordinates))
+
+        # Make multiple requests to the ORS API for each batch
+        for i, batch in enumerate(coordinate_batches):
+            print(f"ALERT \t Sending ORS request for {len(batch)} origin-destination pairs.")
+
+            batch_matrix = client.distance_matrix(
+                locations=batch,
+                profile='driving-car',
+                metrics=['duration', 'distance'],
+                resolve_locations=True
+            )
+            
+            # Extract travel times and distances from the response
+            batch_durations = batch_matrix['durations']
+            batch_distances = batch_matrix['distances']
+            
+            # Determine the range of indices for this batch
+            batch_start = i * batch_size
+            batch_end = batch_start + len(batch)
+            
+            # Populate the corresponding section of the full matrices
+            durations[batch_start:batch_end, batch_start:batch_end] = batch_durations
+            distances[batch_start:batch_end, batch_start:batch_end] = batch_distances
+            
+            time.sleep(2)  # Introduce a delay between requests to avoid rate limiting
 
         # Define constants for distance and time within two points located in the same zone
         minx, miny, maxx, maxy = self.simulation_bbox
 
         a = geodesic((miny, minx), (miny, maxx)).kilometers / self.n_subdivisions # size of the square in km
         d_avg = a * 0.52  # average distance between two randomy distributed points in a square
-        speed_kmh = 50  # speed in km/h
+        speed_kmh = 20  # speed in km/h
         t = d_avg / speed_kmh * 60 # Travel time in minutes
 
         # Prepare lists to hold the data
@@ -434,7 +458,11 @@ class MobilitySim:
                     travel_times.append(t)  # time in minutes
                 else:
                     travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometers
-                    travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
+
+                    # Calculated ORS duration...
+                    #travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
+                    # ... or duration from average travel speed
+                    travel_times.append(distances[i][j] / 1000 / speed_kmh * 60)  # time in minutes
 
         # Create the resulting DataFrame
         flow_data = {
@@ -466,6 +494,9 @@ class MobilitySim:
             flow_value_sum = .0
 
             print(pop_origin)
+
+            # Exclude destinations less than 5 km away
+            origin_rows = origin_rows[origin_rows['Travel Distance (km)'] >= min_distance]
 
             # Iterate over each destination in the sorted DataFrame
             j = 0
