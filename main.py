@@ -1,5 +1,10 @@
 # coding: utf-8
 
+""" 
+A python script to simulate the spatio-temporal charging demand based on 
+mobility simulation.
+"""
+
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import LineString, Point, box, Polygon
@@ -21,47 +26,77 @@ import branca.colormap as cm
 from evpv.mobilitysim import MobilitySim
 from evpv import helpers as hlp
 
+#############################################
+# PARAMETERS - MODIFY ACCORDING TO YOUR NEEDS
+#############################################
+
 """
 Environment variables
 """
+
 load_dotenv() # take environment variables from .env
 
 INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
 OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 
 """
-Parameters
+Global parameters 
 """
 
-shapefile_path = INPUT_PATH / "gadm41_ETH_1.json"
-population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif"
+shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative boundaries
+population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
+
+buffer_distance = 0 # Margin in km added to the bbox around the shapefile_path
+n_subdivisions = 3 # Number of subdivisions of the bbox to create traffic analysis zones
+road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
+workplaces_tags = { # Tags used to get workplaces
+            "building": ["industrial", "office"],
+            "company": [],
+            "landuse": ["industrial"],
+            "industrial": [],
+            "office": ["company", "government"],
+            "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
+        }
+
+#####################
+# Mobility simulation
+#####################
 
 """
-Pre-processing
-"""
-# Crop the population raster to the bbox
-
-
-
-"""
-Mobility simulation
+##################### MobilitySim object initialisation #####################
 """
 
-"""
-Initialisation
-"""
+# 1. Creating the object 
 
-# Initialize mobility simulation
-mobsim = MobilitySim(shapefile_path, population_density = population_density_path, buffer_distance = 0, n_subdivisions = 9)
-
-# print(mobsim.centroid_coords)
-# print(mobsim.simulation_bbox)
-
-#print(mobsim.traffic_zones)
-print(mobsim.traffic_zones['population'].sum())
+mobsim = MobilitySim(
+    target_area_shapefile = shapefile_path,
+    population_density = population_density_path, 
+    buffer_distance = buffer_distance, 
+    n_subdivisions = n_subdivisions,
+    road_network_filter_string = road_network_filter_string,
+    workplaces_tags = workplaces_tags)
 
 
-# Plot the boundaries on a folium map
+# 2. Pre-analysis: number of workplaces as a function of the population
+# Is the population a good proxy for workplaces?
+
+# plt.figure(figsize=(10, 6))
+# plt.scatter(mobsim.traffic_zones['population'], mobsim.traffic_zones['workplaces'], color='blue')
+
+# # Adding title and labels
+# plt.title('Number of Workplaces as a Function of Population')
+# plt.xlabel('Population')
+# plt.ylabel('Number of Workplaces')
+
+# plt.show()
+# plt.savefig(OUTPUT_PATH / 'population_vs_workplaces.png')
+
+# 3. Create a folium map and add all the data
+
+mymap = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+
+##### 3.1 Administrative boundaries
 
 # Define style function to only show lines
 def style_function(feature):
@@ -71,11 +106,9 @@ def style_function(feature):
         'fillColor': 'none',  # Set fill color to 'none'
     }
 
-mymap = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
-
-
-# Add GeoJSON layer to the map, specifying style function
 folium.GeoJson(mobsim.target_area_shapefile['features'][0]['geometry'], name='Administrative boundary', style_function=style_function).add_to(mymap)
+
+##### 3.2 Simulation bbox
 
 minx, miny, maxx, maxy = mobsim.simulation_bbox
 
@@ -91,43 +124,36 @@ rectangle = folium.Rectangle(
 # Add the rectangle to the map
 rectangle.add_to(mymap)
 
-# Add population data to map
+##### 3.3 Population data
 
 mymap = hlp.add_raster_to_folium(mobsim.population_density, mymap)
 
+##### 3.4 Road network
 
-# Add road network
+# # Convert the network to a GeoDataFrame
+# gdf = ox.graph_to_gdfs(mobsim.road_network, nodes=False, edges=True)
 
-# Convert the network to a GeoDataFrame
-gdf = ox.graph_to_gdfs(mobsim.road_network, nodes=False, edges=True)
+# # Add the road network to the map /!\ Heavy process
+# folium.GeoJson(gdf, name='Road Network', style_function=lambda x:{'fillColor': '#000000', 'color': '#000000'}).add_to(mymap)
 
-# Add the road network to the map /!\ Heavy process
-folium.GeoJson(gdf, name='Road Network', style_function=lambda x:{'fillColor': '#000000', 'color': '#000000'}).add_to(mymap)
-
-
-# folium.LayerControl().add_to(mymap)
-# mymap.save(OUTPUT_PATH / "map.html")
-
+##### 3.5 Workplaces
 
 # Add workplaces
 # Add markers for each center point
 # for point in mobsim.workplaces:
 #     folium.Marker(location=[point[1], point[0]], popup="Center point").add_to(mymap)
 
+##### 3.6 Markers for the nearest nodes
 
+for idx, row in mobsim.traffic_zones.iterrows():
+    nearest_node_lat, nearest_node_lon = row['nearest_node']
+    folium.Marker(
+        location=[nearest_node_lon, nearest_node_lat],
+        icon=folium.Icon(color='red'),
+        popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
+    ).add_to(mymap)
 
-
-# # Add markers for the nearest nodes
-# for idx, row in mobsim.traffic_zones.iterrows():
-#     nearest_node_lat, nearest_node_lon = row['nearest_node']
-#     folium.Marker(
-#         location=[nearest_node_lon, nearest_node_lat],
-#         icon=folium.Icon(color='red'),
-#         popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
-#     ).add_to(mymap)
-
-
-# # Add the subdivisions
+##### 3.7 TAZs
 
 # Function to add rectangles to the map
 def add_rectangle(row):
@@ -144,79 +170,78 @@ def add_rectangle(row):
         fill_opacity=0.0
     ).add_to(mymap)
 
-
 # # Apply the function to each row in the DataFrame
 mobsim.traffic_zones.apply(add_rectangle, axis=1)
 
 # # Display the map
 folium.LayerControl().add_to(mymap)
-mymap.save(OUTPUT_PATH / "map.html")
+mymap.save(OUTPUT_PATH / "data_map.html")
 
-
-# """
-# Trip generation
-# """	
-
-mobsim.trip_generation(
-    share_active = 0.76, 
-    share_unemployed = 0.227, 
-    share_home_office = 0.0, 
-    mode_split_car = 1.0, 
-    car_occupancy = 1.0, 
-    mode_split_motorbike = 0.0,
-    motorbike_occupancy = 1.0
-)
-
-# print(mobsim.traffic_zones)
-
-df = mobsim.traffic_zones 
-
-m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
-
-# Normalize population data for color scaling
-linear = cm.LinearColormap(["green", "yellow", "red"], vmin=df['n_commuters'].min(), vmax=df['n_commuters'].max())
-
-# Add polygons to the map
-for idx, row in df.iterrows():
-
-    bbox_polygon = row['bbox']
-    bbox_coords = bbox_polygon.bounds
-
-    folium.Rectangle(
-        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color=None,
-        fill=True,
-        fill_color=linear(row.n_commuters),
-        fill_opacity=0.7,
-        tooltip=f'Commuters: {row.n_commuters} - Car trips: {row.n_car_trips} - Motorbike trips: {row.n_motorbike_trips} - Public trips: {row.n_motorbike_trips}'
-    ).add_to(m)
-
-# Display the map
-m.save(OUTPUT_PATH / 'n_commuters.html')
 
 """
-Trip distribution
-""" 
+Trip generation
+"""	
 
-mobsim.trip_distribution(mode = "car", model = "radiation")
+# mobsim.trip_generation(
+#     share_active = 0.76, 
+#     share_unemployed = 0.227, 
+#     share_home_office = 0.0, 
+#     mode_split_car = 1.0, 
+#     car_occupancy = 1.0, 
+#     mode_split_motorbike = 0.0,
+#     motorbike_occupancy = 1.0
+# )
 
-df = mobsim.flows_car
-print(mobsim.flows_car)
+# # print(mobsim.traffic_zones)
 
-# Calculate flow-weighted average travel time and distance
-flow_weighted_avg_time = np.average(df['Travel Time (min)'], weights=df['Flow'])
-flow_weighted_avg_distance = np.average(df['Travel Distance (km)'], weights=df['Flow'])
+# df = mobsim.traffic_zones 
 
-print("Flow-weighted average travel time:", flow_weighted_avg_time)
-print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
+# m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
 
-# Plot histogram of total flow for each bin of travel time
-plt.hist(df['Travel Distance (km)'], bins=200, weights=df['Flow'], color='blue', edgecolor='black')
-plt.xlabel('Travel Distance (km)')
-plt.ylabel('Total Flow')
-plt.title('Total Flow as a function of Travel Distance')
-plt.grid(True)
-plt.show()
+# # Normalize population data for color scaling
+# linear = cm.LinearColormap(["green", "yellow", "red"], vmin=df['n_commuters'].min(), vmax=df['n_commuters'].max())
+
+# # Add polygons to the map
+# for idx, row in df.iterrows():
+
+#     bbox_polygon = row['bbox']
+#     bbox_coords = bbox_polygon.bounds
+
+#     folium.Rectangle(
+#         bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+#         color=None,
+#         fill=True,
+#         fill_color=linear(row.n_commuters),
+#         fill_opacity=0.7,
+#         tooltip=f'Commuters: {row.n_commuters} - Car trips: {row.n_car_trips} - Motorbike trips: {row.n_motorbike_trips} - Public trips: {row.n_motorbike_trips}'
+#     ).add_to(m)
+
+# # Display the map
+# m.save(OUTPUT_PATH / 'n_commuters.html')
+
+# """
+# Trip distribution
+# """ 
+
+# mobsim.trip_distribution(mode = "car", model = "radiation")
+
+# df = mobsim.flows_car
+# print(mobsim.flows_car)
+
+# # Calculate flow-weighted average travel time and distance
+# flow_weighted_avg_time = np.average(df['Travel Time (min)'], weights=df['Flow'])
+# flow_weighted_avg_distance = np.average(df['Travel Distance (km)'], weights=df['Flow'])
+
+# print("Flow-weighted average travel time:", flow_weighted_avg_time)
+# print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
+
+# # Plot histogram of total flow for each bin of travel time
+# plt.hist(df['Travel Distance (km)'], bins=200, weights=df['Flow'], color='blue', edgecolor='black')
+# plt.xlabel('Travel Distance (km)')
+# plt.ylabel('Total Flow')
+# plt.title('Total Flow as a function of Travel Distance')
+# plt.grid(True)
+# plt.show()
 
 
 # df.to_csv('flow_distanc.csv', index=False) 

@@ -2,7 +2,8 @@
 
 """ 
 MobilitySim 
-Simulates the daily travel demand for different road-based transport modes (car, motorbike) for various
+
+A class to simulate the daily travel demand for different road-based transport modes (car, motorbike) for various
 mobility chains specified by the user (home-work-home, home-school-home, etc)
 """
 
@@ -46,6 +47,9 @@ class MobilitySim:
     simulation_bbox = list()
     n_subdivisions = 0
 
+    subdivision_size = .0
+    simulation_area_size = .0
+
     # Raw input data
 
     population_density = None
@@ -67,10 +71,23 @@ class MobilitySim:
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, target_area_shapefile, population_density, buffer_distance = .0, n_subdivisions = 10):
-        print("\t -")
+    def __init__(self, target_area_shapefile, 
+        population_density, 
+        buffer_distance = .0, 
+        n_subdivisions = 10, 
+        road_network_filter_string = '["highway"!~"^(service|track|residential)$"]',
+        workplaces_tags = {
+            "building": ["industrial", "office"],
+            "company": [],
+            "landuse": ["industrial"],
+            "industrial": [],
+            "office": ["company", "government"],
+            "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
+        }):
+        
+        print("---")
 
-        print(f"INFO \t Initializing a new MobilitySim object.")
+        print(f"INFO \t MobilitySim object initialisation with {n_subdivisions}x{n_subdivisions} TAZs and {buffer_distance} km buffer distance")
     
         self.set_target_area_shapefile(target_area_shapefile)
         self.set_buffer_distance(buffer_distance)
@@ -78,15 +95,21 @@ class MobilitySim:
         self.set_centroid_coords()
         self.set_simulation_bbox()
 
+        self.set_simulation_area_size()
+        self.set_subdivision_size()        
+
         self.set_population_density(population_density)
-        self.set_road_network()
-        self.set_workplaces()
+        self.set_road_network(road_network_filter_string)
+        self.set_workplaces(workplaces_tags)
 
         self.set_traffic_zones(n_subdivisions)
         
-        print("INFO \t MobilitySim object created.")
-        print("\t -")
-
+        print(f"INFO \t MobilitySim object created:")
+        print(f" \t - Simulation area bbox length: {self.simulation_area_size} km")
+        print(f" \t - TAZ length: {self.subdivision_size} km")
+        print(f" \t - Population: {self.traffic_zones['population'].sum()}")
+        print(f" \t - Workplaces: {self.traffic_zones['workplaces'].sum()}")
+        print("---")
 
     ############# Setters #############
     ###################################
@@ -163,6 +186,14 @@ class MobilitySim:
         # Return the coordinates of the centroid
         self.simulation_bbox = minx, miny, maxx, maxy
 
+    def set_simulation_area_size(self):
+        minx, miny, maxx, maxy = self.simulation_bbox
+
+        self.simulation_area_size = geodesic((miny, minx), (miny, maxx)).kilometers
+
+    def set_subdivision_size(self):
+        self.subdivision_size = self.simulation_area_size / self.n_subdivisions
+
     def set_population_density(self, path):
         """ Setter for the population_density attribute.
         """
@@ -181,7 +212,7 @@ class MobilitySim:
         except FileNotFoundError as e:
             print(e)
 
-    def set_road_network(self):
+    def set_road_network(self, road_network_filter_string):
         """ Setter for the road_network attribute.
         """     
 
@@ -192,7 +223,7 @@ class MobilitySim:
         graphml_file = OUTPUT_PATH / "road_network.graphml"
 
         # Define the filter string to keep only motorways and primary roads
-        filter_string = '["highway"!~"^(service|track|residential)$"]'
+        filter_string = road_network_filter_string
 
         print(f"INFO \t Getting the road network from OSM. Applied filter: {filter_string}")
 
@@ -228,16 +259,14 @@ class MobilitySim:
 
         else:
             # Download and extract the road network within the bounding box
-            #G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive')
             G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
-
 
             # Save the graph to a GraphML file
             ox.save_graphml(G, graphml_file)
 
         self.road_network = G
 
-    def set_workplaces(self):
+    def set_workplaces(self, workplaces_tags):
         """ Setter for the workplaces
         """       
 
@@ -246,14 +275,7 @@ class MobilitySim:
         bbox_coords = [maxy, miny, maxx, minx]
 
         # Amenities to extract
-        tags = {
-            "building": ["industrial", "office"],
-            "company": [],
-            "landuse": ["industrial"],
-            "industrial": [],
-            "office": ["company", "government"],
-            "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
-        }
+        tags = workplaces_tags
 
         print(f"INFO \t Getting the workplaces from OSM. Tags: {tags}")
 
@@ -277,7 +299,7 @@ class MobilitySim:
         """ Setter for the traffic_zones attribute.
         """
 
-        print(f"INFO \t Initialization of mobility zones and associated features")
+        print(f"INFO \t Setting up traffic analysis zones (TAZs) and associated features")
 
         # Split the area into num_squares x num_squares zones 
 
@@ -338,7 +360,6 @@ class MobilitySim:
                 points_within_bbox = [point for point in points if point.within(bbox_geom)]
                 n_workplaces = len(points_within_bbox)
 
-
                 # 6. Append everything
 
                 grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'workplaces': n_workplaces})
@@ -349,22 +370,15 @@ class MobilitySim:
     ############# Trip Generation #############
     ###########################################
 
-    def trip_generation(self, share_active, share_unemployed, share_home_office, mode_split_car, car_occupancy, mode_split_motorbike, motorbike_occupancy):
-        print(f"INFO \t Generating the number of trips in each zone")
+    def trip_generation(self, share_active, share_unemployed, share_home_office, vehicle_occupancy):
+        print(f"INFO \t Generating the number of trips from each TAZ")
 
         # Check the values 
 
-        params = [
-        share_active, share_unemployed, share_home_office, 
-        mode_split_car, mode_split_motorbike
-        ]
+        params = [share_active, share_unemployed, share_home_office]
     
         if not all(0.0 <= param <= 1.0 for param in params):
             print(f"ERROR \t All parameters must be between 0 and 1.")
-            return
-
-        if not (mode_split_car + mode_split_motorbike) <= 1.0:
-            print(f"ERROR \t The sum of car and motorbike mode splits must be less or equal than 1.")
             return
 
         # Load the traffic_zones dataframe
@@ -375,7 +389,7 @@ class MobilitySim:
 
         df['n_commuters'] = df['population'].apply( lambda x: int(x * share_active * (1 - share_unemployed) * (1 - share_home_office)) )
 
-        df['n_car_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_car / car_occupancy) )
+        df['n_car_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_car / vehicle_occupancy) )
         df['n_motorbike_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_motorbike / motorbike_occupancy) )
         df['n_public_trips'] = df['n_commuters'].apply( lambda x: int(x * (1 - mode_split_car + mode_split_motorbike)) )
 
