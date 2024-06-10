@@ -370,12 +370,12 @@ class MobilitySim:
     ############# Trip Generation #############
     ###########################################
 
-    def trip_generation(self, share_active, share_unemployed, share_home_office, vehicle_occupancy):
+    def trip_generation(self, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy):
         print(f"INFO \t Generating the number of trips from each TAZ")
 
         # Check the values 
 
-        params = [share_active, share_unemployed, share_home_office]
+        params = [share_active, share_unemployed, share_home_office, mode_share]
     
         if not all(0.0 <= param <= 1.0 for param in params):
             print(f"ERROR \t All parameters must be between 0 and 1.")
@@ -385,13 +385,9 @@ class MobilitySim:
 
         df = self.traffic_zones
 
-        # Calculate the number of trips, the modal share and append them to the df
-
+        # Calculate the number of trips and append them to the df
         df['n_commuters'] = df['population'].apply( lambda x: int(x * share_active * (1 - share_unemployed) * (1 - share_home_office)) )
-
-        df['n_car_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_car / vehicle_occupancy) )
-        df['n_motorbike_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_split_motorbike / motorbike_occupancy) )
-        df['n_public_trips'] = df['n_commuters'].apply( lambda x: int(x * (1 - mode_split_car + mode_split_motorbike)) )
+        df['n_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_share / vehicle_occupancy) )
 
         self.traffic_zones = df
 

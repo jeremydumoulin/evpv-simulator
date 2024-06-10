@@ -47,7 +47,7 @@ shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative b
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
 buffer_distance = 0 # Margin in km added to the bbox around the shapefile_path
-n_subdivisions = 3 # Number of subdivisions of the bbox to create traffic analysis zones
+n_subdivisions = 10 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -179,45 +179,45 @@ mymap.save(OUTPUT_PATH / "data_map.html")
 
 
 """
-Trip generation
-"""	
+##################### Trip generation #####################
+"""
 
-# mobsim.trip_generation(
-#     share_active = 0.76, 
-#     share_unemployed = 0.227, 
-#     share_home_office = 0.0, 
-#     mode_split_car = 1.0, 
-#     car_occupancy = 1.0, 
-#     mode_split_motorbike = 0.0,
-#     motorbike_occupancy = 1.0
-# )
+# Generation of number of home-work-home and home-study-home trips by car 
 
-# # print(mobsim.traffic_zones)
+mobsim.trip_generation(
+    share_active = 0.76, 
+    share_unemployed = 0.227, 
+    share_home_office = 0.0, 
+    mode_share = 1.0, 
+    vehicle_occupancy = 1.0
+)
 
-# df = mobsim.traffic_zones 
+# Creating a map with the number of commuters
 
-# m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
+df = mobsim.traffic_zones
 
-# # Normalize population data for color scaling
-# linear = cm.LinearColormap(["green", "yellow", "red"], vmin=df['n_commuters'].min(), vmax=df['n_commuters'].max())
+m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron') # Create the map
 
-# # Add polygons to the map
-# for idx, row in df.iterrows():
+# Normalize population data for color scaling
+linear = cm.LinearColormap(["green", "yellow", "red"], vmin=df['n_commuters'].min(), vmax=df['n_commuters'].max())
 
-#     bbox_polygon = row['bbox']
-#     bbox_coords = bbox_polygon.bounds
+# Add polygons to the map
+for idx, row in df.iterrows():
 
-#     folium.Rectangle(
-#         bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-#         color=None,
-#         fill=True,
-#         fill_color=linear(row.n_commuters),
-#         fill_opacity=0.7,
-#         tooltip=f'Commuters: {row.n_commuters} - Car trips: {row.n_car_trips} - Motorbike trips: {row.n_motorbike_trips} - Public trips: {row.n_motorbike_trips}'
-#     ).add_to(m)
+    bbox_polygon = row['bbox']
+    bbox_coords = bbox_polygon.bounds
 
-# # Display the map
-# m.save(OUTPUT_PATH / 'n_commuters.html')
+    folium.Rectangle(
+        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+        color=None,
+        fill=True,
+        fill_color=linear(row.n_commuters),
+        fill_opacity=0.7,
+        tooltip=f'Commuters: {row.n_commuters} - Car trips: {row.n_trips} '
+    ).add_to(m)
+
+# Display the map
+m.save(OUTPUT_PATH / 'n_commuters.html')
 
 # """
 # Trip distribution
