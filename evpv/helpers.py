@@ -100,6 +100,31 @@ def get_graph_bbox(G):
     return north, south, east, west 
 
 
+# Function to estimate flows from origin to destinations using a 
+# production-constrained spatial interaction model
+# NB: The origin attractivity is not used as it drops when normalizing
+def prod_constrained_gravity(origin_n_trips, dest_attractivity_list, cost_list, gamma = 1):
+
+    flows = np.zeros(len(dest_attractivity_list))
+    norm_constant = .0
+
+    # Calculating raw flows and normalisation constant
+    for j in range(len(flows)):
+        if cost_list[j] == 0:
+            print(f"ALERT \t Cost function is zero for some fluxes, setting flux to zero")
+            flows[j] = 0
+            attractivity_over_cost = 0
+        else:
+            attractivity_over_cost = dest_attractivity_list[j] / (cost_list[j]**gamma)
+            flows[j] = origin_n_trips * attractivity_over_cost
+
+        norm_constant += attractivity_over_cost
+
+    # Normalisation
+    flows = flows / norm_constant
+
+    return flows
+
 # Function to estimate flows using the radiation model
 def radiation(T, dist_matrix, pop_matrix, pop_origin):
 
