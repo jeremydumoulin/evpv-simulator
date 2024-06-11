@@ -147,7 +147,8 @@ mymap = hlp.add_raster_to_folium(mobsim.population_density, mymap)
 ##### 3.6 Markers for the nearest nodes
 
 for idx, row in mobsim.traffic_zones.iterrows():
-    nearest_node_lat, nearest_node_lon = row['nearest_node']
+    #nearest_node_lat, nearest_node_lon = row['nearest_node']
+    nearest_node_lat, nearest_node_lon = row['geometric_center']
     folium.Marker(
         location=[nearest_node_lon, nearest_node_lat],
         icon=folium.Icon(color='red'),
@@ -224,7 +225,7 @@ m.save(OUTPUT_PATH / 'n_commuters.html')
 ##################### Trip distribution #####################
 """
 
-mobsim.trip_distribution(model = "radiation", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
+mobsim.trip_distribution(model = "radiation", attraction_feature = "workplaces", cost_feature = "distance_centroid", taz_center = "centroid")
 
 df = mobsim.flows
 

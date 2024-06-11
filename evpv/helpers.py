@@ -173,19 +173,21 @@ def prod_constrained_radiation(origin_n_trips, origin_attractivity, dest_attract
     # Step 3: Calculate raw flows and normalization constant
     for original_index, _ in sorted_indexed_cost_list:
         j = original_index  # Use the original index from the sorted list
-        if sorted_indexed_cost_list[j] == 0:
-            print(f"ALERT \t Cost function is NULL for some fluxes, setting the corresponding flux to zero", end='\r')
-            flows[j] = 0
-            attractivity_over_cost = 0
-        else:
-            num = (origin_attractivity * dest_attractivity_list[j])
-            den = (origin_attractivity + intervening_opportunity) * (origin_attractivity + dest_attractivity_list[j] + intervening_opportunity)
 
+        num = dest_attractivity_list[j] # Origin attractivty cancels out when normalizating. Thus, it has been removed, also avoid zero values when origin attractivty is null
+        den = (origin_attractivity + intervening_opportunity) * (origin_attractivity + dest_attractivity_list[j] + intervening_opportunity)
+
+        if den == 0:
+            print(f"ALERT \t Denominator of radiation model is NULL. Flow is set to zero.", end='\r')
+            attractivity_over_cost = 0
+            calculated_flow = 0
+        else:
             attractivity_over_cost = num / den
             calculated_flow = origin_n_trips * attractivity_over_cost
-            flows[j] = calculated_flow
 
-            intervening_opportunity += dest_attractivity_list[j]
+        flows[j] = calculated_flow
+
+        intervening_opportunity += dest_attractivity_list[j]
 
         norm_constant += attractivity_over_cost
 

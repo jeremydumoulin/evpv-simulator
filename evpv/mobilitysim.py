@@ -21,7 +21,7 @@ from shapely.ops import transform, nearest_points, snap
 import pyproj
 from pyproj import Geod
 from dotenv import load_dotenv
-from geopy.distance import geodesic
+from geopy.distance import geodesic, distance
 import osmnx as ox
 import openrouteservice
 import time
@@ -304,6 +304,9 @@ class MobilitySim:
         # Split the area into num_squares x num_squares zones 
 
         minx, miny, maxx, maxy = self.simulation_bbox
+
+        width_bbox = geodesic((miny, minx), (miny, maxx)).kilometers
+        size_unit_cell = width_bbox / num_squares
     
         # Calculate the width and height of each zone
         width = (maxx - minx) / num_squares
@@ -311,15 +314,15 @@ class MobilitySim:
         
         grid_data = []
         
-        # Loop to create grid and calculate center of each square
-        for i in range(num_squares):
+        # Loop to create grid and calculate center of each square        
+        for i in range(num_squares):     
             for j in range(num_squares):
                 # 0. ID 
                 zone_id = f"{i}_{j}"
 
                 # 1. Latitude and longitude of the geometric center 
-                center_lat = minx + (i + 0.5) * width
-                center_lon = miny + (j + 0.5) * height
+                center_lon = miny + (i + 0.5) * height
+                center_lat = minx + (j + 0.5) * width
 
                 # 2. Nearest node in the road network
 
@@ -481,13 +484,13 @@ class MobilitySim:
                 # Euclidian travel distance 
                 point1 = df.loc[df['id'] == origin_id, 'geometric_center'].iloc[0]
                 point2 = df.loc[df['id'] == destination_id, 'geometric_center'].iloc[0]
+
                 euclidian_distance = geodesic(point1, point2).kilometers
 
                 travel_distances_euclidian.append(euclidian_distance)
 
                 # Check if ors errors. Display only once
-                if math.isnan(distances[i][j]):                   
-
+                if math.isnan(distances[i][j]):
                     travel_distances.append(euclidian_distance)
                     travel_times.append(euclidian_distance / 30 * 60)
 
