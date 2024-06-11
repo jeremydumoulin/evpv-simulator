@@ -47,7 +47,7 @@ shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative b
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
 buffer_distance = 0 # Margin in km added to the bbox around the shapefile_path
-n_subdivisions = 5 # Number of subdivisions of the bbox to create traffic analysis zones
+n_subdivisions = 15 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -224,14 +224,20 @@ m.save(OUTPUT_PATH / 'n_commuters.html')
 ##################### Trip distribution #####################
 """
 
-mobsim.trip_distribution(model = "gravity_power_1", attraction_feature = "population", cost_feature = "centroid")
+mobsim.trip_distribution(model = "radiation", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
 
 df = mobsim.flows
 
 df.to_csv(OUTPUT_PATH / "mobility_flows.csv", index=False)
 
-flow_weighted_avg_distance = np.average(df['Centroid Distance (km)'], weights=df['Flow'])
+flow_weighted_avg_distance = np.average(df['Travel Distance (km)'], weights=df['Flow'])
+flow_weighted_avg_centroid = np.average(df['Centroid Distance (km)'], weights=df['Flow'])
+
 print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
+print("Flow-weighted average travel distance btwn centroids:", flow_weighted_avg_centroid)
+
+print("Total flow:", df['Flow'].sum())
+print("Total trips:", mobsim.traffic_zones['n_trips'].sum())
 
 # print("Flow-weighted average travel time:", flow_weighted_avg_time)
 
@@ -249,7 +255,7 @@ print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
 plt.hist(df['Centroid Distance (km)'], bins=200, weights=df['Flow'], color='blue', edgecolor='black')
 plt.xlabel('Centroid Distance (km)')
 plt.ylabel('Total Flow')
-plt.title('Total Flow as a function of Travel Distance')
+plt.title('Total Flow as a function of Centroid Distance (km)')
 plt.grid(True)
 plt.show()
 

@@ -25,6 +25,7 @@ from geopy.distance import geodesic
 import osmnx as ox
 import openrouteservice
 import time
+import math
 
 from evpv import helpers as hlp
 
@@ -395,7 +396,7 @@ class MobilitySim:
     ############ Trip Distribution ############
     ###########################################
 
-    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance", batch_size = 49):
+    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", taz_center = "centroid", batch_size = 49):
         ############ Get TAZ data ############
 
         df = self.traffic_zones
@@ -408,7 +409,14 @@ class MobilitySim:
         ############ Get ORS data ############
 
         # Extract coordinates
-        coordinates = [list(coord) for coord in df['geometric_center']]
+        if taz_center == 'centroid':
+            coordinates = [list(coord) for coord in df['geometric_center']]        
+        elif taz_center == 'nearest_node':
+            coordinates = [list(coord) for coord in df['nearest_node']]
+        else:
+            print(f"ERROR \t TAZ center is unknown.")
+            return        
+        
         num_coordinates = len(coordinates)
 
         # Check if the number of coordinates exceeds the batch size
@@ -427,7 +435,7 @@ class MobilitySim:
 
         # Make multiple requests to the ORS API for each batch
         for i, batch in enumerate(coordinate_batches):
-            print(f"ALERT \t Sending ORS request for {len(batch)} origin-destination pairs.")
+            print(f"INFO \t Sending ORS request for {len(batch)} origin-destination pairs.")
 
             batch_matrix = client.distance_matrix(
                 locations=batch,
@@ -453,11 +461,6 @@ class MobilitySim:
         # Define constants for distance and time within two points located in the same zone
         minx, miny, maxx, maxy = self.simulation_bbox
 
-        # a = geodesic((miny, minx), (miny, maxx)).kilometers / self.n_subdivisions # size of the square in km
-        # d_avg = a * 0.52  # average distance between two randomy distributed points in a square
-        # speed_kmh = 20  # speed in km/h
-        # t = d_avg / speed_kmh * 60 # Travel time in minutes
-
         # Prepare lists to hold the data
         origin_ids = []
         destination_ids = []
@@ -467,30 +470,33 @@ class MobilitySim:
         travel_distances_euclidian = []
 
         # Populate the data based on the matrix response
+        ors_error = False
         for i, origin_id in enumerate(df['id']):
             for j, destination_id in enumerate(df['id']):
                 origin_ids.append(origin_id)
                 destination_ids.append(destination_id)
 
-                flows.append(0.0)  # Placeholded for the flow for all origin-destination pairs
+                flows.append(0.0)  # Placeholded for the flow for all origin-destination pairs                
 
-                travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometer
-                travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
-
+                # Euclidian travel distance 
                 point1 = df.loc[df['id'] == origin_id, 'geometric_center'].iloc[0]
                 point2 = df.loc[df['id'] == destination_id, 'geometric_center'].iloc[0]
-                travel_distances_euclidian.append(geodesic(point1, point2).kilometers)
+                euclidian_distance = geodesic(point1, point2).kilometers
 
-                # if origin_id == destination_id:
-                #     travel_distances.append(d_avg)  # average distance in the same zone
-                #     travel_times.append(t)  # time in minutes
-                # else:
-                #     travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometers
+                travel_distances_euclidian.append(euclidian_distance)
 
-                #     # Calculated ORS duration...
-                #     #travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
-                #     # ... or duration from average travel speed
-                #     travel_times.append(distances[i][j] / 1000 / speed_kmh * 60)  # time in minutes
+                # Check if ors errors. Display only once
+                if math.isnan(distances[i][j]):                   
+
+                    travel_distances.append(euclidian_distance)
+                    travel_times.append(euclidian_distance / 30 * 60)
+
+                    if not ors_error:
+                        print(f"ALERT \t ORS was unable to resolve some locations. Using euclidian distance instead. Travel time is estimated using 30 km/h speed. This could affect the model reliability!")
+                        ors_error = True
+                else:
+                    travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometer
+                    travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
 
         # Create the resulting DataFrame
         flow_data = {
@@ -529,82 +535,52 @@ class MobilitySim:
                 att_origin = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'workplaces'].values[0]
                 dest_att_list = origin_rows['Destination'].apply(lambda x: self.traffic_zones.loc[self.traffic_zones['id'] == x, 'workplaces'].values[0]).tolist()
             else:
-                print(f"ALERT \t Attraction feature is unknown.")
+                print(f"ERROR \t Attraction feature is unknown.")
                 return
 
             # SIM input: cost
-            if cost_feature == 'distance':
+            if cost_feature == 'distance_road':
                 cost_list = origin_rows['Travel Distance (km)'].tolist() # Extract the "Travel Distance (km)" column into a list
-            elif cost_feature == 'time':
+            elif cost_feature == 'time_road':
                 cost_list = origin_rows['Travel Time (min)'].tolist() # Extract the "Travel Time (min)" column into a list
-            elif cost_feature == 'centroid':
+            elif cost_feature == 'distance_centroid':
                 cost_list = origin_rows['Centroid Distance (km)'].tolist() # Extract the "Centroid Distance (km)" column into a list
             else:
-                print(f"ALERT \t Cost feature is unknown.")
+                print(f"ERROR \t Cost feature is unknown.")
                 return        
 
             # Calculate the flows depending on the model 
             if model == 'gravity_power_1':
-                flows = hlp.prod_constrained_gravity(
+                flows = hlp.prod_constrained_gravity_power(
                     origin_n_trips = trips,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     gamma = 1)
+            elif model == 'gravity_exp_1':
+                flows = hlp.prod_constrained_gravity_exp(
+                    origin_n_trips = trips,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list, 
+                    beta = 1)
+            elif model == 'gravity_exp_scaled':
+                flows = hlp.prod_constrained_gravity_exp(
+                    origin_n_trips = trips,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list, 
+                    beta = 0.3 * (self.subdivision_size*self.subdivision_size)**(-0.18) )
+            elif model == 'radiation':
+                flows = hlp.prod_constrained_radiation(
+                    origin_n_trips = trips,
+                    origin_attractivity = att_origin,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list)
             else:
-                print(f"ALERT \t Spatial interaction model is unknown.")
+                print(f"ERROR \t Spatial interaction model is unknown.")
                 return   
-
 
             # Update the flows column where row_id equals 1
             flows_df.loc[flows_df['Origin'] == origin_id, 'Flow'] = flows[:len(flows_df.loc[flows_df['Origin'] == origin_id])]
 
         ############ Append flow data ############
-        #print(flows_df)
+
         self.flows = flows_df
-
-
-            # # Initialize the population counter of the intervening opportunities
-            # pop_intervening = 0
-            # flow_value_sum = .0
-
-            # print(pop_origin)
-
-            # # Sort the DataFrame by the value of travel distance
-            # origin_rows = origin_rows.sort_values(by='Travel Distance (km)')
-            # # origin_rows = origin_rows.sort_values(by='Travel Time (min)')
-
-        #     # Exclude destinations less than 5 km away
-        #     origin_rows = origin_rows[origin_rows['Travel Distance (km)'] >= min_distance]
-
-        #     # Iterate over each destination in the sorted DataFrame
-        #     j = 0
-        #     for index, row in origin_rows.iterrows():
-        #         # Get the destination population and distance 
-        #         destination_id = row['Destination']
-        #         pop_destination = self.traffic_zones.loc[self.traffic_zones['id'] == destination_id, 'population'].values[0]
-
-        #         # Compute the flows using a radiation model 
-        #         num = pop_origin * pop_destination
-        #         den = (pop_origin + pop_intervening) * (pop_origin + pop_destination + pop_intervening)
-
-        #         flow_value = num / den
-
-        #         print(flow_value)
-
-        #         flow_value_sum += flow_value
-
-        #         if j >= 2:
-        #             pop_intervening += pop_destination # Adding the intervening opportunity population, skipping the population at the origin
-
-        #         j += 1
-
-        #         # Update the Flow value in the original DataFrame
-        #         flows_df.loc[index, 'Flow'] = flow_value
-
-        #     # Normalisation and number of trips affectation
-        #     pop_tot = 0
-        #     for index, row in origin_rows.iterrows():
-        #         flows_df.loc[index, 'Flow'] = int( flows_df.loc[index, 'Flow'] / flow_value_sum * pop_origin )
-
-        #     # Calculate and print the sum of flows for the current origin
-        #     self.flows_car = flows_df

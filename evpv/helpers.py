@@ -17,6 +17,7 @@ import tempfile
 import folium
 import branca.colormap as cm
 from matplotlib import colors as colors
+import math
 
 def crop_raster(raster_path, bbox, output_raster_path):
     """ Creates a new raster cropped to the bbox
@@ -101,9 +102,9 @@ def get_graph_bbox(G):
 
 
 # Function to estimate flows from origin to destinations using a 
-# production-constrained spatial interaction model
+# production-constrained gravity model
 # NB: The origin attractivity is not used as it drops when normalizing
-def prod_constrained_gravity(origin_n_trips, dest_attractivity_list, cost_list, gamma = 1):
+def prod_constrained_gravity_power(origin_n_trips, dest_attractivity_list, cost_list, gamma = 1):
 
     flows = np.zeros(len(dest_attractivity_list))
     norm_constant = .0
@@ -111,7 +112,7 @@ def prod_constrained_gravity(origin_n_trips, dest_attractivity_list, cost_list, 
     # Calculating raw flows and normalisation constant
     for j in range(len(flows)):
         if cost_list[j] == 0:
-            print(f"ALERT \t Cost function is zero for some fluxes, setting flux to zero")
+            print(f"ALERT \t Cost function is NULL some fluxes, setting the corresponding flux to zero", end='\r')
             flows[j] = 0
             attractivity_over_cost = 0
         else:
@@ -125,26 +126,79 @@ def prod_constrained_gravity(origin_n_trips, dest_attractivity_list, cost_list, 
 
     return flows
 
-# Function to estimate flows using the radiation model
-def radiation(T, dist_matrix, pop_matrix, pop_origin):
+# Function to estimate flows from origin to destinations using a 
+# production-constrained gravity model with expontential cost
+# NB: The origin attractivity is not used as it drops when normalizing
+def prod_constrained_gravity_exp(origin_n_trips, dest_attractivity_list, cost_list, beta = 1):
 
-    def from_origin():
-        # Sort destinations by distance from origin
-        didxs = np.argsort(dist_matrix)
-        pop_matrix_sorted =  pop_matrix[didxs]
-        pop_in_radius = 0
-        flows_proba = np.zeros(T.shape)
-        for j in range(T.shape[0]):
-            num = pop_origin*pop_matrix_sorted[j]
-            denom = (pop_origin + pop_in_radius)*(pop_origin + pop_matrix_sorted[j] + pop_in_radius)
-            flows_proba[j] = num/denom
-            pop_in_radius += pop_matrix_sorted[j]
-        # Unsort list
+    flows = np.zeros(len(dest_attractivity_list))
+    norm_constant = .0
 
-        return flows_proba[didxs.argsort()]
+    # Calculating raw flows and normalisation constant
+    for j in range(len(flows)):
+        if cost_list[j] == 0:
+            print(f"ALERT \t Cost function is NULL for some fluxes, setting the corresponding flux to zero", end='\r')
+            flows[j] = 0
+            attractivity_over_cost = 0
+        else:
+            attractivity_over_cost = dest_attractivity_list[j] / math.exp(beta * cost_list[j])
+            flows[j] = origin_n_trips * attractivity_over_cost
 
-    # Builds the OD matrix T from the input data
-    T_norm_p = np.zeros(T.shape)
-    T_norm_p = from_origin()
-    
-    return T_norm_p
+        norm_constant += attractivity_over_cost
+
+    # Normalisation
+    flows = flows / norm_constant
+
+    return flows
+
+# Function to estimate flows from origin to destinations using a 
+# production-constrained radiation model 
+def prod_constrained_radiation(origin_n_trips, origin_attractivity, dest_attractivity_list, cost_list):
+
+    # Step 1: Initialize variables
+    flows = np.zeros(len(dest_attractivity_list))
+    norm_constant = .0
+    intervening_opportunity = .0
+
+    # Step 2: Create list of tuples to store initial order of cost_list and order them by distance
+    # Create a list of tuples (value, original_index)
+    indexed_cost_list = list(enumerate(cost_list))
+
+    # Sort the list of tuples based on the values
+    sorted_indexed_cost_list = sorted(indexed_cost_list, key=lambda x: x[1])
+
+    # Prepare a list to store flows with their original indices
+    calculated_indexed_flows = []
+
+    # Step 3: Calculate raw flows and normalization constant
+    for original_index, _ in sorted_indexed_cost_list:
+        j = original_index  # Use the original index from the sorted list
+        if sorted_indexed_cost_list[j] == 0:
+            print(f"ALERT \t Cost function is NULL for some fluxes, setting the corresponding flux to zero", end='\r')
+            flows[j] = 0
+            attractivity_over_cost = 0
+        else:
+            num = (origin_attractivity * dest_attractivity_list[j])
+            den = (origin_attractivity + intervening_opportunity) * (origin_attractivity + dest_attractivity_list[j] + intervening_opportunity)
+
+            attractivity_over_cost = num / den
+            calculated_flow = origin_n_trips * attractivity_over_cost
+            flows[j] = calculated_flow
+
+            intervening_opportunity += dest_attractivity_list[j]
+
+        norm_constant += attractivity_over_cost
+
+        # Append the calculated flow with its original index to the list
+        calculated_indexed_flows.append((original_index, flows[j]))
+
+    # Step 4: Sort back to the original order using the original indices
+    original_order_flows = sorted(calculated_indexed_flows, key=lambda x: x[0])
+
+    # Extract the values from the tuples to get the final list
+    final_flows = [value for index, value in original_order_flows]
+
+    # Step 5: Normalize the flows
+    final_flows = np.array(final_flows) / norm_constant
+
+    return final_flows
