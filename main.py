@@ -46,8 +46,13 @@ Global parameters
 shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
-buffer_distance = 0 # Margin in km added to the bbox around the shapefile_path
-n_subdivisions = 15 # Number of subdivisions of the bbox to create traffic analysis zones
+commuting_zone = {
+            "isochrone_center": (38.74, 9.02),            
+            "max_time_min": 60,
+            "isochrone_timestep_min": 10
+        }
+
+n_subdivisions = 10 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -71,7 +76,7 @@ workplaces_tags = { # Tags used to get workplaces
 mobsim = MobilitySim(
     target_area_shapefile = shapefile_path,
     population_density = population_density_path, 
-    buffer_distance = buffer_distance, 
+    commuting_zone = commuting_zone, 
     n_subdivisions = n_subdivisions,
     road_network_filter_string = road_network_filter_string,
     workplaces_tags = workplaces_tags)
@@ -225,7 +230,7 @@ m.save(OUTPUT_PATH / 'n_commuters.html')
 ##################### Trip distribution #####################
 """
 
-mobsim.trip_distribution(model = "radiation", attraction_feature = "workplaces", cost_feature = "distance_centroid", taz_center = "centroid")
+mobsim.trip_distribution(model = "radiation", attraction_feature = "population", cost_feature = "distance_road", taz_center = "nearest_node")
 
 df = mobsim.flows
 

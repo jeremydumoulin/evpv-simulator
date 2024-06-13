@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 from geopy.distance import geodesic, distance
 import osmnx as ox
 import openrouteservice
+import requests
 import time
 import math
 
@@ -43,7 +44,6 @@ class MobilitySim:
     # Simulation are settings 
 
     target_area_shapefile = None
-    buffer_distance = .0
     centroid_coords = list()
     simulation_bbox = list()
     n_subdivisions = 0
@@ -73,7 +73,11 @@ class MobilitySim:
 
     def __init__(self, target_area_shapefile, 
         population_density, 
-        buffer_distance = .0, 
+        commuting_zone = {
+            "isochrone_center": (38.74, 9.02),            
+            "max_time_min": 60,
+            "isochrone_timestep_min": 10
+        },
         n_subdivisions = 10, 
         road_network_filter_string = '["highway"!~"^(service|track|residential)$"]',
         workplaces_tags = {
@@ -87,11 +91,12 @@ class MobilitySim:
         
         print("---")
 
-        print(f"INFO \t MobilitySim object initialisation with {n_subdivisions}x{n_subdivisions} TAZs and {buffer_distance} km buffer distance")
+        print(f"INFO \t MobilitySim object initialisation: {n_subdivisions}x{n_subdivisions} TAZs - Commuting zone extended by a {commuting_zone['max_time_min']} min travel time to city center")
     
         self.set_target_area_shapefile(target_area_shapefile)
-        self.set_buffer_distance(buffer_distance)
         self.set_n_subdivisions(n_subdivisions)
+        self.set_commuting_zone_params(commuting_zone)
+
         self.set_centroid_coords()
         self.set_simulation_bbox()
 
@@ -129,17 +134,6 @@ class MobilitySim:
         except FileNotFoundError as e:
             print(e)
 
-    def set_buffer_distance(self, buffer_distance):
-        """ Setter for buffer_distance attribute.
-        Converts the value into a float
-        """
-        try:       
-            buffer_distance = float(buffer_distance)
-        except Exception as e:
-            print(f"ERROR \t Impossible to convert the specified buffer distance into a float. - {e}")
-        else:            
-            self.buffer_distance = buffer_distance
-
     def set_n_subdivisions(self, n_subdivisions):
         """ Setter for n_subdivision attribute.
         Converts the value into an int
@@ -150,6 +144,11 @@ class MobilitySim:
             print(f"ERROR \t Impossible to convert the specified subdivisions into a int. - {e}")
         else:            
             self.n_subdivisions = n_subdivisions
+
+    def set_commuting_zone_params(self, commuting_zone):
+        """ 
+        """                   
+        self.commuting_zone_params = commuting_zone
 
     def set_centroid_coords(self):
         geometry = self.target_area_shapefile['features'][0]['geometry']
@@ -164,24 +163,68 @@ class MobilitySim:
         self.centroid_coords = centroid.y, centroid.x
 
     def set_simulation_bbox(self):
+        """ Calculate the bounding box for simulation from ORS isochrones
+        """ 
+        print(f"INFO \t Getting isochrones from ORS for setting up commuting zone and simulation bbox")     
+
+        # Calculate the bounding box of the target area
         geometry = self.target_area_shapefile['features'][0]['geometry']
-        margin_km = self.buffer_distance
 
         # Create a shapely shape
         shapely_shape = shape(geometry)
         
-        # Get the bounding box of the shape
+        #Get the bounding box of the shapefile defininf the target area
         minx, miny, maxx, maxy = shapely_shape.bounds
 
-        # Calculate the new bounding box by extending each side by the given margin in kilometers
-        # Extend the minimum y (south)
-        miny = geodesic(kilometers=margin_km).destination((miny, minx), 180).latitude
-        # Extend the maximum y (north)
-        maxy = geodesic(kilometers=margin_km).destination((maxy, minx), 0).latitude
-        # Extend the minimum x (west)
-        minx = geodesic(kilometers=margin_km).destination((miny, minx), 270).longitude
-        # Extend the maximum x (east)
-        maxx = geodesic(kilometers=margin_km).destination((miny, maxx), 90).longitude    
+        # Define the API endpoint and API key
+        api_endpoint = "https://api.openrouteservice.org/v2/isochrones/driving-car"
+        api_key = str(os.getenv("ORS_KEY")) # Replace "your_api_key" with your actual API key
+
+        # Define the request parameters
+        params = {
+            "locations": [self.commuting_zone_params['isochrone_center']],
+            "range": [self.commuting_zone_params['max_time_min']*60],  # Time in seconds 
+            "interval": self.commuting_zone_params['isochrone_timestep_min']*60,  # Contour interval in seconds 
+            "intersections":"false", # ?
+            "units": "m",  # Units (meters)
+        }
+
+        # Define the headers with the API key
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
+
+        # Make an HTTP POST request to the API
+        response = requests.post(api_endpoint, json=params, headers=headers)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Parse the JSON response
+            data = response.json()
+            # Print the response data
+            #print(data)
+        else:
+            # Print the error message if the request was unsuccessful
+            print(f"ERROR \t Problem in ORS isochrone calculation: {response.status_code} - {response.text}")
+
+        # Extract the coordinates of the maximum isochrone polygon
+        isochrone_coords = data['features'][-1]['geometry']['coordinates'][0]
+
+        # Calculate the bounding box from the coordinates of the isochrone polygon
+        minx_2, miny_2 = min(coord[0] for coord in isochrone_coords), min(coord[1] for coord in isochrone_coords)
+        maxx_2, maxy_2 = max(coord[0] for coord in isochrone_coords), max(coord[1] for coord in isochrone_coords)
+
+
+        # Adjust the bounding box is isochrone are more far away than the target zone
+        if minx_2 < minx:
+            minx = minx_2
+        if miny_2 < miny:
+            miny = miny_2
+        if maxx_2 > maxx:
+            maxx = maxx_2
+        if maxy_2 > maxy:
+            maxy = maxy_2
 
         # Return the coordinates of the centroid
         self.simulation_bbox = minx, miny, maxx, maxy
@@ -253,13 +296,13 @@ class MobilitySim:
             else:
                 print(f"\t -> Found a graphml file with road network but the bounding box does not match. Downloading new data.")
                 #G = ox.graph_from_bbox(north, south, east, west, network_type='drive')
-                G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
+                G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive', custom_filter=filter_string)
 
                 ox.save_graphml(G, graphml_file)
 
         else:
             # Download and extract the road network within the bounding box
-            G = ox.graph_from_bbox(north, south, east, west, network_type='drive', custom_filter=filter_string)
+            G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='all', custom_filter=filter_string)
 
             # Save the graph to a GraphML file
             ox.save_graphml(G, graphml_file)
@@ -490,12 +533,12 @@ class MobilitySim:
                 travel_distances_euclidian.append(euclidian_distance)
 
                 # Check if ors errors. Display only once
-                if math.isnan(distances[i][j]):
+                if math.isnan(distances[i][j]) or distances[i][j] == .0:
                     travel_distances.append(euclidian_distance)
                     travel_times.append(euclidian_distance / 30 * 60)
 
                     if not ors_error:
-                        print(f"ALERT \t ORS was unable to resolve some locations. Using euclidian distance instead. Travel time is estimated using 30 km/h speed. This could affect the model reliability!")
+                        print(f"ALERT \t ORS was unable to calculate distance or resolve some locations. Using euclidian distance instead. Travel time is estimated using 30 km/h speed. This could affect the model reliability!")
                         ors_error = True
                 else:
                     travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometer
