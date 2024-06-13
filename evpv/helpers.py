@@ -171,6 +171,7 @@ def prod_constrained_radiation(origin_n_trips, origin_attractivity, dest_attract
     calculated_indexed_flows = []
 
     # Step 3: Calculate raw flows and normalization constant
+    i = 0
     for original_index, _ in sorted_indexed_cost_list:
         j = original_index  # Use the original index from the sorted list
 
@@ -187,12 +188,16 @@ def prod_constrained_radiation(origin_n_trips, origin_attractivity, dest_attract
 
         flows[j] = calculated_flow
 
-        intervening_opportunity += dest_attractivity_list[j]
+        # Add intervening opportunity only if the next destination is farther away than the current one
+        if i>=1 and (sorted_indexed_cost_list[i-1] < sorted_indexed_cost_list[i]):
+            intervening_opportunity += dest_attractivity_list[j]
 
         norm_constant += attractivity_over_cost
 
         # Append the calculated flow with its original index to the list
         calculated_indexed_flows.append((original_index, flows[j]))
+
+        i = i + 1
 
     # Step 4: Sort back to the original order using the original indices
     original_order_flows = sorted(calculated_indexed_flows, key=lambda x: x[0])

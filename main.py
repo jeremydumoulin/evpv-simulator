@@ -48,11 +48,11 @@ population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22
 
 commuting_zone = {
             "isochrone_center": (38.74, 9.02),            
-            "max_time_min": 60,
+            "max_time_min": 10,
             "isochrone_timestep_min": 10
         }
 
-n_subdivisions = 10 # Number of subdivisions of the bbox to create traffic analysis zones
+n_subdivisions = 8 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -84,7 +84,7 @@ mobsim = MobilitySim(
 mobsim.traffic_zones.to_csv(OUTPUT_PATH / "traffic_zones.csv", index=False)
 
 # 2. Pre-analysis: number of workplaces as a function of the population
-# Is the population a good proxy for workplaces?
+#Is the population a good proxy for workplaces?
 
 # plt.figure(figsize=(10, 6))
 # plt.scatter(mobsim.traffic_zones['population'], mobsim.traffic_zones['workplaces'], color='blue')
@@ -144,21 +144,21 @@ mymap = hlp.add_raster_to_folium(mobsim.population_density, mymap)
 
 ##### 3.5 Workplaces
 
-# Add workplaces
-# Add markers for each center point
+#Add workplaces
+
 # for point in mobsim.workplaces:
 #     folium.Marker(location=[point[1], point[0]], popup="Center point").add_to(mymap)
 
 ##### 3.6 Markers for the nearest nodes
 
-for idx, row in mobsim.traffic_zones.iterrows():
-    #nearest_node_lat, nearest_node_lon = row['nearest_node']
-    nearest_node_lat, nearest_node_lon = row['geometric_center']
-    folium.Marker(
-        location=[nearest_node_lon, nearest_node_lat],
-        icon=folium.Icon(color='red'),
-        popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
-    ).add_to(mymap)
+# for idx, row in mobsim.traffic_zones.iterrows():
+#     #nearest_node_lat, nearest_node_lon = row['nearest_node']
+#     nearest_node_lat, nearest_node_lon = row['geometric_center']
+#     folium.Marker(
+#         location=[nearest_node_lon, nearest_node_lat],
+#         icon=folium.Icon(color='red'),
+#         popup=f"{nearest_node_lat}, {nearest_node_lon} - Pop: {int(row['population'])} - Work: {int(row['workplaces'])}"
+#     ).add_to(mymap)
 
 ##### 3.7 TAZs
 
@@ -230,20 +230,32 @@ m.save(OUTPUT_PATH / 'n_commuters.html')
 ##################### Trip distribution #####################
 """
 
-mobsim.trip_distribution(model = "radiation", attraction_feature = "population", cost_feature = "distance_road", taz_center = "nearest_node")
+# mobsim.trip_distribution(model = "gravity_power_1", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
 
+# df = mobsim.flows
+
+# df.to_csv(OUTPUT_PATH / "mobility_flows.csv", index=False)
+
+# flow_weighted_avg_distance = np.average(df['Travel Distance (km)'], weights=df['Flow'])
+# flow_weighted_avg_centroid = np.average(df['Centroid Distance (km)'], weights=df['Flow'])
+
+# print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
+# print("Flow-weighted average travel distance btwn centroids:", flow_weighted_avg_centroid)
+
+# print("Total flow:", df['Flow'].sum())
+# print("Total trips:", mobsim.traffic_zones['n_trips'].sum())
+
+
+# mobsim.trip_distribution(model = "gravity_exp_01", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
+# df = mobsim.flows
+# flow_weighted_avg_centroid = np.average(df['Centroid Distance (km)'], weights=df['Flow'])
+# print("Flow-weighted average travel distance btwn centroids exp:", flow_weighted_avg_centroid)
+
+mobsim.trip_distribution(model = "radiation", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
 df = mobsim.flows
-
-df.to_csv(OUTPUT_PATH / "mobility_flows.csv", index=False)
-
-flow_weighted_avg_distance = np.average(df['Travel Distance (km)'], weights=df['Flow'])
 flow_weighted_avg_centroid = np.average(df['Centroid Distance (km)'], weights=df['Flow'])
+print("Flow-weighted average travel distance btwn centroids exp:", flow_weighted_avg_centroid)
 
-print("Flow-weighted average travel distance:", flow_weighted_avg_distance)
-print("Flow-weighted average travel distance btwn centroids:", flow_weighted_avg_centroid)
-
-print("Total flow:", df['Flow'].sum())
-print("Total trips:", mobsim.traffic_zones['n_trips'].sum())
 
 # print("Flow-weighted average travel time:", flow_weighted_avg_time)
 

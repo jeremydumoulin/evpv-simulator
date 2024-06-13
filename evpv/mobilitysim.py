@@ -608,6 +608,12 @@ class MobilitySim:
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 1)
+            elif model == 'gravity_exp_01':
+                flows = hlp.prod_constrained_gravity_exp(
+                    origin_n_trips = trips,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list, 
+                    beta = 0.1)
             elif model == 'gravity_exp_scaled':
                 flows = hlp.prod_constrained_gravity_exp(
                     origin_n_trips = trips,
