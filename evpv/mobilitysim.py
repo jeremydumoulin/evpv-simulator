@@ -206,7 +206,7 @@ class MobilitySim:
             #print(data)
         else:
             # Print the error message if the request was unsuccessful
-            print(f"ERROR \t Problem in ORS isochrone calculation: {response.status_code} - {response.text}")
+            print(f"ERROR \t Problem in ORS isochrone calculation: {response.status_code} - {response.text}. Please check the ORS status (https://status.openrouteservice.org/)")
 
         # Extract the coordinates of the maximum isochrone polygon
         isochrone_coords = data['features'][-1]['geometry']['coordinates'][0]
@@ -417,7 +417,7 @@ class MobilitySim:
     ###########################################
 
     def trip_generation(self, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy):
-        print(f"INFO \t Generating the number of trips from each TAZ")
+        print(f"INFO \t Starting trip generation")
 
         # Check the values 
 
@@ -433,22 +433,24 @@ class MobilitySim:
 
         # Calculate the number of trips and append them to the df
         df['n_commuters'] = df['population'].apply( lambda x: int(x * share_active * (1 - share_unemployed) * (1 - share_home_office)) )
-        df['n_trips'] = df['n_commuters'].apply( lambda x: int(x * mode_share / vehicle_occupancy) )
+        df['n_outflows'] = df['n_commuters'].apply( lambda x: int(x * mode_share / vehicle_occupancy) )
 
         self.traffic_zones = df
 
-        print(f"INFO \t Trip generation done. Data has been appended to the traffic_zones attribute.")
+        print(f"INFO \t Trip generation done. Data has been appended to the traffic_zones attribute. Trip distribution required!")
 
     ############ Trip Distribution ############
     ###########################################
 
     def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", taz_center = "centroid", batch_size = 49):
+        print(f"INFO \t Starting trip distribution")
+
         ############ Get TAZ data ############
 
         df = self.traffic_zones
 
         # Check if trip generation has been performed
-        if not 'n_trips' in df.columns:
+        if not 'n_outflows' in df.columns:
             print(f"ERROR \t Traffic Analysis Zones do not contain the number of trips: trip generation must be performed before trip distribution.")
             return
 
@@ -571,7 +573,7 @@ class MobilitySim:
             origin_id = origin_rows.iloc[0]['Origin']
 
             # SIM input: outgoing trips
-            trips = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'n_trips'].values[0]
+            n_outflows = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'n_outflows'].values[0]
 
             # SIM input: attraction
             if attraction_feature == 'population':
@@ -598,31 +600,31 @@ class MobilitySim:
             # Calculate the flows depending on the model 
             if model == 'gravity_power_1':
                 flows = hlp.prod_constrained_gravity_power(
-                    origin_n_trips = trips,
+                    origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     gamma = 1)
             elif model == 'gravity_exp_1':
                 flows = hlp.prod_constrained_gravity_exp(
-                    origin_n_trips = trips,
+                    origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 1)
             elif model == 'gravity_exp_01':
                 flows = hlp.prod_constrained_gravity_exp(
-                    origin_n_trips = trips,
+                    origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 0.1)
             elif model == 'gravity_exp_scaled':
                 flows = hlp.prod_constrained_gravity_exp(
-                    origin_n_trips = trips,
+                    origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 0.3 * (self.subdivision_size*self.subdivision_size)**(-0.18) )
             elif model == 'radiation':
                 flows = hlp.prod_constrained_radiation(
-                    origin_n_trips = trips,
+                    origin_n_trips = n_outflows,
                     origin_attractivity = att_origin,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list)
