@@ -24,6 +24,7 @@ import osmnx as ox
 import branca.colormap as cm
 
 from evpv.mobilitysim import MobilitySim
+from evpv.chargingdemand import ChargingDemand
 from evpv import helpers as hlp
 
 #############################################
@@ -52,7 +53,7 @@ commuting_zone = {
             "isochrone_timestep_min": 10
         }
 
-n_subdivisions = 5 # Number of subdivisions of the bbox to create traffic analysis zones
+n_subdivisions = 9 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -89,7 +90,7 @@ mobsim.trip_generation(
 
 # 3. Trip ditribution using SIM
 
-mobsim.trip_distribution(model = "gravity_power_1", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
+mobsim.trip_distribution(model = "gravity_exp_01", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
 
 # 4. Storing outputs
 
@@ -99,6 +100,13 @@ mobsim.traffic_zones.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_TrafficAnalys
 #############################################
 ############### CHARGING NEEDS ##############
 #############################################
+
+chargedem = ChargingDemand(
+    mobsim = mobsim, 
+    ev_consumption = 0.2,
+    charging_efficiency = 0.9)
+
+chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZProperties.csv", index=False) # Store aggregated TAZ features as csv
 
 #############################################
 ################ VISUALISATION ##############
