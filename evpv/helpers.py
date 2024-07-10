@@ -18,6 +18,7 @@ import folium
 import branca.colormap as cm
 from matplotlib import colors as colors
 import math
+import hashlib
 
 def crop_raster(raster_path, bbox, output_raster_path):
     """ Creates a new raster cropped to the bbox
@@ -209,3 +210,13 @@ def prod_constrained_radiation(origin_n_trips, origin_attractivity, dest_attract
     final_flows = np.array(final_flows) / norm_constant
 
     return final_flows
+
+def create_unique_id(variables):
+    # Example list of variables
+    # variables = [123, 'example', 45.67, 'another_example']
+
+    # Convert the list of variables into a single string
+    combined_string = '_'.join(map(str, variables))
+    # Generate a unique hash of the combined string
+    unique_id = hashlib.md5(combined_string.encode()).hexdigest()
+    return unique_id

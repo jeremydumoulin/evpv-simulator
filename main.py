@@ -7,16 +7,27 @@ mobility simulation.
 
 import geopandas as gpd
 import pandas as pd
+import rasterio
+from rasterio.features import rasterize
 from shapely.geometry import LineString, Point, box, Polygon
+from shapely import wkt
 from shapely.ops import transform
+from rasterio.features import geometry_mask
+from rasterio.features import shapes
+from shapely.geometry import mapping
 import pyproj
+from pyproj import Transformer
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from branca.colormap import LinearColormap
 import numpy as np
 import math
 import os
 import folium
 from folium.plugins import AntPath
+from folium.plugins import HeatMap
+import pickle
+
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -53,8 +64,8 @@ commuting_zone = {
             "isochrone_timestep_min": 10
         }
 
-n_subdivisions = 9 # Number of subdivisions of the bbox to create traffic analysis zones
-road_network_filter_string = '["highway"!~"^(service|track|residential)$"]' # Roads used in the road network
+n_subdivisions = 2 # Number of subdivisions of the bbox to create traffic analysis zones
+road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
             "company": [],
@@ -64,33 +75,64 @@ workplaces_tags = { # Tags used to get workplaces
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
 
+share_active = 0.1
+share_unemployed = 0.227
+share_home_office = 0.0
+mode_share = 1.0
+vehicle_occupancy = 1.2
+
+model = "gravity_exp_01"
+attraction_feature = "population"
+cost_feature = "distance_centroid"
+taz_center = "centroid"
+
+use_cached_data = True
+
 #############################################
 ### MOBILITY SIMULATION (home-work-home) ####
 #############################################
 
-# 1. MobilitySim object initialization 
+mobsim = None # Init the mobsim object for the mobility simulation 
 
-mobsim = MobilitySim(
-    target_area_shapefile = shapefile_path,
-    population_density = population_density_path, 
-    commuting_zone = commuting_zone, 
-    n_subdivisions = n_subdivisions,
-    road_network_filter_string = road_network_filter_string,
-    workplaces_tags = workplaces_tags)
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, n_subdivisions, road_network_filter_string, workplaces_tags, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
+pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb 
 
-# 2. Trip generation from statistics
 
-mobsim.trip_generation(
-    share_active = 0.76, 
-    share_unemployed = 0.227, 
-    share_home_office = 0.0, 
-    mode_share = 1.0, 
-    vehicle_occupancy = 1.2
-)
+# If True, try to use cached pickle object
+if use_cached_data and os.path.isfile(pickle_filename): 
+    print("INFO \t Mobility simulation: loading object from pickle file...")
+    with open(pickle_filename, 'rb') as file:
+        mobsim = pickle.load(file)
 
-# 3. Trip ditribution using SIM
+else:
+    # 1. MobilitySim object initialization 
 
-mobsim.trip_distribution(model = "gravity_exp_01", attraction_feature = "population", cost_feature = "distance_centroid", taz_center = "centroid")
+    mobsim = MobilitySim(
+        target_area_shapefile = shapefile_path,
+        population_density = population_density_path, 
+        commuting_zone = commuting_zone, 
+        n_subdivisions = n_subdivisions,
+        road_network_filter_string = road_network_filter_string,
+        workplaces_tags = workplaces_tags)
+
+    # 2. Trip generation from statistics
+
+    mobsim.trip_generation(
+        share_active = share_active, 
+        share_unemployed = share_unemployed, 
+        share_home_office = share_home_office, 
+        mode_share = mode_share, 
+        vehicle_occupancy = vehicle_occupancy
+    )
+
+    # 3. Trip ditribution using SIM
+
+    mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature, taz_center = taz_center)
+
+    # 4. Storing data
+    print("INFO \t Saving MobilitySim object to pickle file")
+    with open(pickle_filename, 'wb') as file:
+        pickle.dump(mobsim, file)
 
 # 4. Storing outputs
 
@@ -106,6 +148,8 @@ chargedem = ChargingDemand(
     ev_consumption = 0.2,
     charging_efficiency = 0.9)
 
+chargedem.load_profile()
+
 chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZProperties.csv", index=False) # Store aggregated TAZ features as csv
 
 #############################################
@@ -117,6 +161,239 @@ chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZPro
 #############################################
 ############### OTHER ANALYSIS ##############
 #############################################
+
+# Flow allocation (routing)
+
+#mobsim.allocate_routes()
+df = mobsim.flows
+
+m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+
+
+# Normalize flow values for color scaling
+min_flow = df['Flow'].min()
+max_flow = df['Flow'].max()
+df['normalized_flow'] = (df['Flow'] - min_flow) / (max_flow - min_flow)
+
+
+
+# Method 1
+# # Function to get color based on normalized flow
+# def get_color(normalized_flow):
+#     return f'#{int(255*normalized_flow):02x}00{int(255*(1-normalized_flow)):02x}'
+
+# # Add routes to the map
+# for idx, row in df.iterrows():
+#     geojson = gpd.GeoSeries([row['Geometry']]).__geo_interface__
+#     color = get_color(row['normalized_flow'])
+    
+#     folium.GeoJson(
+#         geojson,
+#         style_function=lambda x, color=color: {
+#             'color': color,
+#             'weight': 2,
+#             'opacity': 0.7
+#         }
+#     ).add_to(m)
+
+# # Add a color scale legend
+# colormap = folium.LinearColormap(colors=['blue', 'red'], vmin=min_flow, vmax=max_flow)
+# colormap.add_to(m)
+# colormap.caption = 'Flow'
+
+
+
+# Method 2
+
+
+
+
+# Function to get color based on normalized flow
+def get_color(normalized_flow):
+    return f'#{int(255*normalized_flow):02x}00{int(255*(1-normalized_flow)):02x}'
+
+# Function to get line width based on normalized flow
+def get_width(normalized_flow):
+    return 1 + normalized_flow * 9  # Width ranges from 1 to 10
+
+# Add routes to the map
+for idx, row in df.iterrows():
+    geojson = gpd.GeoSeries([row['Geometry']]).__geo_interface__
+    color = get_color(row['normalized_flow'])
+    width = get_width(row['normalized_flow'])
+    
+    folium.GeoJson(
+        geojson,
+        style_function=lambda x, color=color, width=width: {
+            'color': color,
+            'weight': width,
+            'opacity': 0.7
+        }
+    ).add_to(m)
+
+# Add a color scale legend
+colormap = folium.LinearColormap(colors=['blue', 'red'], vmin=min_flow, vmax=max_flow)
+colormap.add_to(m)
+colormap.caption = 'Flow'
+
+
+
+# Save the map to an HTML file
+m.save(OUTPUT_PATH / "traffic_flows_map.html")
+
+
+# Rasterize the result
+
+# # Step 2: Load the reference population raster
+# reference_raster_path = OUTPUT_PATH / "population_density_cropped.tiff"
+# with rasterio.open(reference_raster_path) as src:
+#     meta = src.meta.copy()
+#     transform = src.transform
+#     out_shape = src.shape
+
+# # Step 3: Create an empty raster with the same metadata
+# output_raster = np.zeros(out_shape, dtype=np.float32)
+
+# # Step 4: Rasterize the LineStrings while accumulating flow values
+# for idx, row in df.iterrows():
+#     geom = row['Geometry']
+#     flow = row['Flow']
+    
+#     # Create a generator of pixel-wise shapes from the LineString
+#     shapes_gen = shapes(geom, transform=transform)
+    
+#     # Iterate over each shape and accumulate flow values in the output raster
+#     for geom, _ in shapes_gen:
+#         # Convert the geometry to a Shapely shape
+#         geom_shape = shape(geom)
+        
+#         # Calculate the pixel indices that intersect with the shape
+#         minx, miny, maxx, maxy = geom_shape.bounds
+#         col_min, row_min = src.index(minx, miny)
+#         col_max, row_max = src.index(maxx, maxy)
+        
+#         # Iterate over the intersecting pixels and accumulate flow values
+#         for row in range(row_min, row_max + 1):
+#             for col in range(col_min, col_max + 1):
+#                 if geom_shape.intersects(shape(src.pixel_bbox(row, col))):
+#                     output_raster[row, col] += flow
+
+# # Step 5: Save the resulting raster
+# output_raster_path = 'path_to_output_flow_raster.tif'
+# with rasterio.open(output_raster_path, 'w', **meta) as dst:
+#     dst.write(output_raster, 1)
+
+# print(f"Output raster saved to {output_raster_path}")
+
+# # Function to calculate weight (flow intensity) for each edge
+# def calculate_edge_weight(edge_flows, edge):
+#     flow = edge_flows.get(edge, 0)  # Get flow value for edge, default to 0 if not present
+#     return flow
+
+# # Create a list of edges with flow intensity
+# edges_with_flow = [(edge[0], edge[1], calculate_edge_weight(edge_flows, edge)) for edge in G.edges()]
+
+# # Extract coordinates of nodes
+# node_positions = {node: (data['y'], data['x']) for node, data in G.nodes(data=True)}
+
+# # Create a list of edge segments with flow intensity and coordinates
+# heat_data = []
+# for u, v, flow in edges_with_flow:
+#     if u in node_positions and v in node_positions:
+#         heat_data.append([node_positions[u], node_positions[v], flow])
+
+# # Convert coordinates to float and ensure they are in (latitude, longitude) format
+# heat_data_float = []
+# for item in heat_data:
+#     if len(item) == 3:  # Check if item has three values (coordinates and flow)
+#         start_coord = tuple(item[0])  # Reverse and convert to tuple
+#         end_coord = tuple(item[1])  # Reverse and convert to tuple
+#         weight = item[2]  # Flow intensity
+#         heat_data_float.append((start_coord[0], start_coord[1], weight))  # Ensure each coordinate pair is (lat, lon, weight)
+#         heat_data_float.append((end_coord[0], end_coord[1], weight))  # Add both start and end points separately
+#     elif len(item) == 2:  # Handle case where item has two values (coordinates and flow)
+#         start_coord = tuple(item[0])  # Reverse and convert to tuple
+#         end_coord = tuple(item[1])  # Reverse and convert to tuple
+#         weight = item[1]  # Flow intensity
+#         heat_data_float.append((start_coord[0], start_coord[1], weight))  # Ensure each coordinate pair is (lat, lon, weight)
+#         heat_data_float.append((end_coord[0], end_coord[1], weight))  # Add both start and end points separately
+
+# # Create a HeatMap layer
+# heat_map = HeatMap(heat_data_float, min_opacity=0.5, max_val=max(edge_flows.values()), radius=15, blur=10)
+
+# # Add HeatMap layer to the map
+# heat_map.add_to(m)
+
+
+
+
+# Function to get the coordinates of an edge
+# def get_edge_coords(G, edge):
+#     if len(edge) == 3:
+#         u, v, key = edge
+#     else:
+#         u, v = edge
+#     u_coords = (G.nodes[u]['y'], G.nodes[u]['x'])
+#     v_coords = (G.nodes[v]['y'], G.nodes[v]['x'])
+#     return [u_coords, v_coords]
+
+# # Create a MarkerCluster to aggregate flows based on zoom level
+# marker_cluster = folium.plugins.MarkerCluster().add_to(m)
+
+# # Determine min and max flow values for normalization
+# min_flow = min(edge_flows.values())
+# max_flow = max(edge_flows.values())
+
+# # Function to calculate color based on flow intensity
+# def calculate_color(flow):
+#     normalized_flow = (flow - min_flow) / (max_flow - min_flow)
+#     return folium.LinearColormap(['blue', 'red'], vmin=0, vmax=1).to_step(10)(normalized_flow)
+
+# # Function to aggregate flows of adjacent edges
+# def aggregate_adjacent_flows(G, edge_flows):
+#     aggregated_edge_flows = {}
+#     for edge, flow in edge_flows.items():
+#         u, v = edge[:2]  # For simplicity, consider only u-v for undirected or first segment in multigraph
+#         if (u, v) in aggregated_edge_flows:
+#             aggregated_edge_flows[(u, v)] += flow
+#         else:
+#             aggregated_edge_flows[(u, v)] = flow
+#     return aggregated_edge_flows
+
+# # Aggregate flows of adjacent edges
+# aggregated_edge_flows = aggregate_adjacent_flows(G, edge_flows)
+
+
+# # Create a feature group for edges
+# edge_group = folium.FeatureGroup(name='Edges').add_to(m)
+
+# # Add aggregated edges to the map with flow visualization
+# for edge, flow in aggregated_edge_flows.items():
+#     coords = get_edge_coords(G, edge)
+#     color = calculate_color(flow)
+#     popup_text = f"Aggregated Flow: {flow}"  # Example popup text
+#     folium.PolyLine(coords, color=color, weight=5, opacity=0.7, popup=popup_text).add_to(edge_group)
+
+# # Add LayerControl to toggle edge visibility
+# folium.LayerControl().add_to(m)
+
+
+# # Add edges to the map with flow visualization
+# for edge, flow in edge_flows.items():
+#     coords = get_edge_coords(G, edge)
+#     color = mcolors.to_hex(cmap(norm(flow)))
+#     folium.PolyLine(coords, color=color, weight=2, opacity=0.7).add_to(m)
+
+
+# # Add colormap legend to the map
+# colormap = LinearColormap(colors=['blue', 'red'], vmin=min(edge_flows.values()), vmax=max(edge_flows.values()))
+# colormap.add_to(m)
+
+
+
+# Save the map to an HTML file
+#m.save(OUTPUT_PATH / "traffic_flows_map.html")
 
 # Workplaces as a function of population
 

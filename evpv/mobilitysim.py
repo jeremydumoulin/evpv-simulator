@@ -23,10 +23,12 @@ from pyproj import Geod
 from dotenv import load_dotenv
 from geopy.distance import geodesic, distance
 import osmnx as ox
+import networkx as nx
 import openrouteservice
 import requests
 import time
 import math
+
 
 from evpv import helpers as hlp
 
@@ -638,3 +640,68 @@ class MobilitySim:
         ############ Append flow data ############
 
         self.flows = flows_df
+
+    ################# Routing #################
+    ###########################################
+
+    def allocate_routes(self):
+        print(f"INFO \t Allocation of ORS routes to origin-destination pairs (routing)")
+
+        G = self.road_network
+        flows = self.flows
+        taz = self.traffic_zones
+
+        # Add a new column for the route geometry
+        flows['Geometry'] = None
+
+        # Initialize ORS client
+        client = openrouteservice.Client(key=str(os.getenv("ORS_KEY")))  # Replace with your ORS API key
+
+        # Create a dictionary to store previously calculated routes (avoids recalculating when origin and destination are swapped)
+        route_cache = {}
+
+        i = 0
+        for index, row in flows.iterrows():
+            i = i+1
+
+            print(f"INFO \t Allocation: {i} out of {len(flows)}", end="\r")
+
+            origin_id = row['Origin']
+            destination_id = row['Destination']
+            flow = row['Flow']
+            
+            # Create a unique key for each origin-destination pair
+            route_key = tuple(sorted([origin_id, destination_id]))
+            
+            if route_key in route_cache:
+                # If the route has been calculated before, use the cached geometry
+                geometry = route_cache[route_key]
+                # Check if we need to reverse the LineString
+                if (origin_id, destination_id) != route_key:
+                    geometry = LineString(geometry.coords[::-1])
+            else:
+                # Get the coordinates from taz
+                origin_coords = taz.loc[taz['id'] == origin_id, 'nearest_node'].values[0]
+                destination_coords = taz.loc[taz['id'] == destination_id, 'nearest_node'].values[0]
+                
+                origin_lon, origin_lat = origin_coords
+                destination_lon, destination_lat = destination_coords 
+                
+                # Get the route from ORS
+                try:
+                    route = client.directions(
+                        coordinates=[origin_coords, destination_coords],
+                        profile='driving-car',
+                        format='geojson'
+                    )
+                    geometry = LineString(route['features'][0]['geometry']['coordinates'])
+                    # Cache the route
+                    route_cache[route_key] = geometry
+                except Exception as e:
+                    print(f"ERROR \t An error occurred in route calculation - Geometry is set to None")
+                    geometry = None
+            
+            flows.at[index, 'Geometry'] = geometry
+            
+            # Adding a sleep time to avoid hitting the rate limit
+            time.sleep(1.5)           

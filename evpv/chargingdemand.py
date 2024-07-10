@@ -22,6 +22,7 @@ import pyproj
 from pyproj import Geod
 from dotenv import load_dotenv
 import math
+import matplotlib.pyplot as plt
 
 from evpv import helpers as hlp
 from evpv.mobilitysim import MobilitySim
@@ -163,3 +164,92 @@ class ChargingDemand:
         taz_properties= pd.DataFrame(data)    
 
         self.taz_properties = taz_properties
+
+    ######## Charging demand ##########
+    ###################################
+
+    def load_profile(self):
+        """ 1. Load and Understand the Data
+            2. Model Arrival Times with Lognormal Distribution
+            3. Distribute Charging Demand Over Time
+        """
+
+        # Parameters for lognormal distribution (mean and sigma)
+
+        # Given mean and standard deviation of the variable (arrival times)
+        mean_arrival_time = 18.0 # replace with your mean arrival time in hours
+        std_arrival_time = 3.0 # replace with your standard deviation in hours
+
+        # Calculate sigma
+        sigma = np.sqrt(np.log(1 + (std_arrival_time / mean_arrival_time)**2))
+        # Calculate mu
+        mu = np.log(mean_arrival_time) - 0.5 * sigma**2
+
+        # Other parameters
+        time_step = 0.1 # fraction of minutes
+        charging_power = 11  # e.g., 7 kW for home charging
+
+        # 1. Load and Understand the Data
+
+        # Expand the dataframe to list each vehicle and its charging demand
+        vehicle_counts = self.taz_properties['n_outflows'].round().astype(int) 
+        charging_demands = 2 * self.taz_properties['vkt_outflows'] *  self.ev_consumption / self.charging_efficiency # Multiply by 2 (home-work-home)
+
+        # Create a list of charging demands repeated by the number of vehicles
+        all_charging_demands = []
+        for count, demand in zip(vehicle_counts, charging_demands):
+            all_charging_demands.extend([demand] * count)
+
+        # Convert to a numpy array
+        all_charging_demands = np.array(all_charging_demands)
+        num_vehicles = len(all_charging_demands)
+
+        # 2. Model Arrival Times with Lognormal Distribution
+
+        # Simulate arrival times (in hours) for the vehicles
+        arrival_times = np.random.lognormal(mu, sigma, num_vehicles)
+        arrival_times = arrival_times % 24  # Wrap around to fit within 24 hour
+
+        print(num_vehicles)
+        print(self.mobsim.traffic_zones['n_outflows'].sum())
+
+        # # Plot histogram of arrival times
+        # plt.hist(arrival_times, bins=64, range=(0, 24), edgecolor='black')
+        # plt.xlabel('Time of Day (Hours)')
+        # plt.ylabel('Number of Vehicles')
+        # plt.title('Histogram of Vehicle Arrival Times')
+        # plt.grid(True)
+        # plt.show()
+
+        # 3. Distribute Charging Demand Over Time
+
+        # Create a time array
+        time = np.arange(0, 24, time_step)  # time array with 15-minute intervals
+        power_demand = np.zeros_like(time)
+
+        for arrival_time, demand in zip(arrival_times, all_charging_demands):
+            charging_duration = demand / charging_power
+            start_idx = np.searchsorted(time, arrival_time)
+            end_time = (arrival_time + charging_duration) % 24  # Wrap around to fit within 24 hours
+            end_idx = np.searchsorted(time, end_time)
+
+            if end_idx > start_idx:
+                power_demand[start_idx:end_idx] += charging_power
+            else:
+                power_demand[start_idx:] += charging_power
+                power_demand[:end_idx] += charging_power
+
+            if charging_duration <= time_step:
+                print("ALERT \t Charging duration is smaller than the timestep, this may lead to inaccurate results")
+
+        # Convert power demand to MWh
+        power_demand_mwh = power_demand / 1000  # converting kW to MW
+
+
+        # # Plot the power demand profile
+        # plt.plot(time, power_demand_mwh)
+        # plt.xlabel('Time of Day (Hours)')
+        # plt.ylabel('Power Demand (MW)')
+        # plt.title('EV Charging Power Demand Profile')
+        # plt.grid(True)
+        # plt.show()
