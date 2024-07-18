@@ -418,15 +418,11 @@ class MobilitySim:
     ############# Trip Generation #############
     ###########################################
 
-    def trip_generation(self, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy):
+    def trip_generation(self, n_trips_per_inhabitant):
         print(f"INFO \t Starting trip generation")
 
-        # Check the values 
-
-        params = [share_active, share_unemployed, share_home_office, mode_share]
-    
-        if not all(0.0 <= param <= 1.0 for param in params):
-            print(f"ERROR \t All parameters must be between 0 and 1.")
+        if n_trips_per_inhabitant <= .0:
+            print(f"ERROR \t Trips per inhabitant must be greater than 0")
             return
 
         # Load the traffic_zones dataframe
@@ -434,8 +430,7 @@ class MobilitySim:
         df = self.traffic_zones
 
         # Calculate the number of trips and append them to the df
-        df['n_commuters'] = df['population'].apply( lambda x: int(x * share_active * (1 - share_unemployed) * (1 - share_home_office)) )
-        df['n_outflows'] = df['n_commuters'].apply( lambda x: int(x * mode_share / vehicle_occupancy) )
+        df['n_outflows'] = df['population'].apply( lambda x: int(x * n_trips_per_inhabitant) )
 
         self.traffic_zones = df
 

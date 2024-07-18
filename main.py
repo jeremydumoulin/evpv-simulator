@@ -64,7 +64,7 @@ commuting_zone = {
             "isochrone_timestep_min": 10
         }
 
-n_subdivisions = 8 # Number of subdivisions of the bbox to create traffic analysis zones
+n_subdivisions = 7 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -95,8 +95,7 @@ use_cached_data = True
 mobsim = None # Init the mobsim object for the mobility simulation 
 
 unique_id = hlp.create_unique_id([shapefile_path, population_density_path, n_subdivisions, road_network_filter_string, workplaces_tags, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
-pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb 
-
+pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
 if use_cached_data and os.path.isfile(pickle_filename): 
@@ -117,13 +116,9 @@ else:
 
     # 2. Trip generation from statistics
 
-    mobsim.trip_generation(
-        share_active = share_active, 
-        share_unemployed = share_unemployed, 
-        share_home_office = share_home_office, 
-        mode_share = mode_share, 
-        vehicle_occupancy = vehicle_occupancy
-    )
+    n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  mode_share / vehicle_occupancy
+
+    mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)       
 
     # 3. Trip ditribution using SIM
 

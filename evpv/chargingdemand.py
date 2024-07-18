@@ -236,10 +236,3 @@ class ChargingDemand:
         return time, power_demand_mwh, max_cars_plugged_in
 
 
-        # Plot the power demand profile
-        plt.plot(time, power_demand_mwh)
-        plt.xlabel('Time of Day (Hours)')
-        plt.ylabel('Power Demand (MW)')
-        plt.title('EV Charging Power Demand Profile')
-        plt.grid(True)
-        plt.show()
