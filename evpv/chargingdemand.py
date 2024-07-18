@@ -135,17 +135,29 @@ class ChargingDemand:
             out_df = flows[flows['Origin'] == row['id']].copy()
             out_df['Distance_Flow_Product'] = out_df['Travel Distance (km)'] * out_df['Flow']
 
-            n_outflows.append(out_df['Flow'].sum())
-            fkt_outflows.append(out_df['Distance_Flow_Product'].sum()) 
-            vkt_outflows.append(out_df['Distance_Flow_Product'].sum() / out_df['Flow'].sum())             
+            outflow_sum = out_df['Flow'].sum()
+            distance_flow_product_sum_out = out_df['Distance_Flow_Product'].sum()
 
-             # Append values related to the destination (inflows)            
+            n_outflows.append(outflow_sum)
+            fkt_outflows.append(distance_flow_product_sum_out)
+            if outflow_sum != 0:
+                vkt_outflows.append(distance_flow_product_sum_out / outflow_sum)
+            else:
+                vkt_outflows.append(0)
+
+            # Append values related to the destination (inflows)            
             in_df = flows[flows['Destination'] == row['id']].copy()
             in_df['Distance_Flow_Product'] = in_df['Travel Distance (km)'] * in_df['Flow']
 
-            n_inflows.append(in_df['Flow'].sum())
-            fkt_inflows.append(in_df['Distance_Flow_Product'].sum()) 
-            vkt_inflows.append(in_df['Distance_Flow_Product'].sum() / in_df['Flow'].sum()) 
+            inflow_sum = in_df['Flow'].sum()
+            distance_flow_product_sum_in = in_df['Distance_Flow_Product'].sum()
+
+            n_inflows.append(inflow_sum)
+            fkt_inflows.append(distance_flow_product_sum_in)
+            if inflow_sum != 0:
+                vkt_inflows.append(distance_flow_product_sum_in / inflow_sum)
+            else:
+                vkt_inflows.append(0)
 
             
         # Create the resulting DataFrame

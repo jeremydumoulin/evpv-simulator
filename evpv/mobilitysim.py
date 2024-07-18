@@ -28,7 +28,7 @@ import openrouteservice
 import requests
 import time
 import math
-
+import csv
 
 from evpv import helpers as hlp
 
@@ -73,8 +73,10 @@ class MobilitySim:
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, target_area_shapefile, 
+    def __init__(self, 
+        target_area_shapefile, 
         population_density, 
+        destinations,
         commuting_zone = {
             "isochrone_center": (38.74, 9.02),            
             "max_time_min": 60,
@@ -82,7 +84,6 @@ class MobilitySim:
         },
         n_subdivisions = 10, 
         road_network_filter_string = '["highway"!~"^(service|track|residential)$"]',
-        destinations = "from_osm",
         destinations_filename = None,
         osm_tags = {
             "building": ["industrial", "office"],
@@ -112,6 +113,11 @@ class MobilitySim:
 
         if destinations == "from_osm":
             self.set_destinations_from_osm(osm_tags)
+        elif destinations == "from_file":
+            self.set_destinations_from_file(destinations_filename)
+        else:
+            print(f"ERROR \t Parameter to define destinations is unknown. Unable to initialize MobilitySim object.")
+            return
 
         self.set_traffic_zones(n_subdivisions)
         
@@ -343,6 +349,32 @@ class MobilitySim:
                 break
 
         self.destinations = center_points
+
+
+    def set_destinations_from_file(self, csv_file_path):
+            """Setter for the destinations using a CSV file.
+            """
+            print(f"INFO \t Appending the destinations and weights from CSV file.")
+
+            center_points = []
+
+            with open(csv_file_path, mode='r') as csv_file:
+                csv_reader = csv.DictReader(csv_file)
+                for row in csv_reader:
+                    name = row['name']
+                    latitude = float(row['latitude'])
+                    longitude = float(row['longitude'])
+                    weight = int(row['weight'])
+
+                    if weight < 1:
+                        print(f"AlERT \t Skipping {name} due to non-positive weight: {weight}")
+                        continue
+                    
+                    for _ in range(weight):
+                        center_points.append((longitude, latitude))
+
+            self.destinations = center_points            
+
 
     def set_traffic_zones(self, num_squares):
         """ Setter for the traffic_zones attribute.

@@ -58,14 +58,10 @@ Global parameters
 shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
-commuting_zone = {
-            "isochrone_center": (38.74, 9.02),            
-            "max_time_min": 10,
-            "isochrone_timestep_min": 10
-        }
-
 n_subdivisions = 7 # Number of subdivisions of the bbox to create traffic analysis zones
-road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
+
+destinations = "from_file"
+destinations_filename = INPUT_PATH / "fake_destinations.csv"
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
             "company": [],
@@ -75,6 +71,14 @@ workplaces_tags = { # Tags used to get workplaces
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
 
+commuting_zone = {
+            "isochrone_center": (38.74, 9.02),            
+            "max_time_min": 10,
+            "isochrone_timestep_min": 10
+        }
+
+road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
+
 share_active = 0.1
 share_unemployed = 0.227
 share_home_office = 0.0
@@ -82,11 +86,11 @@ mode_share = 1.0
 vehicle_occupancy = 1.2
 
 model = "gravity_exp_01"
-attraction_feature = "population"
+attraction_feature = "destinations"
 cost_feature = "distance_centroid"
 taz_center = "centroid"
 
-use_cached_data = True
+use_cached_data = False
 
 #############################################
 ### MOBILITY SIMULATION (home-work-home) ####
@@ -94,7 +98,7 @@ use_cached_data = True
 
 mobsim = None # Init the mobsim object for the mobility simulation 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, n_subdivisions, road_network_filter_string, workplaces_tags, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, n_subdivisions, road_network_filter_string, destinations_filename, destinations, workplaces_tags, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
 pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
@@ -112,6 +116,8 @@ else:
         commuting_zone = commuting_zone, 
         n_subdivisions = n_subdivisions,
         road_network_filter_string = road_network_filter_string,
+        destinations = destinations,
+        destinations_filename = destinations_filename,
         osm_tags = workplaces_tags)
 
     # 2. Trip generation from statistics
