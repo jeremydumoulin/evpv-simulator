@@ -57,7 +57,7 @@ class MobilitySim:
 
     population_density = None
     road_network = None
-    workplaces = None
+    destinations = None
 
     # Traffic analysis zones and associated properties 
     traffic_zones = pd.DataFrame()
@@ -82,7 +82,9 @@ class MobilitySim:
         },
         n_subdivisions = 10, 
         road_network_filter_string = '["highway"!~"^(service|track|residential)$"]',
-        workplaces_tags = {
+        destinations = "from_osm",
+        destinations_filename = None,
+        osm_tags = {
             "building": ["industrial", "office"],
             "company": [],
             "landuse": ["industrial"],
@@ -107,7 +109,9 @@ class MobilitySim:
 
         self.set_population_density(population_density)
         self.set_road_network(road_network_filter_string)
-        self.set_workplaces(workplaces_tags)
+
+        if destinations == "from_osm":
+            self.set_destinations_from_osm(osm_tags)
 
         self.set_traffic_zones(n_subdivisions)
         
@@ -115,7 +119,7 @@ class MobilitySim:
         print(f" \t - Simulation area bbox length: {self.simulation_area_size} km")
         print(f" \t - TAZ length: {self.subdivision_size} km")
         print(f" \t - Population: {self.traffic_zones['population'].sum()}")
-        print(f" \t - Workplaces: {self.traffic_zones['workplaces'].sum()}")
+        print(f" \t - Destinations: {self.traffic_zones['destinations'].sum()}")
         print("---")
 
     ############# Setters #############
@@ -311,8 +315,8 @@ class MobilitySim:
 
         self.road_network = G
 
-    def set_workplaces(self, workplaces_tags):
-        """ Setter for the workplaces
+    def set_destinations_from_osm(self, osm_tags):
+        """ Setter for the destinations using OSM. 
         """       
 
         # Extract the coordinates of the bounding box vertices
@@ -320,9 +324,9 @@ class MobilitySim:
         bbox_coords = [maxy, miny, maxx, minx]
 
         # Amenities to extract
-        tags = workplaces_tags
+        tags = osm_tags
 
-        print(f"INFO \t Getting the workplaces from OSM. Tags: {tags}")
+        print(f"INFO \t Getting the destinations from OSM. Tags: {tags}")
 
         mypois = ox.features.features_from_bbox(bbox=bbox_coords, tags=tags) # the table
 
@@ -338,7 +342,7 @@ class MobilitySim:
             else:
                 break
 
-        self.workplaces = center_points
+        self.destinations = center_points
 
     def set_traffic_zones(self, num_squares):
         """ Setter for the traffic_zones attribute.
@@ -399,18 +403,18 @@ class MobilitySim:
                 # Calculate the total population within the bounding box
                 total_population = np.sum(out_image[out_image > 0])  # assuming no data values are <= 0
 
-                # 5. Number of workplaces
+                # 5. Number of destinations
 
                 # Convert the list of center points to shapely Point objects
-                points = [Point(lon, lat) for lon, lat in self.workplaces]
+                points = [Point(lon, lat) for lon, lat in self.destinations]
 
                 # Count how many points are within the bounding box
                 points_within_bbox = [point for point in points if point.within(bbox_geom)]
-                n_workplaces = len(points_within_bbox)
+                n_destinations = len(points_within_bbox)
 
                 # 6. Append everything
 
-                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'workplaces': n_workplaces})
+                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'destinations': n_destinations})
 
         self.traffic_zones = pd.DataFrame(grid_data)
 
@@ -576,9 +580,9 @@ class MobilitySim:
             if attraction_feature == 'population':
                 att_origin = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'population'].values[0]
                 dest_att_list = origin_rows['Destination'].apply(lambda x: self.traffic_zones.loc[self.traffic_zones['id'] == x, 'population'].values[0]).tolist()          
-            elif attraction_feature == 'workplaces':
-                att_origin = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'workplaces'].values[0]
-                dest_att_list = origin_rows['Destination'].apply(lambda x: self.traffic_zones.loc[self.traffic_zones['id'] == x, 'workplaces'].values[0]).tolist()
+            elif attraction_feature == 'destinations':
+                att_origin = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'destinations'].values[0]
+                dest_att_list = origin_rows['Destination'].apply(lambda x: self.traffic_zones.loc[self.traffic_zones['id'] == x, 'destinations'].values[0]).tolist()
             else:
                 print(f"ERROR \t Attraction feature is unknown.")
                 return

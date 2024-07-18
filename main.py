@@ -112,7 +112,7 @@ else:
         commuting_zone = commuting_zone, 
         n_subdivisions = n_subdivisions,
         road_network_filter_string = road_network_filter_string,
-        workplaces_tags = workplaces_tags)
+        osm_tags = workplaces_tags)
 
     # 2. Trip generation from statistics
 
