@@ -64,7 +64,7 @@ commuting_zone = {
             "isochrone_timestep_min": 10
         }
 
-n_subdivisions = 2 # Number of subdivisions of the bbox to create traffic analysis zones
+n_subdivisions = 8 # Number of subdivisions of the bbox to create traffic analysis zones
 road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -148,13 +148,23 @@ chargedem = ChargingDemand(
     ev_consumption = 0.2,
     charging_efficiency = 0.9)
 
-chargedem.load_profile()
+time, power_profile, max_cars_plugged_in = chargedem.load_profile(mean_arrival_time = 18, std_arrival_time = 0.1, charging_power = 3)
 
 chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZProperties.csv", index=False) # Store aggregated TAZ features as csv
 
 #############################################
 ################ VISUALISATION ##############
 #############################################
+print(f"Maximum number of cars plugged in at the same time: {max_cars_plugged_in}")
+
+plt.figure(figsize=(10, 6))
+plt.plot(time, power_profile, label='Power Demand (MWh)')
+plt.xlabel('Time (hours)')
+plt.ylabel('Power Demand (MWh)')
+plt.title('EV Charging Power Profile')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 
 
@@ -162,19 +172,55 @@ chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZPro
 ############### OTHER ANALYSIS ##############
 #############################################
 
-# Flow allocation (routing)
+################## Routing ##################
 
-#mobsim.allocate_routes()
-df = mobsim.flows
+# mobsim.allocate_routes() # Do not comment
+# df = mobsim.flows
 
-m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+# m = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+# # Normalize flow values for color scaling
+# min_flow = df['Flow'].min()
+# max_flow = df['Flow'].max()
+# df['normalized_flow'] = (df['Flow'] - min_flow) / (max_flow - min_flow)
+
+# # Function to get color based on normalized flow
+# def get_color(normalized_flow):
+#     return f'#{int(255*normalized_flow):02x}00{int(255*(1-normalized_flow)):02x}'
+
+# # Function to get line width based on normalized flow
+# def get_width(normalized_flow):
+#     return 1 + normalized_flow * 9  # Width ranges from 1 to 10
+
+# # Add routes to the map
+# for idx, row in df.iterrows():
+#     geojson = gpd.GeoSeries([row['Geometry']]).__geo_interface__
+#     color = get_color(row['normalized_flow'])
+#     width = get_width(row['normalized_flow'])
+    
+#     folium.GeoJson(
+#         geojson,
+#         style_function=lambda x, color=color, width=width: {
+#             'color': color,
+#             'weight': width,
+#             'opacity': 0.7
+#         }
+#     ).add_to(m)
+
+# # Add a color scale legend
+# colormap = folium.LinearColormap(colors=['blue', 'red'], vmin=min_flow, vmax=max_flow)
+# colormap.add_to(m)
+# colormap.caption = 'Flow'
+
+# # Save the map to an HTML file
+# m.save(OUTPUT_PATH / "traffic_flows_map.html")
+
+#############################################
 
 
 
-# Normalize flow values for color scaling
-min_flow = df['Flow'].min()
-max_flow = df['Flow'].max()
-df['normalized_flow'] = (df['Flow'] - min_flow) / (max_flow - min_flow)
+
+
 
 
 
@@ -208,39 +254,34 @@ df['normalized_flow'] = (df['Flow'] - min_flow) / (max_flow - min_flow)
 
 
 
+# # Function to get color based on normalized flow
+# def get_color(normalized_flow):
+#     return f'#{int(255*normalized_flow):02x}00{int(255*(1-normalized_flow)):02x}'
 
-# Function to get color based on normalized flow
-def get_color(normalized_flow):
-    return f'#{int(255*normalized_flow):02x}00{int(255*(1-normalized_flow)):02x}'
+# # Function to get line width based on normalized flow
+# def get_width(normalized_flow):
+#     return 1 + normalized_flow * 9  # Width ranges from 1 to 10
 
-# Function to get line width based on normalized flow
-def get_width(normalized_flow):
-    return 1 + normalized_flow * 9  # Width ranges from 1 to 10
-
-# Add routes to the map
-for idx, row in df.iterrows():
-    geojson = gpd.GeoSeries([row['Geometry']]).__geo_interface__
-    color = get_color(row['normalized_flow'])
-    width = get_width(row['normalized_flow'])
+# # Add routes to the map
+# for idx, row in df.iterrows():
+#     geojson = gpd.GeoSeries([row['Geometry']]).__geo_interface__
+#     color = get_color(row['normalized_flow'])
+#     width = get_width(row['normalized_flow'])
     
-    folium.GeoJson(
-        geojson,
-        style_function=lambda x, color=color, width=width: {
-            'color': color,
-            'weight': width,
-            'opacity': 0.7
-        }
-    ).add_to(m)
+#     folium.GeoJson(
+#         geojson,
+#         style_function=lambda x, color=color, width=width: {
+#             'color': color,
+#             'weight': width,
+#             'opacity': 0.7
+#         }
+#     ).add_to(m)
 
-# Add a color scale legend
-colormap = folium.LinearColormap(colors=['blue', 'red'], vmin=min_flow, vmax=max_flow)
-colormap.add_to(m)
-colormap.caption = 'Flow'
+# # Add a color scale legend
+# colormap = folium.LinearColormap(colors=['blue', 'red'], vmin=min_flow, vmax=max_flow)
+# colormap.add_to(m)
+# colormap.caption = 'Flow'
 
-
-
-# Save the map to an HTML file
-m.save(OUTPUT_PATH / "traffic_flows_map.html")
 
 
 # Rasterize the result
