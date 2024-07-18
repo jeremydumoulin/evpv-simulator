@@ -52,6 +52,7 @@ class MobilitySim:
 
     subdivision_size = .0
     simulation_area_size = .0
+    n_subdivisions = 0
 
     # Raw input data
 
@@ -77,12 +78,8 @@ class MobilitySim:
         target_area_shapefile, 
         population_density, 
         destinations,
-        commuting_zone = {
-            "isochrone_center": (38.74, 9.02),            
-            "max_time_min": 60,
-            "isochrone_timestep_min": 10
-        },
-        n_subdivisions = 10, 
+        commuting_zone_extension_km = 0,
+        taz_target_width_km = 3, 
         road_network_filter_string = '["highway"!~"^(service|track|residential)$"]',
         destinations_filename = None,
         osm_tags = {
@@ -96,17 +93,16 @@ class MobilitySim:
         
         print("---")
 
-        print(f"INFO \t MobilitySim object initialisation: {n_subdivisions}x{n_subdivisions} TAZs - Commuting zone extended by a {commuting_zone['max_time_min']} min travel time to city center")
+        print(f"INFO \t MobilitySim object initialisation...")
     
         self.set_target_area_shapefile(target_area_shapefile)
-        self.set_n_subdivisions(n_subdivisions)
-        self.set_commuting_zone_params(commuting_zone)
 
         self.set_centroid_coords()
-        self.set_simulation_bbox()
+        self.set_simulation_bbox(commuting_zone_extension_km)
 
         self.set_simulation_area_size()
-        self.set_subdivision_size()        
+        self.set_subdivision_size(taz_target_width_km)
+        self.set_n_subdivisions(self.simulation_area_size / self.subdivision_size)        
 
         self.set_population_density(population_density)
         self.set_road_network(road_network_filter_string)
@@ -119,11 +115,11 @@ class MobilitySim:
             print(f"ERROR \t Parameter to define destinations is unknown. Unable to initialize MobilitySim object.")
             return
 
-        self.set_traffic_zones(n_subdivisions)
+        self.set_traffic_zones(self.n_subdivisions)
         
         print(f"INFO \t MobilitySim object created:")
-        print(f" \t - Simulation area bbox length: {self.simulation_area_size} km")
-        print(f" \t - TAZ length: {self.subdivision_size} km")
+        print(f" \t - Simulation area bbox width: {self.simulation_area_size} km")
+        print(f" \t - TAZ - Width: {self.subdivision_size} km | Number: {self.n_subdivisions}x{self.n_subdivisions}")
         print(f" \t - Population: {self.traffic_zones['population'].sum()}")
         print(f" \t - Destinations: {self.traffic_zones['destinations'].sum()}")
         print("---")
@@ -157,11 +153,6 @@ class MobilitySim:
         else:            
             self.n_subdivisions = n_subdivisions
 
-    def set_commuting_zone_params(self, commuting_zone):
-        """ 
-        """                   
-        self.commuting_zone_params = commuting_zone
-
     def set_centroid_coords(self):
         geometry = self.target_area_shapefile['features'][0]['geometry']
 
@@ -174,80 +165,55 @@ class MobilitySim:
         # Return the coordinates of the centroid
         self.centroid_coords = centroid.y, centroid.x
 
-    def set_simulation_bbox(self):
+    def set_simulation_bbox(self, commuting_zone_extension_km):
         """ Calculate the bounding box for simulation from ORS isochrones
         """ 
-        print(f"INFO \t Getting isochrones from ORS for setting up commuting zone and simulation bbox")     
+        print(f"INFO \t Extending the simulation bbox by {commuting_zone_extension_km} km")     
 
         # Calculate the bounding box of the target area
         geometry = self.target_area_shapefile['features'][0]['geometry']
 
         # Create a shapely shape
         shapely_shape = shape(geometry)
-        
+
         #Get the bounding box of the shapefile defininf the target area
         minx, miny, maxx, maxy = shapely_shape.bounds
 
-        # Define the API endpoint and API key
-        api_endpoint = "https://api.openrouteservice.org/v2/isochrones/driving-car"
-        api_key = str(os.getenv("ORS_KEY")) # Replace "your_api_key" with your actual API key
+        # Calculate the new boundaries by extending them
+        def extend_bbox(minx, miny, maxx, maxy, km_extension):
+            # Extend minx and maxx by the km_extension in the longitudinal direction
+            left_point = geodesic(kilometers=km_extension).destination((miny, minx), 270)
+            right_point = geodesic(kilometers=km_extension).destination((maxy, maxx), 90)
+            
+            # Extend miny and maxy by the km_extension in the latitudinal direction
+            bottom_point = geodesic(kilometers=km_extension).destination((miny, minx), 180)
+            top_point = geodesic(kilometers=km_extension).destination((maxy, maxx), 0)
+            
+            new_minx = left_point.longitude
+            new_maxx = right_point.longitude
+            new_miny = bottom_point.latitude
+            new_maxy = top_point.latitude
+            
+            return new_minx, new_miny, new_maxx, new_maxy
 
-        # Define the request parameters
-        params = {
-            "locations": [self.commuting_zone_params['isochrone_center']],
-            "range": [self.commuting_zone_params['max_time_min']*60],  # Time in seconds 
-            "interval": self.commuting_zone_params['isochrone_timestep_min']*60,  # Contour interval in seconds 
-            "intersections":"false", # ?
-            "units": "m",  # Units (meters)
-        }
-
-        # Define the headers with the API key
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        }
-
-        # Make an HTTP POST request to the API
-        response = requests.post(api_endpoint, json=params, headers=headers)
-
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Parse the JSON response
-            data = response.json()
-            # Print the response data
-            #print(data)
-        else:
-            # Print the error message if the request was unsuccessful
-            print(f"ERROR \t Problem in ORS isochrone calculation: {response.status_code} - {response.text}. Please check the ORS status (https://status.openrouteservice.org/)")
-
-        # Extract the coordinates of the maximum isochrone polygon
-        isochrone_coords = data['features'][-1]['geometry']['coordinates'][0]
-
-        # Calculate the bounding box from the coordinates of the isochrone polygon
-        minx_2, miny_2 = min(coord[0] for coord in isochrone_coords), min(coord[1] for coord in isochrone_coords)
-        maxx_2, maxy_2 = max(coord[0] for coord in isochrone_coords), max(coord[1] for coord in isochrone_coords)
-
-
-        # Adjust the bounding box is isochrone are more far away than the target zone
-        if minx_2 < minx:
-            minx = minx_2
-        if miny_2 < miny:
-            miny = miny_2
-        if maxx_2 > maxx:
-            maxx = maxx_2
-        if maxy_2 > maxy:
-            maxy = maxy_2
+        new_minx, new_miny, new_maxx, new_maxy = extend_bbox(minx, miny, maxx, maxy, commuting_zone_extension_km)
 
         # Return the coordinates of the centroid
-        self.simulation_bbox = minx, miny, maxx, maxy
+        self.simulation_bbox = new_minx, new_miny, new_maxx, new_maxy
 
     def set_simulation_area_size(self):
         minx, miny, maxx, maxy = self.simulation_bbox
 
         self.simulation_area_size = geodesic((miny, minx), (miny, maxx)).kilometers
 
-    def set_subdivision_size(self):
-        self.subdivision_size = self.simulation_area_size / self.n_subdivisions
+    def set_subdivision_size(self, taz_target_width_km):
+        # Compute the number of interger segments close to the target width
+        n = round(self.simulation_area_size / taz_target_width_km)
+
+        # Calculate the actual segment length
+        l = self.simulation_area_size / n
+
+        self.subdivision_size = l
 
     def set_population_density(self, path):
         """ Setter for the population_density attribute.
@@ -347,6 +313,8 @@ class MobilitySim:
                 center_points.append((row['geometry'].x, row['geometry'].y))
             else:
                 break
+
+        print(len(center_points))
 
         self.destinations = center_points
 
@@ -649,6 +617,12 @@ class MobilitySim:
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 0.1)
+            elif model == 'gravity_exp_016':
+                flows = hlp.prod_constrained_gravity_exp(
+                    origin_n_trips = n_outflows,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list, 
+                    beta = 0.16)
             elif model == 'gravity_exp_scaled':
                 flows = hlp.prod_constrained_gravity_exp(
                     origin_n_trips = n_outflows,

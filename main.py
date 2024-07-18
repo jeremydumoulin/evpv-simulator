@@ -58,9 +58,9 @@ Global parameters
 shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
-n_subdivisions = 7 # Number of subdivisions of the bbox to create traffic analysis zones
+taz_target_width_km = 5 # Desired TAZ width
 
-destinations = "from_file"
+destinations = "from_osm"
 destinations_filename = INPUT_PATH / "fake_destinations.csv"
 workplaces_tags = { # Tags used to get workplaces
             "building": ["industrial", "office"],
@@ -71,11 +71,7 @@ workplaces_tags = { # Tags used to get workplaces
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
 
-commuting_zone = {
-            "isochrone_center": (38.74, 9.02),            
-            "max_time_min": 10,
-            "isochrone_timestep_min": 10
-        }
+commuting_zone_extension_km = 30
 
 road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 
@@ -85,12 +81,12 @@ share_home_office = 0.0
 mode_share = 1.0
 vehicle_occupancy = 1.2
 
-model = "gravity_exp_01"
-attraction_feature = "destinations"
+model = "gravity_exp_016"
+attraction_feature = "population"
 cost_feature = "distance_centroid"
 taz_center = "centroid"
 
-use_cached_data = False
+use_cached_data = True
 
 #############################################
 ### MOBILITY SIMULATION (home-work-home) ####
@@ -98,7 +94,7 @@ use_cached_data = False
 
 mobsim = None # Init the mobsim object for the mobility simulation 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, n_subdivisions, road_network_filter_string, destinations_filename, destinations, workplaces_tags, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, taz_target_width_km, road_network_filter_string, destinations_filename, destinations, workplaces_tags, commuting_zone_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
 pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
@@ -113,8 +109,8 @@ else:
     mobsim = MobilitySim(
         target_area_shapefile = shapefile_path,
         population_density = population_density_path, 
-        commuting_zone = commuting_zone, 
-        n_subdivisions = n_subdivisions,
+        commuting_zone_extension_km = commuting_zone_extension_km, 
+        taz_target_width_km = taz_target_width_km,
         road_network_filter_string = road_network_filter_string,
         destinations = destinations,
         destinations_filename = destinations_filename,
@@ -156,22 +152,182 @@ chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZPro
 #############################################
 ################ VISUALISATION ##############
 #############################################
-print(f"Maximum number of cars plugged in at the same time: {max_cars_plugged_in}")
 
-plt.figure(figsize=(10, 6))
-plt.plot(time, power_profile, label='Power Demand (MWh)')
-plt.xlabel('Time (hours)')
-plt.ylabel('Power Demand (MWh)')
-plt.title('EV Charging Power Profile')
-plt.legend()
-plt.grid(True)
-plt.show()
+###### Folium map with main geo data ########
+
+# 1. Create an empty map
+m1 = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+# 2. Add administrative boundaries
+
+# Define style function to only show lines
+def style_function(feature):
+    return {
+        'color': 'blue',  # Set line color
+        'weight': 3,      # Set line weight
+        'fillColor': 'none',  # Set fill color to 'none'
+    }
+
+folium.GeoJson(mobsim.target_area_shapefile['features'][0]['geometry'], name='Administrative boundary', style_function=style_function).add_to(m1)
+
+# 3. Add Simulation bbox
+
+minx, miny, maxx, maxy = mobsim.simulation_bbox
+
+# Create a rectangle using the bounding box coordinates
+rectangle = folium.Rectangle(
+    bounds=[[miny, minx], [maxy, maxx]],
+    fill=True,  # Fill the rectangle
+    fill_opacity=0,  # Set the opacity of the fill color
+    color='blue',  # Border color
+    weight=2,  # Border width
+)
+
+# Create a feature group to hold the rectangle and give it a name
+feature_group = folium.FeatureGroup(name='Simulation Area')
+rectangle.add_to(feature_group)
+feature_group.add_to(m1)
+
+# 4. Add Population data
+
+m1 = hlp.add_raster_to_folium(mobsim.population_density, m1)
+
+# 5. Add TAZs
+
+# Function to add rectangles to the map
+def add_rectangle(row):
+    # Parse the WKT string to create a Polygon object
+    bbox_polygon = row['bbox']
+    bbox_coords = bbox_polygon.bounds
+    
+    # Add rectangle to map
+    folium.Rectangle(
+        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+        color='grey',
+        fill=True,
+        fill_color='grey',
+        fill_opacity=0.0
+    ).add_to(m1)
+
+# # Apply the function to each row in the DataFrame
+mobsim.traffic_zones.apply(add_rectangle, axis=1)
+
+# 6. Add Aggregated Destinations
+
+# Get TAZ data
+df = mobsim.traffic_zones
+
+# Normalize population data for color scaling
+linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
+
+# Create a feature group for all polygons
+feature_group = folium.FeatureGroup(name='Destinations')
+
+# Add polygons to the feature group
+for idx, row in df.iterrows():
+    bbox_polygon = row['bbox']
+    bbox_coords = bbox_polygon.bounds
+
+    # Create a rectangle for each row
+    rectangle = folium.Rectangle(
+        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+        color=None,
+        fill=True,
+        fill_color=linear(row['destinations']),
+        fill_opacity=0.7,
+    )
+
+    # Add the rectangle to the feature group
+    rectangle.add_to(feature_group)
+
+# Add the feature group to the map
+feature_group.add_to(m1)
+
+# 6. Add Aggregateds Population
+
+# Get TAZ data
+df = mobsim.traffic_zones
+
+# Normalize population data for color scaling
+linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
+
+# Create a feature group for all polygons
+feature_group = folium.FeatureGroup(name='Population')
+
+# Add polygons to the feature group
+for idx, row in df.iterrows():
+    bbox_polygon = row['bbox']
+    bbox_coords = bbox_polygon.bounds
+
+    # Create a rectangle for each row
+    rectangle = folium.Rectangle(
+        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+        color=None,
+        fill=True,
+        fill_color=linear(row['population']),
+        fill_opacity=0.7,
+    )
+
+    # Add the rectangle to the feature group
+    rectangle.add_to(feature_group)
+
+# Add the feature group to the map
+feature_group.add_to(m1)
+
+# Add Layer Control and Save 
+
+folium.LayerControl().add_to(m1)
+m1.save(OUTPUT_PATH / "evpv_Result_MobilitySim_MainGeoInputs.html")
+
+#############################################
+
+
+######## N cars #########
+
+# print(f"Maximum number of cars plugged in at the same time: {max_cars_plugged_in}")
+
+# plt.figure(figsize=(10, 6))
+# plt.plot(time, power_profile, label='Power Demand (MW)')
+# plt.xlabel('Time (hours)')
+# plt.ylabel('Power Demand (MW)')
+# plt.title('EV Charging Power Profile')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
 
 
 
 #############################################
 ############### OTHER ANALYSIS ##############
 #############################################
+
+###### Calibration of Simulation Area #######
+# Get the total FKT within the target area, that
+# is, the vehicles that could potentially charge 
+# within the target area (at work or POI)
+
+# Convert the geometric_center to GeoSeries of Points
+chargedem.taz_properties['geometry'] = chargedem.taz_properties['geometric_center'].apply(lambda coords: Point(coords[0], coords[1]))
+
+# Create a GeoDataFrame
+taz_properties_gdf = gpd.GeoDataFrame(chargedem.taz_properties, geometry='geometry')
+
+# Load the shapefile (geojson)
+shapefile_gdf = gpd.read_file(shapefile_path)
+
+# Ensure both GeoDataFrames use the same coordinate reference system (CRS)
+taz_properties_gdf = taz_properties_gdf.set_crs(shapefile_gdf.crs, allow_override=True)
+
+# Perform a spatial join to get only the points within the shapefile
+joined_gdf = gpd.sjoin(taz_properties_gdf, shapefile_gdf, how="inner", predicate="within")
+
+# Sum the fkt_inflows within the shapefile
+total_fkt_inflows_within_shapefile = joined_gdf['fkt_inflows'].sum()
+
+print(f"Total fkt_inflows within shapefile: {total_fkt_inflows_within_shapefile}")
+
+#############################################
+
 
 ################## Routing ##################
 
