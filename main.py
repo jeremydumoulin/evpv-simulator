@@ -55,7 +55,7 @@ OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 Global parameters 
 """
 
-shapefile_path = INPUT_PATH / "gadm41_ETH_1.json" # Addis Ababa administrative boundaries
+shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
 taz_target_width_km = 5 # Desired TAZ width
@@ -71,7 +71,7 @@ workplaces_tags = { # Tags used to get workplaces
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
 
-commuting_zone_extension_km = 30
+commuting_zone_extension_km = 35
 
 road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 
