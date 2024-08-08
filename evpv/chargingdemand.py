@@ -115,7 +115,6 @@ class ChargingDemand:
         # Prepare lists to hold the data
         taz_id = []
         geometric_center = []
-        nearest_node = []
         bbox = []
         n_outflows = []
         n_inflows = []
@@ -128,7 +127,6 @@ class ChargingDemand:
         for index, row in taz.iterrows():
             taz_id.append(row['id'])
             geometric_center.append(row['geometric_center'])
-            nearest_node.append(row['nearest_node'])
             bbox.append(row['bbox'])
 
             # Append values related to the origin (outflows)            
@@ -164,7 +162,6 @@ class ChargingDemand:
         data = {
             'id': taz_id,
             'geometric_center': geometric_center,
-            'nearest_node': nearest_node,
             'n_outflows': n_outflows,
             'n_inflows': n_inflows,
             'fkt_outflows': fkt_outflows,

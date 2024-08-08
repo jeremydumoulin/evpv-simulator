@@ -57,7 +57,6 @@ class MobilitySim:
     # Raw input data
 
     population_density = None
-    road_network = None
     destinations = None
 
     # Traffic analysis zones and associated properties 
@@ -80,7 +79,6 @@ class MobilitySim:
         destinations,
         commuting_zone_extension_km = 0,
         taz_target_width_km = 3, 
-        road_network_filter_string = '["highway"!~"^(service|track|residential)$"]',
         destinations_filename = None,
         osm_tags = {
             "building": ["industrial", "office"],
@@ -105,7 +103,6 @@ class MobilitySim:
         self.set_n_subdivisions(self.simulation_area_size / self.subdivision_size)        
 
         self.set_population_density(population_density)
-        self.set_road_network(road_network_filter_string)
 
         if destinations == "from_osm":
             self.set_destinations_from_osm(osm_tags)
@@ -233,60 +230,6 @@ class MobilitySim:
         except FileNotFoundError as e:
             print(e)
 
-    def set_road_network(self, road_network_filter_string):
-        """ Setter for the road_network attribute.
-        """     
-
-        # Convert to the format required by osmnx: north, south, east, west
-        minx, miny, maxx, maxy = self.simulation_bbox
-        north, south, east, west = maxy, miny, maxx, minx
-
-        graphml_file = OUTPUT_PATH / "road_network.graphml"
-
-        # Define the filter string to keep only motorways and primary roads
-        filter_string = road_network_filter_string
-
-        print(f"INFO \t Getting the road network from OSM. Applied filter: {filter_string}")
-
-        ox.settings.use_cache=False
-        #ox.config(use_cache=False)
-
-        # Check if the GraphML file exists
-        if os.path.exists(graphml_file):
-            # Load the graph from the GraphML file
-            G = ox.load_graphml(graphml_file)
-            
-            # Extract the bounding box from the loaded graph
-            loaded_north, loaded_south, loaded_east, loaded_west = hlp.get_graph_bbox(G)
-
-            # Round to decimal places to ignore small differences
-            decimals = 2
-
-            loaded_bbox = (round(loaded_north, decimals), round(loaded_south, decimals),
-                   round(loaded_east, decimals), round(loaded_west, decimals))
-
-            bbox = (round(north, decimals), round(south, decimals),
-                   round(east, decimals), round(west, decimals))
-            
-            # Compare the bounding boxes
-            if bbox == loaded_bbox:
-                print(f"\t -> Found a graphml file with road network. Reusing existing data.")
-            else:
-                print(f"\t -> Found a graphml file with road network but the bounding box does not match. Downloading new data.")
-                #G = ox.graph_from_bbox(north, south, east, west, network_type='drive')
-                G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive', custom_filter=filter_string)
-
-                ox.save_graphml(G, graphml_file)
-
-        else:
-            # Download and extract the road network within the bounding box
-            G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='all', custom_filter=filter_string)
-
-            # Save the graph to a GraphML file
-            ox.save_graphml(G, graphml_file)
-
-        self.road_network = G
-
     def set_destinations_from_osm(self, osm_tags):
         """ Setter for the destinations using OSM. 
         """       
@@ -373,11 +316,7 @@ class MobilitySim:
                 center_lon = miny + (i + 0.5) * height
                 center_lat = minx + (j + 0.5) * width
 
-                # 2. Nearest node in the road network
-
-                nearest_node = ox.distance.nearest_nodes(self.road_network, center_lat, center_lon)
-
-                # 3. Bounding box 
+                # 2. Bounding box 
 
                 lower_left_x = minx + i * width
                 lower_left_y = miny + j * height
@@ -386,7 +325,7 @@ class MobilitySim:
 
                 bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)
 
-                # 4. Population within the bounding box
+                # 3. Population within the bounding box
 
                 # GeoDataFrame
                 bbox_gdf = gpd.GeoDataFrame({'geometry': [bbox_geom]}, crs="EPSG:4326")
@@ -403,7 +342,7 @@ class MobilitySim:
                 # Calculate the total population within the bounding box
                 total_population = np.sum(out_image[out_image > 0])  # assuming no data values are <= 0
 
-                # 5. Number of destinations
+                # 4. Number of destinations
 
                 # Convert the list of center points to shapely Point objects
                 points = [Point(lon, lat) for lon, lat in self.destinations]
@@ -412,9 +351,9 @@ class MobilitySim:
                 points_within_bbox = [point for point in points if point.within(bbox_geom)]
                 n_destinations = len(points_within_bbox)
 
-                # 6. Append everything
+                # 5. Append everything
 
-                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'nearest_node': (self.road_network.nodes[nearest_node]['x'], self.road_network.nodes[nearest_node]['y']), 'bbox': bbox_geom, 'population': total_population, 'destinations': n_destinations})
+                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'bbox': bbox_geom, 'population': total_population, 'destinations': n_destinations})
 
         self.traffic_zones = pd.DataFrame(grid_data)
 
@@ -542,7 +481,7 @@ class MobilitySim:
                     travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
 
         if ors_errors != 0:
-            print(f"ALERT \t ORS was unable to calculate distance or resolve {ors_errors} routes. Using euclidian distance instead and a travel time 30 km/h speed. This could affect the model reliability!")
+            print(f"ALERT \t ORS was unable to calculate distance or resolve {ors_errors} routes. Using euclidian distance instead and a travel speed of 30 km/h. This could affect the model reliability!")
 
         # Create the resulting DataFrame
         flow_data = {
@@ -651,7 +590,6 @@ class MobilitySim:
     def allocate_routes(self):
         print(f"INFO \t Allocation of ORS routes to origin-destination pairs (routing)")
 
-        G = self.road_network
         flows = self.flows
         taz = self.traffic_zones
 
@@ -685,8 +623,8 @@ class MobilitySim:
                     geometry = LineString(geometry.coords[::-1])
             else:
                 # Get the coordinates from taz
-                origin_coords = taz.loc[taz['id'] == origin_id, 'nearest_node'].values[0]
-                destination_coords = taz.loc[taz['id'] == destination_id, 'nearest_node'].values[0]
+                origin_coords = taz.loc[taz['id'] == origin_id, 'geometric_center'].values[0]
+                destination_coords = taz.loc[taz['id'] == destination_id, 'geometric_center'].values[0]
                 
                 origin_lon, origin_lat = origin_coords
                 destination_lon, destination_lat = destination_coords 
@@ -708,4 +646,62 @@ class MobilitySim:
             flows.at[index, 'Geometry'] = geometry
             
             # Adding a sleep time to avoid hitting the rate limit
-            time.sleep(1.5)           
+            time.sleep(1.5) 
+
+    ############### Deprecated ################
+    ###########################################
+
+    # def set_road_network(self, road_network_filter_string):
+    #     """ Setter for the road_network attribute.
+    #     """     
+
+    #     # Convert to the format required by osmnx: north, south, east, west
+    #     minx, miny, maxx, maxy = self.simulation_bbox
+    #     north, south, east, west = maxy, miny, maxx, minx
+
+    #     graphml_file = OUTPUT_PATH / "road_network.graphml"
+
+    #     # Define the filter string to keep only motorways and primary roads
+    #     filter_string = road_network_filter_string
+
+    #     print(f"INFO \t Getting the road network from OSM. Applied filter: {filter_string}")
+
+    #     ox.settings.use_cache=False
+    #     #ox.config(use_cache=False)
+
+    #     # Check if the GraphML file exists
+    #     if os.path.exists(graphml_file):
+    #         # Load the graph from the GraphML file
+    #         G = ox.load_graphml(graphml_file)
+            
+    #         # Extract the bounding box from the loaded graph
+    #         loaded_north, loaded_south, loaded_east, loaded_west = hlp.get_graph_bbox(G)
+
+    #         # Round to decimal places to ignore small differences
+    #         decimals = 2
+
+    #         loaded_bbox = (round(loaded_north, decimals), round(loaded_south, decimals),
+    #                round(loaded_east, decimals), round(loaded_west, decimals))
+
+    #         bbox = (round(north, decimals), round(south, decimals),
+    #                round(east, decimals), round(west, decimals))
+            
+    #         # Compare the bounding boxes
+    #         if bbox == loaded_bbox:
+    #             print(f"\t -> Found a graphml file with road network. Reusing existing data.")
+    #         else:
+    #             print(f"\t -> Found a graphml file with road network but the bounding box does not match. Downloading new data.")
+    #             #G = ox.graph_from_bbox(north, south, east, west, network_type='drive')
+    #             G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive', custom_filter=filter_string)
+
+    #             ox.save_graphml(G, graphml_file)
+
+    #     else:
+    #         # Download and extract the road network within the bounding box
+    #         G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='all', custom_filter=filter_string)
+
+    #         # Save the graph to a GraphML file
+    #         ox.save_graphml(G, graphml_file)
+
+    #     self.road_network = G
+        
