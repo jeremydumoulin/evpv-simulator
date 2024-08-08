@@ -78,7 +78,8 @@ class MobilitySim:
         population_density, 
         destinations,
         commuting_zone_extension_km = 0,
-        taz_target_width_km = 3):
+        taz_target_width_km = 3,
+        percentage_population_to_ignore = .0):
         
         print("---")
 
@@ -96,11 +97,11 @@ class MobilitySim:
         self.set_population_density(population_density)
         self.set_destinations(destinations)
 
-        self.set_traffic_zones(self.n_subdivisions)
+        self.set_traffic_zones(self.n_subdivisions, percentage_population_to_ignore)
         
         print(f"INFO \t MobilitySim object created:")
         print(f" \t - Simulation area bbox width: {self.simulation_area_size} km")
-        print(f" \t - TAZ - Width: {self.subdivision_size} km | Number: {self.n_subdivisions}x{self.n_subdivisions}")
+        print(f" \t - TAZ - Width: {self.subdivision_size} km | Number: {len(self.traffic_zones)}")
         print(f" \t - Population: {self.traffic_zones['population'].sum()}")
         print(f" \t - Destinations: {self.traffic_zones['destinations'].sum()}")
         print("---")
@@ -239,7 +240,7 @@ class MobilitySim:
             self.destinations = center_points            
 
 
-    def set_traffic_zones(self, num_squares):
+    def set_traffic_zones(self, num_squares, percentage_population_to_ignore = .0):
         """ Setter for the traffic_zones attribute.
         """
 
@@ -303,11 +304,46 @@ class MobilitySim:
                 points_within_bbox = [point for point in points if point.within(bbox_geom)]
                 n_destinations = len(points_within_bbox)
 
+                # 5. Check if the TAZ is inside the target area
+                
+                shapefile_geometry = shape(self.target_area_shapefile['features'][0]['geometry'])
+                center_point = Point((center_lat, center_lon))
+
+                # Check if the point is within the MultiPolygon
+                is_within = shapefile_geometry.contains(center_point)
+
                 # 5. Append everything
 
-                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'bbox': bbox_geom, 'population': total_population, 'destinations': n_destinations})
+                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'bbox': bbox_geom, 'population': total_population, 'destinations': n_destinations, 'is_within_target_area': is_within})
 
-        self.traffic_zones = pd.DataFrame(grid_data)
+        df = pd.DataFrame(grid_data)
+
+        # Delete the sparsely TAZs, such that the sum of the less populated is below a threshold
+        if percentage_population_to_ignore > .0:
+            print(f"INFO \t Deleting sparsely populated TAZs")
+
+            # Calculate the total population
+            total_population = df['population'].sum()
+
+            # Calculate the population limit based on the percentage
+            population_limit = (percentage_population_to_ignore / 100) * total_population
+
+            # Sort by population in ascending order
+            df = df.sort_values(by='population')
+
+            # Calculate the cumulative sum of populations
+            df['cumulative_population'] = df['population'].cumsum()
+
+            # Identify the rows to remove
+            rows_to_remove = df[df['cumulative_population'] <= population_limit]
+
+            # Drop these rows from the original DataFrame
+            df = df.drop(rows_to_remove.index)
+
+            # Optionally, remove the cumulative_population column
+            df = df.drop(columns=['cumulative_population'])
+
+        self.traffic_zones = pd.DataFrame(df)
 
 
     ############# Trip Generation #############
@@ -422,7 +458,7 @@ class MobilitySim:
                 travel_distances_euclidian.append(euclidian_distance)
 
                 # Check if ors errors. Display only once
-                if math.isnan(distances[i][j]) or distances[i][j] == .0:
+                if (math.isnan(distances[i][j]) or distances[i][j] == .0) and (origin_id != destination_id):
                     travel_distances.append(euclidian_distance)
                     travel_times.append(euclidian_distance / 30 * 60)
 
