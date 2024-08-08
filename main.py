@@ -57,7 +57,7 @@ Global parameters
 shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 
-taz_target_width_km = 5 # Desired TAZ width
+taz_target_width_km = 10 # Desired TAZ width
 
 destinations = "from_osm"
 destinations_filename = INPUT_PATH / "fake_destinations.csv"
@@ -70,7 +70,7 @@ workplaces_tags = { # Tags used to get workplaces
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
 
-commuting_zone_extension_km = 10
+commuting_zone_extension_km = 0
 
 road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 
@@ -80,10 +80,11 @@ share_home_office = 0.0
 mode_share = 1.0
 vehicle_occupancy = 1.2
 
+n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  mode_share / vehicle_occupancy
+
 model = "radiation"
 attraction_feature = "population"
 cost_feature = "distance_centroid"
-taz_center = "centroid"
 
 use_cached_data = True
 
@@ -93,7 +94,7 @@ use_cached_data = True
 
 mobsim = None # Init the mobsim object for the mobility simulation 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, taz_target_width_km, road_network_filter_string, destinations_filename, destinations, workplaces_tags, commuting_zone_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature, taz_center]) # Unique ID from input variables - ensures that we redo the simulation
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, taz_target_width_km, road_network_filter_string, destinations_filename, destinations, workplaces_tags, commuting_zone_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
 pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
@@ -115,15 +116,13 @@ else:
         destinations_filename = destinations_filename,
         osm_tags = workplaces_tags)
 
-    # 2. Trip generation from statistics
-
-    n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  mode_share / vehicle_occupancy
+    # 2. Trip generation from statistics    
 
     mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)       
 
     # 3. Trip ditribution using SIM
 
-    mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature, taz_center = taz_center)
+    mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature)
 
     # 4. Storing data
     print("INFO \t Saving MobilitySim object to pickle file")

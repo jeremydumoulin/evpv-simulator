@@ -443,7 +443,7 @@ class MobilitySim:
     ############ Trip Distribution ############
     ###########################################
 
-    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", taz_center = "centroid", batch_size = 49):
+    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49):
         print(f"INFO \t Starting trip distribution")
 
         ############ Get TAZ data ############
@@ -459,20 +459,13 @@ class MobilitySim:
 
         print(f"INFO \t Getting ORS data")
 
-        # Extract coordinates
-        if taz_center == 'centroid':
-            coordinates = [list(coord) for coord in df['geometric_center']]        
-        elif taz_center == 'nearest_node':
-            coordinates = [list(coord) for coord in df['nearest_node']]
-        else:
-            print(f"ERROR \t TAZ center is unknown.")
-            return        
-        
+        # Extract coordinates of the centroid
+        coordinates = [list(coord) for coord in df['geometric_center']] 
         num_coordinates = len(coordinates)
 
         # Check if the number of coordinates exceeds the batch size
         if num_coordinates > batch_size:
-            print(f"ALERT \t {num_coordinates} origin-destination pairs: this number is greater than the batch size set at {batch_size}. Multiple ORS requests are needed.")
+            print(f"ALERT \t {num_coordinates} origins/destinations: this number is greater than the batch size set at {batch_size}. Multiple ORS requests are needed.")
 
         # Initialize ORS client
         client = openrouteservice.Client(key=str(os.getenv("ORS_KEY")))  # Replace with your ORS API key
@@ -486,7 +479,7 @@ class MobilitySim:
 
         # Make multiple requests to the ORS API for each batch
         for i, batch in enumerate(coordinate_batches):
-            print(f"INFO \t Sending ORS request for {len(batch)} origin-destination pairs.")
+            print(f"INFO \t Sending ORS request for {len(batch)} origins/destinations.")
 
             batch_matrix = client.distance_matrix(
                 locations=batch,
@@ -521,7 +514,7 @@ class MobilitySim:
         travel_distances_euclidian = []
 
         # Populate the data based on the matrix response
-        ors_error = False
+        ors_errors = 0
         for i, origin_id in enumerate(df['id']):
             for j, destination_id in enumerate(df['id']):
                 origin_ids.append(origin_id)
@@ -542,12 +535,14 @@ class MobilitySim:
                     travel_distances.append(euclidian_distance)
                     travel_times.append(euclidian_distance / 30 * 60)
 
-                    if not ors_error:
-                        print(f"ALERT \t ORS was unable to calculate distance or resolve some locations. Using euclidian distance instead. Travel time is estimated using 30 km/h speed. This could affect the model reliability!")
-                        ors_error = True
+                    ors_errors = ors_errors + 1
+                        
                 else:
                     travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometer
                     travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
+
+        if ors_errors != 0:
+            print(f"ALERT \t ORS was unable to calculate distance or resolve {ors_errors} routes. Using euclidian distance instead and a travel time 30 km/h speed. This could affect the model reliability!")
 
         # Create the resulting DataFrame
         flow_data = {
