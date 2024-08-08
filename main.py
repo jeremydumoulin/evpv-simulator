@@ -56,20 +56,9 @@ Global parameters
 
 shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
+destinations_path = INPUT_PATH /  "workplaces.csv"
 
 taz_target_width_km = 10 # Desired TAZ width
-
-destinations = "from_osm"
-destinations_filename = INPUT_PATH / "fake_destinations.csv"
-workplaces_tags = { # Tags used to get workplaces
-            "building": ["industrial", "office"],
-            "company": [],
-            "landuse": ["industrial"],
-            "industrial": [],
-            "office": ["company", "government"],
-            "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
-        }
-
 commuting_zone_extension_km = 0
 
 share_active = 0.1
@@ -92,7 +81,7 @@ use_cached_data = True
 
 mobsim = None # Init the mobsim object for the mobility simulation 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, taz_target_width_km, destinations_filename, destinations, workplaces_tags, commuting_zone_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, taz_target_width_km, destinations_path, commuting_zone_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
 pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
@@ -109,9 +98,7 @@ else:
         population_density = population_density_path, 
         commuting_zone_extension_km = commuting_zone_extension_km, 
         taz_target_width_km = taz_target_width_km,
-        destinations = destinations,
-        destinations_filename = destinations_filename,
-        osm_tags = workplaces_tags)
+        destinations = destinations_path)
 
     # 2. Trip generation from statistics    
 

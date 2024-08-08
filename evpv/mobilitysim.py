@@ -78,16 +78,7 @@ class MobilitySim:
         population_density, 
         destinations,
         commuting_zone_extension_km = 0,
-        taz_target_width_km = 3, 
-        destinations_filename = None,
-        osm_tags = {
-            "building": ["industrial", "office"],
-            "company": [],
-            "landuse": ["industrial"],
-            "industrial": [],
-            "office": ["company", "government"],
-            "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
-        }):
+        taz_target_width_km = 3):
         
         print("---")
 
@@ -103,14 +94,7 @@ class MobilitySim:
         self.set_n_subdivisions(self.simulation_area_size / self.subdivision_size)        
 
         self.set_population_density(population_density)
-
-        if destinations == "from_osm":
-            self.set_destinations_from_osm(osm_tags)
-        elif destinations == "from_file":
-            self.set_destinations_from_file(destinations_filename)
-        else:
-            print(f"ERROR \t Parameter to define destinations is unknown. Unable to initialize MobilitySim object.")
-            return
+        self.set_destinations(destinations)
 
         self.set_traffic_zones(self.n_subdivisions)
         
@@ -230,42 +214,8 @@ class MobilitySim:
         except FileNotFoundError as e:
             print(e)
 
-    def set_destinations_from_osm(self, osm_tags):
-        """ Setter for the destinations using OSM. 
-        """       
-
-        # Extract the coordinates of the bounding box vertices
-        minx, miny, maxx, maxy = self.simulation_bbox
-        bbox_coords = [maxy, miny, maxx, minx]
-
-        print(bbox_coords)
-
-        # Amenities to extract
-        tags = osm_tags
-
-        print(f"INFO \t Getting the destinations from OSM. Tags: {tags}")
-
-        mypois = ox.features.features_from_bbox(bbox=bbox_coords, tags=tags) # the table
-
-        # Convert ways into nodes and get the coordinates of the center point - Do not store the relations
-        center_points = []
-        for index, row in mypois.iterrows():
-            if index[0] == 'way':
-                shapefile = row['geometry']
-                center_point = shapefile.centroid
-                center_points.append((center_point.x, center_point.y))
-            if index[0] == 'node':
-                center_points.append((row['geometry'].x, row['geometry'].y))
-            else:
-                break
-
-        print(len(center_points))
-
-        self.destinations = center_points
-
-
-    def set_destinations_from_file(self, csv_file_path):
-            """Setter for the destinations using a CSV file with 3 cols: latitude, longitude, weigth
+    def set_destinations(self, csv_file_path):
+            """Setter for the destinations using a CSV file with 4 cols: name, latitude, longitude, weigth
             """
             print(f"INFO \t Appending the destinations and weights from CSV file.")
 

@@ -35,7 +35,7 @@ tags = {"building": ["industrial", "office"],
         }
 
 # Define the number of rows and columns for the grid
-n_rows, n_cols = 4, 4  # Adjust these values to control the size of the chunks
+n_rows, n_cols = 10, 10  # Adjust these values to control the size of the chunks
 
 print(f"INFO \t Getting the destinations from OSM. Tags: {tags}")
 
