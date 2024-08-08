@@ -238,6 +238,8 @@ class MobilitySim:
         minx, miny, maxx, maxy = self.simulation_bbox
         bbox_coords = [maxy, miny, maxx, minx]
 
+        print(bbox_coords)
+
         # Amenities to extract
         tags = osm_tags
 
@@ -263,7 +265,7 @@ class MobilitySim:
 
 
     def set_destinations_from_file(self, csv_file_path):
-            """Setter for the destinations using a CSV file.
+            """Setter for the destinations using a CSV file with 3 cols: latitude, longitude, weigth
             """
             print(f"INFO \t Appending the destinations and weights from CSV file.")
 
@@ -278,7 +280,7 @@ class MobilitySim:
                     weight = int(row['weight'])
 
                     if weight < 1:
-                        print(f"AlERT \t Skipping {name} due to non-positive weight: {weight}")
+                        print(f"ALERT \t Skipping {name} due to non-positive weight: {weight}")
                         continue
                     
                     for _ in range(weight):
