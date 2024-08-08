@@ -457,6 +457,8 @@ class MobilitySim:
 
         ############ Get ORS data ############
 
+        print(f"INFO \t Getting ORS data")
+
         # Extract coordinates
         if taz_center == 'centroid':
             coordinates = [list(coord) for coord in df['geometric_center']]        
@@ -567,6 +569,8 @@ class MobilitySim:
 
         ############ Apply spatial interaction model ############
 
+        print(f"INFO \t Applying spatial interaction model")
+
         # Iterate over each origin and apply the model
         for origin in flows_df['Origin'].unique():
             # Filter rows for the current origin
@@ -636,7 +640,7 @@ class MobilitySim:
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list)
             else:
-                print(f"ERROR \t Spatial interaction model is unknown.")
+                print(f"ERROR \t Spatial interaction model '{model}' is unknown.")
                 return   
 
             # Update the flows column where row_id equals 1

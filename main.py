@@ -28,7 +28,6 @@ from folium.plugins import AntPath
 from folium.plugins import HeatMap
 import pickle
 
-
 from dotenv import load_dotenv
 from pathlib import Path
 import osmnx as ox
@@ -71,7 +70,7 @@ workplaces_tags = { # Tags used to get workplaces
             "amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
         }
 
-commuting_zone_extension_km = 35
+commuting_zone_extension_km = 10
 
 road_network_filter_string = '["highway"~"^(primary|secondary|tertiary)"]' # Roads used in the road network
 
@@ -81,7 +80,7 @@ share_home_office = 0.0
 mode_share = 1.0
 vehicle_occupancy = 1.2
 
-model = "gravity_exp_016"
+model = "radiation"
 attraction_feature = "population"
 cost_feature = "distance_centroid"
 taz_center = "centroid"
