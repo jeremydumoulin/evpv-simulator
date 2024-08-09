@@ -152,6 +152,31 @@ def prod_constrained_gravity_exp(origin_n_trips, dest_attractivity_list, cost_li
 
     return flows
 
+def prod_constrained_radius(origin_n_trips, dest_attractivity_list, cost_list, radius = 10):
+
+    flows = np.zeros(len(dest_attractivity_list))
+    norm_constant = .0
+
+    # Calculating raw flows and normalisation constant
+    for j in range(len(flows)):
+        if cost_list[j] == 0:
+            print(f"ALERT \t Cost function is NULL for some fluxes, setting the corresponding flux to zero", end='\r')
+            flows[j] = 0
+            attractivity_over_cost = 0
+        else:
+            if cost_list[j] <= radius:
+                attractivity_over_cost = 1
+            else:
+                attractivity_over_cost = 0
+            flows[j] = origin_n_trips * attractivity_over_cost
+
+        norm_constant += attractivity_over_cost
+
+    # Normalisation
+    flows = flows / norm_constant
+
+    return flows
+
 # Function to estimate flows from origin to destinations using a 
 # production-constrained radiation model 
 def prod_constrained_radiation(origin_n_trips, origin_attractivity, dest_attractivity_list, cost_list):

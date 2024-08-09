@@ -59,9 +59,9 @@ population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22
 destinations_path = INPUT_PATH /  "workplaces.csv"
 
 taz_target_width_km = 5 # Desired TAZ width
-commuting_zone_extension_km = 0
+simulation_area_extension_km = 0
 
-percentage_population_to_ignore = 2
+percentage_population_to_ignore = 0
 
 share_active = 0.1
 share_unemployed = 0.227
@@ -72,7 +72,7 @@ vehicle_occupancy = 1.2
 n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  mode_share / vehicle_occupancy
 
 model = "gravity_exp_016"
-attraction_feature = "destinations"
+attraction_feature = "population"
 cost_feature = "distance_centroid"
 
 use_cached_data = True
@@ -83,7 +83,7 @@ use_cached_data = True
 
 mobsim = None # Init the mobsim object for the mobility simulation 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, percentage_population_to_ignore, taz_target_width_km, destinations_path, commuting_zone_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, percentage_population_to_ignore, taz_target_width_km, destinations_path, simulation_area_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
 pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
@@ -98,7 +98,7 @@ else:
     mobsim = MobilitySim(
         target_area_shapefile = shapefile_path,
         population_density = population_density_path, 
-        commuting_zone_extension_km = commuting_zone_extension_km, 
+        simulation_area_extension_km = simulation_area_extension_km, 
         taz_target_width_km = taz_target_width_km,
         destinations = destinations_path,
         percentage_population_to_ignore = percentage_population_to_ignore)
@@ -291,25 +291,15 @@ m1.save(OUTPUT_PATH / "evpv_Result_MobilitySim_MainGeoInputs.html")
 # is, the vehicles that could potentially charge 
 # within the target area (at work or POI)
 
-# Convert the geometric_center to GeoSeries of Points
-chargedem.taz_properties['geometry'] = chargedem.taz_properties['geometric_center'].apply(lambda coords: Point(coords[0], coords[1]))
+# Filter rows where 'is_within_target_area' is equal to True
+taz_in_target_area = chargedem.taz_properties[chargedem.taz_properties['is_within_target_area'] == True]
+tot_fkt = taz_in_target_area['fkt_inflows'].sum()
+tot_n_out = taz_in_target_area['n_outflows'].sum()
+tot_n_in = taz_in_target_area['n_inflows'].sum()
 
-# Create a GeoDataFrame
-taz_properties_gdf = gpd.GeoDataFrame(chargedem.taz_properties, geometry='geometry')
-
-# Load the shapefile (geojson)
-shapefile_gdf = gpd.read_file(shapefile_path)
-
-# Ensure both GeoDataFrames use the same coordinate reference system (CRS)
-taz_properties_gdf = taz_properties_gdf.set_crs(shapefile_gdf.crs, allow_override=True)
-
-# Perform a spatial join to get only the points within the shapefile
-joined_gdf = gpd.sjoin(taz_properties_gdf, shapefile_gdf, how="inner", predicate="within")
-
-# Sum the fkt_inflows within the shapefile
-total_fkt_inflows_within_shapefile = joined_gdf['fkt_inflows'].sum()
-
-print(f"Total fkt_inflows within shapefile: {total_fkt_inflows_within_shapefile}")
+print(f"Total fkt_inflows within shapefile: {tot_fkt}")
+print(f"Total n_outflows within shapefile: {tot_n_out}")
+print(f"Total n_inflows within shapefile: {tot_n_in}")
 
 #############################################
 

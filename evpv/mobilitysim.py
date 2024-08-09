@@ -50,7 +50,7 @@ class MobilitySim:
     simulation_bbox = list()
     n_subdivisions = 0
 
-    subdivision_size = .0
+    taz_width = .0
     simulation_area_size = .0
     n_subdivisions = 0
 
@@ -77,7 +77,7 @@ class MobilitySim:
         target_area_shapefile, 
         population_density, 
         destinations,
-        commuting_zone_extension_km = 0,
+        simulation_area_extension_km = 0,
         taz_target_width_km = 3,
         percentage_population_to_ignore = .0):
         
@@ -88,11 +88,11 @@ class MobilitySim:
         self.set_target_area_shapefile(target_area_shapefile)
 
         self.set_centroid_coords()
-        self.set_simulation_bbox(commuting_zone_extension_km)
+        self.set_simulation_bbox(simulation_area_extension_km)
 
         self.set_simulation_area_size()
-        self.set_subdivision_size(taz_target_width_km)
-        self.set_n_subdivisions(self.simulation_area_size / self.subdivision_size)        
+        self.set_taz_width(taz_target_width_km)
+        self.set_n_subdivisions(self.simulation_area_size / self.taz_width)        
 
         self.set_population_density(population_density)
         self.set_destinations(destinations)
@@ -101,7 +101,7 @@ class MobilitySim:
         
         print(f"INFO \t MobilitySim object created:")
         print(f" \t - Simulation area bbox width: {self.simulation_area_size} km")
-        print(f" \t - TAZ - Width: {self.subdivision_size} km | Number: {len(self.traffic_zones)}")
+        print(f" \t - TAZ - Width: {self.taz_width} km | Number: {len(self.traffic_zones)}")
         print(f" \t - Population: {self.traffic_zones['population'].sum()}")
         print(f" \t - Destinations: {self.traffic_zones['destinations'].sum()}")
         print("---")
@@ -147,10 +147,10 @@ class MobilitySim:
         # Return the coordinates of the centroid
         self.centroid_coords = centroid.y, centroid.x
 
-    def set_simulation_bbox(self, commuting_zone_extension_km):
+    def set_simulation_bbox(self, simulation_area_extension_km):
         """ Calculate the bounding box for simulation from ORS isochrones
         """ 
-        print(f"INFO \t Extending the simulation bbox by {commuting_zone_extension_km} km")     
+        print(f"INFO \t Extending the simulation bbox by {simulation_area_extension_km} km")     
 
         # Calculate the bounding box of the target area
         geometry = self.target_area_shapefile['features'][0]['geometry']
@@ -178,7 +178,7 @@ class MobilitySim:
             
             return new_minx, new_miny, new_maxx, new_maxy
 
-        new_minx, new_miny, new_maxx, new_maxy = extend_bbox(minx, miny, maxx, maxy, commuting_zone_extension_km)
+        new_minx, new_miny, new_maxx, new_maxy = extend_bbox(minx, miny, maxx, maxy, simulation_area_extension_km)
 
         # Return the coordinates of the centroid
         self.simulation_bbox = new_minx, new_miny, new_maxx, new_maxy
@@ -188,14 +188,14 @@ class MobilitySim:
 
         self.simulation_area_size = geodesic((miny, minx), (miny, maxx)).kilometers
 
-    def set_subdivision_size(self, taz_target_width_km):
+    def set_taz_width(self, taz_target_width_km):
         # Compute the number of interger segments close to the target width
         n = round(self.simulation_area_size / taz_target_width_km)
 
         # Calculate the actual segment length
         l = self.simulation_area_size / n
 
-        self.subdivision_size = l
+        self.taz_width = l
 
     def set_population_density(self, path):
         """ Setter for the population_density attribute.
@@ -554,13 +554,19 @@ class MobilitySim:
                     origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
-                    beta = 0.3 * (self.subdivision_size*self.subdivision_size)**(-0.18) )
+                    beta = 0.3 * (self.taz_width*self.taz_width)**(-0.18) )
             elif model == 'radiation':
                 flows = hlp.prod_constrained_radiation(
                     origin_n_trips = n_outflows,
                     origin_attractivity = att_origin,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list)
+            elif model == 'radius_6km':
+                flows = hlp.prod_constrained_radius(
+                    origin_n_trips = n_outflows,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list,
+                    radius = 6)
             else:
                 print(f"ERROR \t Spatial interaction model '{model}' is unknown.")
                 return   
@@ -635,6 +641,7 @@ class MobilitySim:
             
             # Adding a sleep time to avoid hitting the rate limit
             time.sleep(1.5) 
+
 
     ############### Deprecated ################
     ###########################################

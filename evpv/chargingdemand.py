@@ -116,6 +116,7 @@ class ChargingDemand:
         taz_id = []
         geometric_center = []
         bbox = []
+        is_within_target_area = []
         n_outflows = []
         n_inflows = []
         fkt_outflows = []
@@ -128,6 +129,7 @@ class ChargingDemand:
             taz_id.append(row['id'])
             geometric_center.append(row['geometric_center'])
             bbox.append(row['bbox'])
+            is_within_target_area.append(row['is_within_target_area'])
 
             # Append values related to the origin (outflows)            
             out_df = flows[flows['Origin'] == row['id']].copy()
@@ -162,6 +164,7 @@ class ChargingDemand:
         data = {
             'id': taz_id,
             'geometric_center': geometric_center,
+            'is_within_target_area': is_within_target_area,
             'n_outflows': n_outflows,
             'n_inflows': n_inflows,
             'fkt_outflows': fkt_outflows,
