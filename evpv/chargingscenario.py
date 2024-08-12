@@ -32,7 +32,7 @@ load_dotenv() # take environment variables from .env
 INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
 OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 
-class ChargingDemand:
+class ChargingScenario:
 
     #######################################
     ############# ATTRIBUTES ##############
