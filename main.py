@@ -139,14 +139,14 @@ chargedem = ChargingScenario(
     },
     "Destination": {
         "Share": 0.1,
-        "Charging power": [30, 0.60], 
-        "Charging time": [4.0, 0.3]
+        "Charging power": [[30, 1]], 
+        "Charging time": [18, 0.2]
     }
 })
 
-time, power_profile, max_cars_plugged_in = chargedem.load_profile(mean_arrival_time = 18, std_arrival_time = 0.1, charging_power = 3)
+time, power_profile, max_cars_plugged_in = chargedem.charging_profile_origin
 
-chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_TAZProperties.csv", index=False) # Store aggregated TAZ features as csv
+chargedem.taz_properties.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand.csv", index=False) # Store aggregated TAZ features as csv
 
 #############################################
 ################ VISUALISATION ##############
@@ -394,21 +394,6 @@ folium.LayerControl().add_to(m3)
 m3.save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
 
 
-######## N cars #########
-
-# print(f"Maximum number of cars plugged in at the same time: {max_cars_plugged_in}")
-
-# plt.figure(figsize=(10, 6))
-# plt.plot(time, power_profile, label='Power Demand (MW)')
-# plt.xlabel('Time (hours)')
-# plt.ylabel('Power Demand (MW)')
-# plt.title('EV Charging Power Profile')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-
-
-
 #############################################
 ############### OTHER ANALYSIS ##############
 #############################################
@@ -419,14 +404,14 @@ m3.save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
 # within the target area (at work or POI)
 
 # Filter rows where 'is_within_target_area' is equal to True
-taz_in_target_area = chargedem.taz_properties[chargedem.taz_properties['is_within_target_area'] == True]
-tot_fkt = taz_in_target_area['fkt_inflows'].sum()
-tot_n_out = taz_in_target_area['n_outflows'].sum()
-tot_n_in = taz_in_target_area['n_inflows'].sum()
+# taz_in_target_area = chargedem.taz_properties[chargedem.taz_properties['is_within_target_area'] == True]
+# tot_fkt = taz_in_target_area['fkt_inflows'].sum()
+# tot_n_out = taz_in_target_area['n_outflows'].sum()
+# tot_n_in = taz_in_target_area['n_inflows'].sum()
 
-print(f"Total fkt_inflows within shapefile: {tot_fkt}")
-print(f"Total n_outflows within shapefile: {tot_n_out}")
-print(f"Total n_inflows within shapefile: {tot_n_in}")
+# print(f"Total fkt_inflows within shapefile: {tot_fkt}")
+# print(f"Total n_outflows within shapefile: {tot_n_out}")
+# print(f"Total n_inflows within shapefile: {tot_n_in}")
 
 #############################################
 
