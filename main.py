@@ -34,7 +34,7 @@ import osmnx as ox
 import branca.colormap as cm
 
 from evpv.mobilitysim import MobilitySim
-from evpv.chargingdemand import ChargingDemand
+from evpv.chargingscenario import ChargingScenario
 from evpv import helpers as hlp
 
 #############################################
