@@ -66,6 +66,7 @@ class ChargingScenario:
         print(f"INFO \t ChargingDemand object initialisation")
 
         self.set_mobsim(mobsim)
+
         self.set_charging_efficiency(charging_efficiency)
         self.set_ev_consumption(ev_consumption)
 
@@ -100,6 +101,11 @@ class ChargingScenario:
 
         self.mobsim = mobsim
 
+    def set_vkt_offset(self, vkt_offset):
+        """ Setter for the vkt_offset attribute.
+        """
+        self.vkt_offset = vkt_offset
+
     def set_ev_consumption(self, ev_consumption):
         self.ev_consumption = ev_consumption
 
@@ -107,9 +113,8 @@ class ChargingScenario:
         self.charging_efficiency = charging_efficiency
 
     def set_taz_properties(self):
-        """ Setter for the taz_properties attribute.
-        """
-        
+        """ Setter for the taz_properties attribute taking the vkt_offset into account.
+        """        
         self.taz_properties = self.mobsim.traffic_zones
 
     ######## Charging demand ##########

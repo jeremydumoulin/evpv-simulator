@@ -71,6 +71,7 @@ vehicle_occupancy = 1.2
 
 n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  mode_share / vehicle_occupancy
 
+vkt_offset = 5
 model = "gravity_exp_016"
 attraction_feature = "population"
 cost_feature = "distance_centroid"
@@ -83,7 +84,7 @@ use_cached_data = True
 
 mobsim = None # Init the mobsim object for the mobility simulation 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, percentage_population_to_ignore, taz_target_width_km, destinations_path, simulation_area_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
+unique_id = hlp.create_unique_id([shapefile_path, population_density_path, vkt_offset, percentage_population_to_ignore, taz_target_width_km, destinations_path, simulation_area_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
 pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
 
 # If True, try to use cached pickle object
@@ -109,7 +110,7 @@ else:
 
     # 3. Trip ditribution using SIM
 
-    mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature)
+    mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature, vkt_offset = vkt_offset)
 
     # 4. Storing data
     print("INFO \t Saving MobilitySim object to pickle file")

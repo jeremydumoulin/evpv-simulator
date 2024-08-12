@@ -385,7 +385,7 @@ class MobilitySim:
     ############ Trip Distribution ############
     ###########################################
 
-    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49):
+    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0):
         print(f"INFO \t Starting trip distribution")
 
         ############ Get TAZ data ############
@@ -607,7 +607,7 @@ class MobilitySim:
 
             # Append values related to the origin (outflows)            
             out_df = flows_df[flows_df['Origin'] == row['id']].copy()
-            out_df['Distance_Flow_Product'] = out_df['Travel Distance (km)'] * out_df['Flow']
+            out_df['Distance_Flow_Product'] = (out_df['Travel Distance (km)'] + vkt_offset) * out_df['Flow']
 
             outflow_sum = out_df['Flow'].sum()
             distance_flow_product_sum_out = out_df['Distance_Flow_Product'].sum()
@@ -621,7 +621,7 @@ class MobilitySim:
 
             # Append values related to the destination (inflows)            
             in_df = flows_df[flows_df['Destination'] == row['id']].copy()
-            in_df['Distance_Flow_Product'] = in_df['Travel Distance (km)'] * in_df['Flow']
+            in_df['Distance_Flow_Product'] = (in_df['Travel Distance (km)'] + vkt_offset) * in_df['Flow']
 
             inflow_sum = in_df['Flow'].sum()
             distance_flow_product_sum_in = in_df['Distance_Flow_Product'].sum()
