@@ -127,9 +127,22 @@ mobsim.traffic_zones.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_TrafficAnalys
 #############################################
 
 chargedem = ChargingScenario(
-    mobsim = mobsim, 
+    mobsim = [mobsim],
     ev_consumption = 0.2,
-    charging_efficiency = 0.9)
+    charging_efficiency = 0.9,
+    time_step = 0.1,
+    scenario_definition = {
+    "Origin": {
+        "Share": 0.9, # Charging location share
+        "Charging power": [[50, 0.75], [11, 0.25]], # Charging powers and shares of each charger
+        "Charging time": [18, 0.2] # Average charger plugin time and std deviation
+    },
+    "Destination": {
+        "Share": 0.1,
+        "Charging power": [30, 0.60], 
+        "Charging time": [4.0, 0.3]
+    }
+})
 
 time, power_profile, max_cars_plugged_in = chargedem.load_profile(mean_arrival_time = 18, std_arrival_time = 0.1, charging_power = 3)
 

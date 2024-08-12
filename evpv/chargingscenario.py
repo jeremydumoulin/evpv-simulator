@@ -38,8 +38,8 @@ class ChargingScenario:
     ############# ATTRIBUTES ##############
     #######################################
     
-    # Mobility Simulation
-    mobsim = None
+    # Mobility Simulations used to feed the charging model
+    mobsim = []
 
     # EV fuel consumption and charging efficiency
     ev_consumption = .0
@@ -61,16 +61,15 @@ class ChargingScenario:
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, mobsim, ev_consumption, charging_efficiency):
+    def __init__(self, mobsim, ev_consumption, charging_efficiency, time_step, scenario_definition):
         print("---")
         print(f"INFO \t ChargingDemand object initialisation")
 
         self.set_mobsim(mobsim)
+        self.set_taz_properties() # Combine TAZ properties of each mobsim into a single effective TAZ properties df
 
         self.set_charging_efficiency(charging_efficiency)
-        self.set_ev_consumption(ev_consumption)
-
-        self.set_taz_properties()
+        self.set_ev_consumption(ev_consumption)        
 
         print(f"INFO \t ChargingDemand object created")
         print(f" \t - Number of trips: {self.taz_properties['n_inflows'].sum()} (n_in) // {self.taz_properties['n_outflows'].sum()} (n_out)")
@@ -85,19 +84,20 @@ class ChargingScenario:
     def set_mobsim(self, mobsim):
         """ Setter for the mobsim attribute.
         """
-        if not isinstance(mobsim, MobilitySim):
-            print(f"ERROR \t A MobilitySim object is required as an input.")
-            return
+        for mobsim_n in mobsim:
+            if not isinstance(mobsim_n, MobilitySim):
+                print(f"ERROR \t A MobilitySim object is required as an input.")
+                return
 
-        # Check if trip generation has been performed
-        if not 'n_outflows' in mobsim.traffic_zones.columns:
-            print(f"ERROR \t MobilitySim object - Trip Generation has not been performed.")
-            return
+            # Check if trip generation has been performed
+            if not 'n_outflows' in mobsim_n.traffic_zones.columns:
+                print(f"ERROR \t MobilitySim object - Trip Generation has not been performed.")
+                return
 
-        # Check if trip generation has been performed
-        if not 'Origin' in mobsim.flows.columns:
-            print(f"ERROR \t MobilitySim object - Trip Distribution has not been performed.")
-            return
+            # Check if trip distribution has been performed
+            if not 'Origin' in mobsim_n.flows.columns:
+                print(f"ERROR \t MobilitySim object - Trip Distribution has not been performed.")
+                return
 
         self.mobsim = mobsim
 
@@ -113,9 +113,24 @@ class ChargingScenario:
         self.charging_efficiency = charging_efficiency
 
     def set_taz_properties(self):
-        """ Setter for the taz_properties attribute taking the vkt_offset into account.
-        """        
-        self.taz_properties = self.mobsim.traffic_zones
+        """ Setter for the taz_properties attribute by summing the relevant properties for each mobsim
+        """
+        # Create a list of TAZ properties
+        df_list = []
+        for mobsim_n in self.mobsim:
+            df_list.append(mobsim_n.traffic_zones)
+
+        # List of columns to sum
+        columns_to_sum = ['n_outflows', 'n_inflows', 'fkt_outflows', 'fkt_inflows', 'vkt_outflows', 'vkt_inflows']
+
+        # Initialize a DataFrame by summing the columns across all DataFrames in the list
+        summed_df = pd.concat([df[columns_to_sum] for df in df_list]).groupby(level=0).sum()
+
+        # Add back the non-summed columns from the first DataFrame (e.g., 'id')
+        result_df = df_list[0][['id', 'geometric_center', 'bbox', 'is_within_target_area']].copy()
+        result_df[columns_to_sum] = summed_df
+
+        self.taz_properties = result_df
 
     ######## Charging demand ##########
     ###################################
