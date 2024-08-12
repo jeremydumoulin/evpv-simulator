@@ -109,73 +109,8 @@ class ChargingScenario:
     def set_taz_properties(self):
         """ Setter for the taz_properties attribute.
         """
-        taz = self.mobsim.traffic_zones
-        flows = self.mobsim.flows
-
-        # Prepare lists to hold the data
-        taz_id = []
-        geometric_center = []
-        bbox = []
-        is_within_target_area = []
-        n_outflows = []
-        n_inflows = []
-        fkt_outflows = []
-        fkt_inflows = []
-        vkt_inflows = []
-        vkt_outflows = []
-
-        # Iterate over the TAZ and append data
-        for index, row in taz.iterrows():
-            taz_id.append(row['id'])
-            geometric_center.append(row['geometric_center'])
-            bbox.append(row['bbox'])
-            is_within_target_area.append(row['is_within_target_area'])
-
-            # Append values related to the origin (outflows)            
-            out_df = flows[flows['Origin'] == row['id']].copy()
-            out_df['Distance_Flow_Product'] = out_df['Travel Distance (km)'] * out_df['Flow']
-
-            outflow_sum = out_df['Flow'].sum()
-            distance_flow_product_sum_out = out_df['Distance_Flow_Product'].sum()
-
-            n_outflows.append(outflow_sum)
-            fkt_outflows.append(distance_flow_product_sum_out)
-            if outflow_sum != 0:
-                vkt_outflows.append(distance_flow_product_sum_out / outflow_sum)
-            else:
-                vkt_outflows.append(0)
-
-            # Append values related to the destination (inflows)            
-            in_df = flows[flows['Destination'] == row['id']].copy()
-            in_df['Distance_Flow_Product'] = in_df['Travel Distance (km)'] * in_df['Flow']
-
-            inflow_sum = in_df['Flow'].sum()
-            distance_flow_product_sum_in = in_df['Distance_Flow_Product'].sum()
-
-            n_inflows.append(inflow_sum)
-            fkt_inflows.append(distance_flow_product_sum_in)
-            if inflow_sum != 0:
-                vkt_inflows.append(distance_flow_product_sum_in / inflow_sum)
-            else:
-                vkt_inflows.append(0)
-
-            
-        # Create the resulting DataFrame
-        data = {
-            'id': taz_id,
-            'geometric_center': geometric_center,
-            'is_within_target_area': is_within_target_area,
-            'n_outflows': n_outflows,
-            'n_inflows': n_inflows,
-            'fkt_outflows': fkt_outflows,
-            'fkt_inflows': fkt_inflows,
-            'vkt_outflows': vkt_outflows,
-            'vkt_inflows': vkt_inflows
-        }
-
-        taz_properties= pd.DataFrame(data)    
-
-        self.taz_properties = taz_properties
+        
+        self.taz_properties = self.mobsim.traffic_zones
 
     ######## Charging demand ##########
     ###################################

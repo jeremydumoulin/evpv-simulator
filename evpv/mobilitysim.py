@@ -67,7 +67,6 @@ class MobilitySim:
     # Origin-desitnation flows 
     flows = pd.DataFrame()
 
-
     #######################################
     ############### METHODS ###############
     #######################################
@@ -593,6 +592,54 @@ class MobilitySim:
         ############ Append flow data ############
 
         self.flows = flows_df
+
+        ############ Append Aggregated data to TAZ ############
+
+        n_outflows = []
+        n_inflows = [] 
+        fkt_outflows = []
+        fkt_inflows = []
+        vkt_outflows = []
+        vkt_inflows = []
+
+        # Iterate over the TAZ and append data
+        for index, row in df.iterrows():
+
+            # Append values related to the origin (outflows)            
+            out_df = flows_df[flows_df['Origin'] == row['id']].copy()
+            out_df['Distance_Flow_Product'] = out_df['Travel Distance (km)'] * out_df['Flow']
+
+            outflow_sum = out_df['Flow'].sum()
+            distance_flow_product_sum_out = out_df['Distance_Flow_Product'].sum()
+
+            n_outflows.append(outflow_sum)
+            fkt_outflows.append(distance_flow_product_sum_out)
+            if outflow_sum != 0:
+                vkt_outflows.append(distance_flow_product_sum_out / outflow_sum)
+            else:
+                vkt_outflows.append(0)
+
+            # Append values related to the destination (inflows)            
+            in_df = flows_df[flows_df['Destination'] == row['id']].copy()
+            in_df['Distance_Flow_Product'] = in_df['Travel Distance (km)'] * in_df['Flow']
+
+            inflow_sum = in_df['Flow'].sum()
+            distance_flow_product_sum_in = in_df['Distance_Flow_Product'].sum()
+
+            n_inflows.append(inflow_sum)
+            fkt_inflows.append(distance_flow_product_sum_in)
+            if inflow_sum != 0:
+                vkt_inflows.append(distance_flow_product_sum_in / inflow_sum)
+            else:
+                vkt_inflows.append(0)
+
+        # Add a new column with values from the list
+        self.traffic_zones['n_outflows'] = n_outflows
+        self.traffic_zones['n_inflows'] = n_inflows
+        self.traffic_zones['fkt_outflows'] = fkt_outflows
+        self.traffic_zones['fkt_inflows'] = fkt_inflows
+        self.traffic_zones['vkt_outflows'] = vkt_outflows
+        self.traffic_zones['vkt_inflows'] = vkt_inflows
 
     ################# Routing #################
     ###########################################
