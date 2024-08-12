@@ -51,7 +51,9 @@ class MobilitySim:
     n_subdivisions = 0
 
     taz_width = .0
-    simulation_area_size = .0
+    taz_height = .0
+    simulation_area_width = .0
+    simulation_area_height = .0
     n_subdivisions = 0
 
     # Raw input data
@@ -90,18 +92,21 @@ class MobilitySim:
         self.set_centroid_coords()
         self.set_simulation_bbox(simulation_area_extension_km)
 
-        self.set_simulation_area_size()
+        self.set_simulation_area_width()
+        self.set_simulation_area_height()
+
         self.set_taz_width(taz_target_width_km)
-        self.set_n_subdivisions(self.simulation_area_size / self.taz_width)        
+        self.set_n_subdivisions(self.simulation_area_width / self.taz_width)  
+        self.set_taz_height()              
 
         self.set_population_density(population_density)
         self.set_destinations(destinations)
 
-        self.set_traffic_zones(self.n_subdivisions, percentage_population_to_ignore)
+        self.set_traffic_zones(percentage_population_to_ignore)
         
         print(f"INFO \t MobilitySim object created:")
-        print(f" \t - Simulation area bbox width: {self.simulation_area_size} km")
-        print(f" \t - TAZ - Width: {self.taz_width} km | Number: {len(self.traffic_zones)}")
+        print(f" \t - Simulation area - Width: {self.simulation_area_width} km | Height: {self.simulation_area_height} km")
+        print(f" \t - TAZ - Number: {len(self.traffic_zones)} | Width: {self.taz_width} km | Height: {self.taz_height} km ")
         print(f" \t - Population: {self.traffic_zones['population'].sum()}")
         print(f" \t - Destinations: {self.traffic_zones['destinations'].sum()}")
         print("---")
@@ -183,19 +188,29 @@ class MobilitySim:
         # Return the coordinates of the centroid
         self.simulation_bbox = new_minx, new_miny, new_maxx, new_maxy
 
-    def set_simulation_area_size(self):
+    def set_simulation_area_width(self):
         minx, miny, maxx, maxy = self.simulation_bbox
 
-        self.simulation_area_size = geodesic((miny, minx), (miny, maxx)).kilometers
+        self.simulation_area_width = geodesic((minx, miny), (maxx, miny)).kilometers
+
+    def set_simulation_area_height(self):
+        minx, miny, maxx, maxy = self.simulation_bbox
+
+        self.simulation_area_height = geodesic((minx, miny), (minx, maxy)).kilometers
 
     def set_taz_width(self, taz_target_width_km):
-        # Compute the number of interger segments close to the target width
-        n = round(self.simulation_area_size / taz_target_width_km)
+        # Compute the number of integer segments close to the target width
+        n = round(self.simulation_area_width / taz_target_width_km)
 
         # Calculate the actual segment length
-        l = self.simulation_area_size / n
+        l = self.simulation_area_width / n
 
         self.taz_width = l
+
+    def set_taz_height(self):
+        minx, miny, maxx, maxy = self.simulation_bbox
+
+        self.taz_height = self.simulation_area_height / self.n_subdivisions
 
     def set_population_density(self, path):
         """ Setter for the population_density attribute.
@@ -240,18 +255,19 @@ class MobilitySim:
             self.destinations = center_points            
 
 
-    def set_traffic_zones(self, num_squares, percentage_population_to_ignore = .0):
+    def set_traffic_zones(self, percentage_population_to_ignore = .0):
         """ Setter for the traffic_zones attribute.
         """
 
         print(f"INFO \t Setting up traffic analysis zones (TAZs) and associated features")
 
-        # Split the area into num_squares x num_squares zones 
+        # Split the area into n x n zones 
 
         minx, miny, maxx, maxy = self.simulation_bbox
 
-        width_bbox = geodesic((miny, minx), (miny, maxx)).kilometers
-        size_unit_cell = width_bbox / num_squares
+        width_bbox = self.simulation_area_width
+        size_unit_cell = self.taz_width
+        num_squares = self.n_subdivisions
     
         # Calculate the width and height of each zone
         width = (maxx - minx) / num_squares

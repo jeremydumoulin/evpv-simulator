@@ -54,11 +54,11 @@ OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 Global parameters 
 """
 
-shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
+shapefile_path = INPUT_PATH / "dummy_shapefile.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
 destinations_path = INPUT_PATH /  "workplaces.csv"
 
-taz_target_width_km = 5 # Desired TAZ width
+taz_target_width_km = 10 # Desired TAZ width
 simulation_area_extension_km = 0
 
 percentage_population_to_ignore = 0
@@ -75,7 +75,7 @@ model = "gravity_exp_016"
 attraction_feature = "population"
 cost_feature = "distance_centroid"
 
-use_cached_data = True
+use_cached_data = False
 
 #############################################
 ### MOBILITY SIMULATION (home-work-home) ####
@@ -197,12 +197,24 @@ def add_rectangle(row):
 # # Apply the function to each row in the DataFrame
 mobsim.traffic_zones.apply(add_rectangle, axis=1)
 
-# 6. Add Aggregated Destinations
-
 # Get TAZ data
 df = mobsim.traffic_zones
 
-# Normalize population data for color scaling
+# Add center points
+
+# Add markers
+
+for idx, row in df.iterrows():
+    lat, lon = row['geometric_center']
+    folium.Marker(
+        location=[lon, lat],
+        icon=folium.Icon(color='red'),
+        popup=f"ID: {row['id']} - ({lat}, {lon}) - Pop: {int(row['population'])} - Dest: {int(row['destinations'])}"
+    ).add_to(m1)
+
+# Add destinations
+
+# Normalize data for color scaling
 linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
 
 # Create a feature group for all polygons
@@ -229,9 +241,6 @@ for idx, row in df.iterrows():
 feature_group.add_to(m1)
 
 # 6. Add Aggregateds Population
-
-# Get TAZ data
-df = mobsim.traffic_zones
 
 # Normalize population data for color scaling
 linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
