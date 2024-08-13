@@ -89,7 +89,7 @@ class ChargingScenario:
         self.charging_profile_destination()
 
         print(f"INFO \t Charging profile:")
-        print(f" \t Max. number of vehicles charging simultaneously. At origin: {self.charging_profile_origin[2]} - At destination: {self.charging_profile_destination[2]}")
+        print(f" \t Max. number of vehicles charging simultaneously. At origin: {self.charging_profile_origin[3]} - At destination: {self.charging_profile_destination[3]}")
         print(f" \t Peak power. At origin: {np.max(self.charging_profile_origin[1])} MW - At destination: {np.max(self.charging_profile_destination[1])} MW")
 
         print("---")
@@ -185,8 +185,9 @@ class ChargingScenario:
             Etot_destination = 2 * row['fkt_inflows']*share_destination * self.ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
 
             # Average charging demand per vehicle
-            E0_origin = Etot_origin / vehicles_origin
-            E0_destination = Etot_destination / vehicles_destination
+            
+            E0_origin = (Etot_origin / vehicles_origin) if vehicles_origin > 0 else 0
+            E0_destination = (Etot_destination / vehicles_destination) if vehicles_destination > 0 else 0
 
             data.append({'id': taz_id,                
                 'bbox': bbox, 
@@ -275,7 +276,7 @@ class ChargingScenario:
         # Find the maximum number of cars plugged in at the same time
         max_cars_plugged_in = np.max(num_cars_plugged_in)
 
-        self.charging_profile_origin = time, power_demand_mwh, max_cars_plugged_in
+        self.charging_profile_origin = time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
 
     def charging_profile_destination(self):
         """ 1. Load and Understand the Data
@@ -350,7 +351,7 @@ class ChargingScenario:
         # Find the maximum number of cars plugged in at the same time
         max_cars_plugged_in = np.max(num_cars_plugged_in)
 
-        self.charging_profile_destination = time, power_demand_mwh, max_cars_plugged_in
+        self.charging_profile_destination = time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
 
 
 
