@@ -275,7 +275,7 @@ class ChargingScenario:
 
         # Find the maximum number of cars plugged in at the same time
         max_cars_plugged_in = np.max(num_cars_plugged_in)
-
+        
         self.charging_profile_origin = time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
 
     def charging_profile_destination(self):
