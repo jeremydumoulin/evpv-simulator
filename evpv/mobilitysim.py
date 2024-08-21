@@ -38,132 +38,124 @@ INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
 OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 
 class MobilitySim:
-
-    #######################################
-    ############# ATTRIBUTES ##############
-    #######################################
-    
-    # Simulation are settings 
-
-    target_area_shapefile = None
-    centroid_coords = list()
-    simulation_bbox = list()
-    n_subdivisions = 0
-
-    taz_width = .0
-    taz_height = .0
-    simulation_area_width = .0
-    simulation_area_height = .0
-    n_subdivisions = 0
-
-    # Raw input data
-
-    population_density = None
-    destinations = None
-
-    # Traffic analysis zones and associated properties 
-    traffic_zones = pd.DataFrame()
-
-    # Origin-desitnation flows 
-    flows = pd.DataFrame()
-
-    #######################################
-    ############### METHODS ###############
-    #######################################
     
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, 
-        target_area_shapefile, 
-        population_density, 
-        destinations,
-        simulation_area_extension_km = 0,
-        taz_target_width_km = 3,
-        percentage_population_to_ignore = .0):
+    def __init__(self, target_area, population_density, destinations):
+
+        # Input data
+
+        self.target_area = target_area
+        self.population_density = population_density
+        self.destinations = destinations
         
-        print("---")
+        # Transport model setup 
 
-        print(f"INFO \t MobilitySim object initialisation...")
-    
-        self.set_target_area_shapefile(target_area_shapefile)
+        self._simulation_bbox = None
+        self._taz_width = .0
 
-        self.set_centroid_coords()
-        self.set_simulation_bbox(simulation_area_extension_km)
+        # Transport model results
 
-        self.set_simulation_area_width()
-        self.set_simulation_area_height()
+        self._traffic_zones = pd.DataFrame()
+        self._flows = pd.DataFrame()
 
-        self.set_taz_width(taz_target_width_km)
-        self.set_n_subdivisions(self.simulation_area_width / self.taz_width)  
-        self.set_taz_height()              
+        print(f"INFO \t New MobilitySim object created")
 
-        self.set_population_density(population_density)
-        self.set_destinations(destinations)
+    # Target area
+    @property
+    def target_area(self):
+        return self._target_area
 
-        self.set_traffic_zones(percentage_population_to_ignore)
-        
-        print(f"INFO \t MobilitySim object created:")
-        print(f" \t - Simulation area - Width: {self.simulation_area_width} km | Height: {self.simulation_area_height} km")
-        print(f" \t - TAZ - Number: {len(self.traffic_zones)} | Width: {self.taz_width} km | Height: {self.taz_height} km ")
-        print(f" \t - Population: {self.traffic_zones['population'].sum()}")
-        print(f" \t - Destinations: {self.traffic_zones['destinations'].sum()}")
-        print("---")
+    @target_area.setter
+    def target_area(self, path):
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"ERROR \t The geojson at {path} does not exist.")
 
-    ############# Setters #############
-    ###################################
+        # Load the GeoJSON file
+        with open(path, 'r') as f:
+            geojson_data = json.load(f)
 
-    def set_target_area_shapefile(self, path):
-        """ Setter for the target_area_shapefile attribute.
-        """
-        try:
-            if not os.path.isfile(path):
-                raise FileNotFoundError(f"ERROR \t The shapefile at {path} does not exist.")
-
-            # Load the GeoJSON file
-            with open(path, 'r') as f:
-                geojson_data = json.load(f)
-
-            self.target_area_shapefile = geojson_data
-        except FileNotFoundError as e:
-            print(e)
-
-    def set_n_subdivisions(self, n_subdivisions):
-        """ Setter for n_subdivision attribute.
-        Converts the value into an int
-        """
-        try:       
-            n_subdivisions = int(n_subdivisions)
-        except Exception as e:
-            print(f"ERROR \t Impossible to convert the specified subdivisions into a int. - {e}")
-        else:            
-            self.n_subdivisions = n_subdivisions
-
-    def set_centroid_coords(self):
-        geometry = self.target_area_shapefile['features'][0]['geometry']
-
-        # Create a shapely shape
+        # Convert the GEOJSON data to a shapely object
+        geometry = geojson_data['features'][0]['geometry']
         shapely_shape = shape(geometry)
+
+        self._target_area = shapely_shape
+
+    # Population density
+    @property
+    def population_density(self):
+        return self._population_density
+
+    @population_density.setter
+    def population_density(self, path):
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"ERROR \t The population density at {path} does not exist.")
+
+        self._population_density = path
+
+    # Destinations
+    @property
+    def destinations(self):
+        return self._destinations
+
+    @destinations.setter
+    def destinations(self, path):
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"ERROR \t The CSV for destinations at {path} does not exist.")
         
+        center_points = []
+        
+        with open(path, mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                name = row['name']
+                latitude = float(row['latitude'])
+                longitude = float(row['longitude'])
+                weight = int(row['weight'])
+
+                if weight < 1:
+                    print(f"ALERT \t Skipping {name} due to non-positive weight: {weight}")
+                    continue
+                    
+                for _ in range(weight):
+                    center_points.append((longitude, latitude))
+
+        self._destinations = center_points             
+
+    # Target Area Centroid Coordinates
+    @property
+    def centroid_coords(self):    
         # Get the centroid of the shape
-        centroid = shapely_shape.centroid
+        centroid = self.target_area.centroid
         
         # Return the coordinates of the centroid
-        self.centroid_coords = centroid.y, centroid.x
+        return centroid.y, centroid.x
+
+    ###### Simulation setup ########
+    ################################
+
+    def setup_simulation(self, taz_target_width_km, simulation_area_extension_km, population_to_ignore_share):
+        print(f"INFO \t SIMULATION SETUP")
+
+        self.set_simulation_bbox(simulation_area_extension_km)
+        self.set_taz_width(taz_target_width_km)
+        self.init_taz(population_to_ignore_share)
+
+        print(f"INFO \t Simulation properties:")        
+        print(f" \t Simulation area - Width: {self.simulation_area_width} km | Height: {self.simulation_area_height} km | Pop: {self.traffic_zones['population'].sum()} | Destinations: {self.traffic_zones['destinations'].sum()}")
+        print(f" \t TAZ - Number: {len(self.traffic_zones)} | Width: {self.taz_width} km | Height: {self.taz_height} km ")
+
+    # Simulation bbox
+    @property
+    def simulation_bbox(self):
+        return self._simulation_bbox
 
     def set_simulation_bbox(self, simulation_area_extension_km):
-        """ Calculate the bounding box for simulation from ORS isochrones
-        """ 
-        print(f"INFO \t Extending the simulation bbox by {simulation_area_extension_km} km")     
-
-        # Calculate the bounding box of the target area
-        geometry = self.target_area_shapefile['features'][0]['geometry']
-
-        # Create a shapely shape
-        shapely_shape = shape(geometry)
+        print(f"INFO \t Extending the simulation bbox by {simulation_area_extension_km} km")
 
         #Get the bounding box of the shapefile defininf the target area
-        minx, miny, maxx, maxy = shapely_shape.bounds
+        minx, miny, maxx, maxy = self.target_area.bounds
 
         # Calculate the new boundaries by extending them
         def extend_bbox(minx, miny, maxx, maxy, km_extension):
@@ -185,17 +177,23 @@ class MobilitySim:
         new_minx, new_miny, new_maxx, new_maxy = extend_bbox(minx, miny, maxx, maxy, simulation_area_extension_km)
 
         # Return the coordinates of the centroid
-        self.simulation_bbox = new_minx, new_miny, new_maxx, new_maxy
+        self._simulation_bbox = new_minx, new_miny, new_maxx, new_maxy
 
-    def set_simulation_area_width(self):
+    # Simulation Area: Width and Height
+    @property
+    def simulation_area_width(self):
         minx, miny, maxx, maxy = self.simulation_bbox
+        return geodesic((minx, miny), (maxx, miny)).kilometers
 
-        self.simulation_area_width = geodesic((minx, miny), (maxx, miny)).kilometers
-
-    def set_simulation_area_height(self):
+    @property
+    def simulation_area_height(self):
         minx, miny, maxx, maxy = self.simulation_bbox
+        return geodesic((minx, miny), (minx, maxy)).kilometers
 
-        self.simulation_area_height = geodesic((minx, miny), (minx, maxy)).kilometers
+    # TAZ: Width, Height, Number of zones
+    @property
+    def taz_width(self):
+        return self._taz_width
 
     def set_taz_width(self, taz_target_width_km):
         # Compute the number of integer segments close to the target width
@@ -204,60 +202,22 @@ class MobilitySim:
         # Calculate the actual segment length
         l = self.simulation_area_width / n
 
-        self.taz_width = l
+        self._taz_width = l
 
-    def set_taz_height(self):
-        minx, miny, maxx, maxy = self.simulation_bbox
+    @property
+    def taz_height(self):
+        return self.simulation_area_height / self.n_subdivisions
 
-        self.taz_height = self.simulation_area_height / self.n_subdivisions
+    @property
+    def n_subdivisions(self):
+        return int(self.simulation_area_width / self.taz_width)
 
-    def set_population_density(self, path):
-        """ Setter for the population_density attribute.
-        """
-        try:
-            if not os.path.isfile(path):
-                raise FileNotFoundError(f"ERROR \t The population density at {path} does not exist.")
+    # TAZ Initialization
+    @property
+    def traffic_zones(self):
+        return self._traffic_zones
 
-            with rasterio.open(path) as dataset:
-                # Read the first band
-                band1 = dataset.read(1)
-
-                hlp.crop_raster(path, self.simulation_bbox, OUTPUT_PATH / "population_density_cropped.tiff")
-
-            self.population_density = OUTPUT_PATH / "population_density_cropped.tiff"
-
-        except FileNotFoundError as e:
-            print(e)
-
-    def set_destinations(self, csv_file_path):
-            """Setter for the destinations using a CSV file with 4 cols: name, latitude, longitude, weigth
-            """
-            print(f"INFO \t Appending the destinations and weights from CSV file.")
-
-            center_points = []
-
-            with open(csv_file_path, mode='r') as csv_file:
-                csv_reader = csv.DictReader(csv_file)
-                for row in csv_reader:
-                    name = row['name']
-                    latitude = float(row['latitude'])
-                    longitude = float(row['longitude'])
-                    weight = int(row['weight'])
-
-                    if weight < 1:
-                        print(f"ALERT \t Skipping {name} due to non-positive weight: {weight}")
-                        continue
-                    
-                    for _ in range(weight):
-                        center_points.append((longitude, latitude))
-
-            self.destinations = center_points            
-
-
-    def set_traffic_zones(self, percentage_population_to_ignore = .0):
-        """ Setter for the traffic_zones attribute.
-        """
-
+    def init_taz(self, population_to_ignore_share = .0):
         print(f"INFO \t Setting up traffic analysis zones (TAZs) and associated features")
 
         # Split the area into n x n zones 
@@ -321,7 +281,7 @@ class MobilitySim:
 
                 # 5. Check if the TAZ is inside the target area
                 
-                shapefile_geometry = shape(self.target_area_shapefile['features'][0]['geometry'])
+                shapefile_geometry = self.target_area
                 center_point = Point((center_lat, center_lon))
 
                 # Check if the point is within the MultiPolygon
@@ -334,14 +294,14 @@ class MobilitySim:
         df = pd.DataFrame(grid_data)
 
         # Delete the sparsely TAZs, such that the sum of the less populated is below a threshold
-        if percentage_population_to_ignore > .0:
+        if population_to_ignore_share  > .0 and population_to_ignore_share  < 1.0:
             print(f"INFO \t Deleting sparsely populated TAZs")
 
             # Calculate the total population
             total_population = df['population'].sum()
 
             # Calculate the population limit based on the percentage
-            population_limit = (percentage_population_to_ignore / 100) * total_population
+            population_limit = population_to_ignore_share * total_population
 
             # Sort by population in ascending order
             df = df.sort_values(by='population')
@@ -358,14 +318,14 @@ class MobilitySim:
             # Optionally, remove the cumulative_population column
             df = df.drop(columns=['cumulative_population'])
 
-        self.traffic_zones = pd.DataFrame(df)
+        self._traffic_zones = pd.DataFrame(df)
 
 
     ############# Trip Generation #############
     ###########################################
 
     def trip_generation(self, n_trips_per_inhabitant):
-        print(f"INFO \t Starting trip generation")
+        print(f"INFO \t TRIP GENERATION")
 
         if n_trips_per_inhabitant <= .0:
             print(f"ERROR \t Trips per inhabitant must be greater than 0")
@@ -378,15 +338,15 @@ class MobilitySim:
         # Calculate the number of trips and append them to the df
         df['n_outflows'] = df['population'].apply( lambda x: int(x * n_trips_per_inhabitant) )
 
-        self.traffic_zones = df
+        self._traffic_zones = df
 
-        print(f"INFO \t Trip generation done. Data has been appended to the traffic_zones attribute. Trip distribution required!")
+        print(f"INFO \t Trip generation done. Total number of trips: {df['n_outflows'].sum()} ")
 
     ############ Trip Distribution ############
     ###########################################
 
     def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0):
-        print(f"INFO \t Starting trip distribution")
+        print(f"INFO \t TRIP DISTRIBUTION")
 
         ############ Get TAZ data ############
 
@@ -591,7 +551,7 @@ class MobilitySim:
 
         ############ Append flow data ############
 
-        self.flows = flows_df
+        self._flows = flows_df
 
         ############ Append Aggregated data to TAZ ############
 
@@ -634,12 +594,18 @@ class MobilitySim:
                 vkt_inflows.append(0)
 
         # Add a new column with values from the list
-        self.traffic_zones['n_outflows'] = n_outflows
-        self.traffic_zones['n_inflows'] = n_inflows
-        self.traffic_zones['fkt_outflows'] = fkt_outflows
-        self.traffic_zones['fkt_inflows'] = fkt_inflows
-        self.traffic_zones['vkt_outflows'] = vkt_outflows
-        self.traffic_zones['vkt_inflows'] = vkt_inflows
+        self._traffic_zones['n_outflows'] = n_outflows
+        self._traffic_zones['n_inflows'] = n_inflows
+        self._traffic_zones['fkt_outflows'] = fkt_outflows
+        self._traffic_zones['fkt_inflows'] = fkt_inflows
+        self._traffic_zones['vkt_outflows'] = vkt_outflows
+        self._traffic_zones['vkt_inflows'] = vkt_inflows
+
+        print(f"INFO \t Trip distribution done. FKT: {self.traffic_zones['fkt_outflows'].sum()} km | Av. VKT: {self.traffic_zones['fkt_inflows'].sum() / self.traffic_zones['n_inflows'].sum()} km")
+
+    @property
+    def flows(self):
+        return self._flows
 
     ################# Routing #################
     ###########################################
@@ -704,62 +670,4 @@ class MobilitySim:
             
             # Adding a sleep time to avoid hitting the rate limit
             time.sleep(1.5) 
-
-
-    ############### Deprecated ################
-    ###########################################
-
-    # def set_road_network(self, road_network_filter_string):
-    #     """ Setter for the road_network attribute.
-    #     """     
-
-    #     # Convert to the format required by osmnx: north, south, east, west
-    #     minx, miny, maxx, maxy = self.simulation_bbox
-    #     north, south, east, west = maxy, miny, maxx, minx
-
-    #     graphml_file = OUTPUT_PATH / "road_network.graphml"
-
-    #     # Define the filter string to keep only motorways and primary roads
-    #     filter_string = road_network_filter_string
-
-    #     print(f"INFO \t Getting the road network from OSM. Applied filter: {filter_string}")
-
-    #     ox.settings.use_cache=False
-    #     #ox.config(use_cache=False)
-
-    #     # Check if the GraphML file exists
-    #     if os.path.exists(graphml_file):
-    #         # Load the graph from the GraphML file
-    #         G = ox.load_graphml(graphml_file)
-            
-    #         # Extract the bounding box from the loaded graph
-    #         loaded_north, loaded_south, loaded_east, loaded_west = hlp.get_graph_bbox(G)
-
-    #         # Round to decimal places to ignore small differences
-    #         decimals = 2
-
-    #         loaded_bbox = (round(loaded_north, decimals), round(loaded_south, decimals),
-    #                round(loaded_east, decimals), round(loaded_west, decimals))
-
-    #         bbox = (round(north, decimals), round(south, decimals),
-    #                round(east, decimals), round(west, decimals))
-            
-    #         # Compare the bounding boxes
-    #         if bbox == loaded_bbox:
-    #             print(f"\t -> Found a graphml file with road network. Reusing existing data.")
-    #         else:
-    #             print(f"\t -> Found a graphml file with road network but the bounding box does not match. Downloading new data.")
-    #             #G = ox.graph_from_bbox(north, south, east, west, network_type='drive')
-    #             G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='drive', custom_filter=filter_string)
-
-    #             ox.save_graphml(G, graphml_file)
-
-    #     else:
-    #         # Download and extract the road network within the bounding box
-    #         G = ox.graph_from_bbox(bbox = (north, south, east, west), network_type='all', custom_filter=filter_string)
-
-    #         # Save the graph to a GraphML file
-    #         ox.save_graphml(G, graphml_file)
-
-    #     self.road_network = G
         

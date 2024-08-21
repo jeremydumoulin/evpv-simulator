@@ -55,7 +55,7 @@ Global parameters
 """
 
 shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
-population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22.tif" # Population density raster
+population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif" # Population density raster
 destinations_path = INPUT_PATH /  "workplaces.csv"
 
 taz_target_width_km = 3 # Desired TAZ width
@@ -76,7 +76,7 @@ model = "gravity_exp_016"
 attraction_feature = "destinations"
 cost_feature = "distance_road"
 
-use_cached_data = True
+use_cached_data = False
 
 #############################################
 ### MOBILITY SIMULATION (home-work-home) ####
@@ -97,12 +97,16 @@ else:
     # 1. MobilitySim object initialization 
 
     mobsim = MobilitySim(
-        target_area_shapefile = shapefile_path,
+        target_area = shapefile_path,
         population_density = population_density_path, 
-        simulation_area_extension_km = simulation_area_extension_km, 
-        taz_target_width_km = taz_target_width_km,
-        destinations = destinations_path,
-        percentage_population_to_ignore = percentage_population_to_ignore)
+        destinations = destinations_path)
+
+    # Setup the simulation
+
+    mobsim.setup_simulation(
+        taz_target_width_km = 5, 
+        simulation_area_extension_km = 0, 
+        population_to_ignore_share = 0.05)
 
     # 2. Trip generation from statistics    
 
