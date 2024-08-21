@@ -84,15 +84,14 @@ use_cached_data = False
 
 # MobilitySim 
 
-if os.path.isfile(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl"):
+if os.path.isfile(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl") and use_cached_data:
     mobsim = MobilitySim.from_pickle(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl")
-        
+
 else:
     mobsim = MobilitySim(
         target_area = shapefile_path,
         population_density = population_density_path, 
-        destinations = destinations_path,
-        pickle_file = OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl")
+        destinations = destinations_path)
 
     mobsim.setup_simulation(taz_target_width_km = 5, simulation_area_extension_km = 0, population_to_ignore_share = 0.05)
     mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)     

@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import json
-import warnings
 import os
 import rasterio
 from rasterio.mask import mask
@@ -21,10 +20,7 @@ from shapely.ops import transform, nearest_points, snap
 import pyproj
 from pyproj import Geod
 from geopy.distance import geodesic, distance
-import osmnx as ox
-import networkx as nx
 import openrouteservice
-import requests
 import time
 import math
 import csv
@@ -35,7 +31,7 @@ from evpv import helpers as hlp
 class MobilitySim:
     ############ Class Methods ############
     #######################################
-    
+
     @classmethod
     def from_pickle(cls, pickle_file):
         with open(pickle_file, 'rb') as f:
