@@ -20,7 +20,6 @@ from shapely.geometry import shape, LineString, Point, Polygon, box, MultiPoint
 from shapely.ops import transform, nearest_points, snap
 import pyproj
 from pyproj import Geod
-from dotenv import load_dotenv
 from geopy.distance import geodesic, distance
 import osmnx as ox
 import networkx as nx
@@ -31,11 +30,6 @@ import math
 import csv
 
 from evpv import helpers as hlp
-
-load_dotenv() # take environment variables from .env
-
-INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
-OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 
 class MobilitySim:
     
