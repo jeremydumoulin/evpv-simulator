@@ -76,7 +76,7 @@ model = "gravity_exp_016"
 attraction_feature = "destinations"
 cost_feature = "distance_road"
 
-use_cached_data = False
+use_cached_data = True
 
 #############################################
 ## MOBILITY SIMULATION 1 (home-work-home) ###
@@ -99,7 +99,7 @@ else:
 
     mobsim.to_pickle(OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache.pkl")
 
-# 4. Storing outputs
+# Storing outputs
 
 # All flows and TAZ properties
 
@@ -110,6 +110,11 @@ mobsim.traffic_zones.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_TrafficAnalys
 
 vkt_distribution = mobsim.vkt_histogram(n_bins = 200)
 vkt_distribution.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_VKThistogram.csv", index=False)
+
+# Maps
+#mobsim.setup_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_SimulationSetup.html")
+mobsim.trip_generation_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripGeneration.html")
+mobsim.trip_distribution_to_map(trip_id = "4_4").save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
 
 #############################################
 ############### CHARGING NEEDS ##############
@@ -153,6 +158,7 @@ df = pd.DataFrame({
 
 # Save to CSV
 df.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile.csv", index=False)
+
 #############################################
 ################ VISUALISATION ##############
 #############################################
@@ -160,243 +166,14 @@ df.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile.csv", index=Fal
 ###### Folium map with main geo inputs ######
 #############################################
 
-# 1. Create an empty map
-m1 = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
-
-# 2. Add administrative boundaries
-
-# Define style function to only show lines
-def style_function(feature):
-    return {
-        'color': 'blue',  # Set line color
-        'weight': 3,      # Set line weight
-        'fillColor': 'none',  # Set fill color to 'none'
-    }
-
-folium.GeoJson(mobsim.target_area_shapefile['features'][0]['geometry'], name='Administrative boundary', style_function=style_function).add_to(m1)
-
-# 3. Add Simulation bbox
-
-minx, miny, maxx, maxy = mobsim.simulation_bbox
-
-# Create a rectangle using the bounding box coordinates
-rectangle = folium.Rectangle(
-    bounds=[[miny, minx], [maxy, maxx]],
-    fill=True,  # Fill the rectangle
-    fill_opacity=0,  # Set the opacity of the fill color
-    color='blue',  # Border color
-    weight=2,  # Border width
-)
-
-# Create a feature group to hold the rectangle and give it a name
-feature_group = folium.FeatureGroup(name='Simulation Area')
-rectangle.add_to(feature_group)
-feature_group.add_to(m1)
-
-# 4. Add Population data
-
-m1 = hlp.add_raster_to_folium(mobsim.population_density, m1)
-
-# 5. Add TAZs
-
-# Function to add rectangles to the map
-def add_rectangle(row):
-    # Parse the WKT string to create a Polygon object
-    bbox_polygon = row['bbox']
-    bbox_coords = bbox_polygon.bounds
-    
-    # Add rectangle to map
-    folium.Rectangle(
-        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color='grey',
-        fill=True,
-        fill_color='grey',
-        fill_opacity=0.0
-    ).add_to(m1)
-
-# # Apply the function to each row in the DataFrame
-mobsim.traffic_zones.apply(add_rectangle, axis=1)
-
-# Get TAZ data
-df = mobsim.traffic_zones
-
-# Add center points
-
-# Add markers
-
-for idx, row in df.iterrows():
-    lat, lon = row['geometric_center']
-    folium.Marker(
-        location=[lon, lat],
-        icon=folium.Icon(color='red'),
-        popup=f"ID: {row['id']} - ({lat}, {lon}) - Pop: {int(row['population'])} - Dest: {int(row['destinations'])}"
-    ).add_to(m1)
-
-# Add destinations
-
-# Normalize data for color scaling
-linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
-
-# Create a feature group for all polygons
-feature_group = folium.FeatureGroup(name='Destinations')
-
-# Add polygons to the feature group
-for idx, row in df.iterrows():
-    bbox_polygon = row['bbox']
-    bbox_coords = bbox_polygon.bounds
-
-    # Create a rectangle for each row
-    rectangle = folium.Rectangle(
-        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color=None,
-        fill=True,
-        fill_color=linear(row['destinations']),
-        fill_opacity=0.7,
-    )
-
-    # Add the rectangle to the feature group
-    rectangle.add_to(feature_group)
-
-# Add the feature group to the map
-feature_group.add_to(m1)
-
-# 6. Add Aggregateds Population
-
-# Normalize population data for color scaling
-linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
-
-# Create a feature group for all polygons
-feature_group = folium.FeatureGroup(name='Population')
-
-# Add polygons to the feature group
-for idx, row in df.iterrows():
-    bbox_polygon = row['bbox']
-    bbox_coords = bbox_polygon.bounds
-
-    # Create a rectangle for each row
-    rectangle = folium.Rectangle(
-        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color=None,
-        fill=True,
-        fill_color=linear(row['population']),
-        fill_opacity=0.7,
-    )
-
-    # Add the rectangle to the feature group
-    rectangle.add_to(feature_group)
-
-# Add the feature group to the map
-feature_group.add_to(m1)
-
-# Add Layer Control and Save 
-
-folium.LayerControl().add_to(m1)
-m1.save(OUTPUT_PATH / "evpv_Result_MobilitySim_MainGeoInputs.html")
 
 ###### Folium map with trip generation ######
 #############################################
 
-# 1. Create an empty map
-m2 = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
 
-# 2. Add TAZ boundaries
-
-# Function to add rectangles to the map
-def add_rectangle(row):
-    # Parse the WKT string to create a Polygon object
-    bbox_polygon = row['bbox']
-    bbox_coords = bbox_polygon.bounds
-    
-    # Add rectangle to map
-    folium.Rectangle(
-        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color='grey',
-        fill=True,
-        fill_color='grey',
-        fill_opacity=0.0
-    ).add_to(m2)
-
-# Apply the function to each row in the DataFrame
-mobsim.traffic_zones.apply(add_rectangle, axis=1)
-
-# 3. Add number of outflows
-
-# Normalize data for color scaling
-linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['n_outflows'].min(), vmax=df['n_outflows'].max())
-
-# Create a feature group for all polygons
-feature_group = folium.FeatureGroup(name='Number of trips')
-
-# Add polygons to the feature group
-for idx, row in df.iterrows():
-    bbox_polygon = row['bbox']
-    bbox_coords = bbox_polygon.bounds
-
-    # Create a rectangle for each row
-    rectangle = folium.Rectangle(
-        bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-        color=None,
-        fill=True,
-        fill_color=linear(row['n_outflows']),
-        fill_opacity=0.7,
-        popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
-    )
-
-    # Add the rectangle to the feature group
-    rectangle.add_to(feature_group)
-
-# Add the feature group to the map
-feature_group.add_to(m2)
-
-# Add the color scale legend to the map
-linear.caption = 'Number of Trips (n_outflows)'
-linear.add_to(m2)
-
-# Add Layer Control and Save 
-
-folium.LayerControl().add_to(m2)
-m2.save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripGeneration.html")
 
 ##### Folium map with trip distribution #####
 #############################################
-
-# 1. Create an empty map
-
-m3 = folium.Map(location=mobsim.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
-
-# 2. Group the dataframe by Origin
-
-grouped = mobsim.flows.groupby('Origin')
-
-# 3. Iterate over each origin and create a FeatureGroup
-
-for origin_id, group in grouped:
-    feature_group = folium.FeatureGroup(name=f'Origin: {origin_id}')
-    
-    # Add flows to the feature group
-    for idx, row in group.iterrows():
-        linear = cm.LinearColormap(["white", "yellow", "red"], vmin=group['Flow'].min(), vmax=group['Flow'].max())
-
-        bbox_polygon = mobsim.traffic_zones[mobsim.traffic_zones['id'] == row['Destination']]['bbox'].values[0]
-        #print(bbox_polygon[1])
-        bbox_coords = bbox_polygon.bounds
-
-        folium.Rectangle(
-            bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-            color=None,
-            fill=True,
-            fill_color=linear(row.Flow),
-            fill_opacity=0.7,
-            tooltip=f'Commuters: {row.Flow} - Car trips: {row.Flow} '
-        ).add_to(feature_group)
-    
-    # Add the feature group to the map
-    feature_group.add_to(m3)
-
-# Add Layer Control and Save
-
-folium.LayerControl().add_to(m3)
-m3.save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
 
 ########## Charging needs per TAZ ###########
 #############################################
