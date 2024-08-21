@@ -28,22 +28,31 @@ import requests
 import time
 import math
 import csv
+import pickle
 
 from evpv import helpers as hlp
 
 class MobilitySim:
+    ############ Class Methods ############
+    #######################################
+    
+    @classmethod
+    def from_pickle(cls, pickle_file):
+        with open(pickle_file, 'rb') as f:
+            obj = pickle.load(f)
+            print(f"INFO \t MobilitySim object loaded from pickle file")
+            return obj
     
     ############# Constructor #############
     ####################################### 
 
     def __init__(self, target_area, population_density, destinations):
-
         # Input data
 
         self.target_area = target_area
         self.population_density = population_density
         self.destinations = destinations
-        
+            
         # Transport model setup 
 
         self._simulation_bbox = None
@@ -678,5 +687,13 @@ class MobilitySim:
             flows.at[index, 'Geometry'] = geometry
             
             # Adding a sleep time to avoid hitting the rate limit
-            time.sleep(1.5) 
+            time.sleep(1.5)
+
+    ########### Save to pickle ############
+    #######################################
+
+    def to_pickle(self, pickle_filename):
+        print("INFO \t Saving MobilitySim object to pickle file")
+        with open(pickle_filename, 'wb') as file:
+            pickle.dump(self, file)  
         

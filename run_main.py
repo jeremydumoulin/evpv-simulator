@@ -82,41 +82,23 @@ use_cached_data = False
 ### MOBILITY SIMULATION (home-work-home) ####
 #############################################
 
-mobsim = None # Init the mobsim object for the mobility simulation 
+# MobilitySim 
 
-unique_id = hlp.create_unique_id([shapefile_path, population_density_path, vkt_offset, percentage_population_to_ignore, taz_target_width_km, destinations_path, simulation_area_extension_km, share_active, share_unemployed, share_home_office, mode_share, vehicle_occupancy, model, attraction_feature, cost_feature]) # Unique ID from input variables - ensures that we redo the simulation
-pickle_filename = OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache_{unique_id}.pkl" # Unique pickle filename usinb
-
-# If True, try to use cached pickle object
-if use_cached_data and os.path.isfile(pickle_filename): 
-    print("INFO \t Mobility simulation: loading object from pickle file...")
-    with open(pickle_filename, 'rb') as file:
-        mobsim = pickle.load(file)
-
+if os.path.isfile(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl"):
+    mobsim = MobilitySim.from_pickle(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl")
+        
 else:
-    # 1. MobilitySim object initialization 
-
     mobsim = MobilitySim(
         target_area = shapefile_path,
         population_density = population_density_path, 
-        destinations = destinations_path)
-
-    # Setup the simulation
+        destinations = destinations_path,
+        pickle_file = OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl")
 
     mobsim.setup_simulation(taz_target_width_km = 5, simulation_area_extension_km = 0, population_to_ignore_share = 0.05)
-
-    # 2. Trip generation from statistics    
-
-    mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)       
-
-    # 3. Trip ditribution using SIM
-
+    mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)     
     mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature, vkt_offset = vkt_offset)
 
-    # 4. Storing data
-    print("INFO \t Saving MobilitySim object to pickle file")
-    with open(pickle_filename, 'wb') as file:
-        pickle.dump(mobsim, file)
+    mobsim.to_pickle(OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache.pkl")
 
 # 4. Storing outputs
 
