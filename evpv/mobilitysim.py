@@ -29,6 +29,7 @@ import pickle
 from evpv import helpers as hlp
 
 class MobilitySim:
+    #######################################
     ############ Class Methods ############
     #######################################
 
@@ -38,7 +39,8 @@ class MobilitySim:
             obj = pickle.load(f)
             print(f"INFO \t MobilitySim object loaded from pickle file")
             return obj
-    
+
+    #######################################
     ############# Constructor #############
     ####################################### 
 
@@ -134,8 +136,9 @@ class MobilitySim:
         # Return the coordinates of the centroid
         return centroid.y, centroid.x
 
-    ###### Simulation setup ########
-    ################################
+    #######################################
+    ######### Simulation setup ############
+    #######################################
 
     def setup_simulation(self, taz_target_width_km, simulation_area_extension_km, population_to_ignore_share):
         print(f"INFO \t SIMULATION SETUP")
@@ -324,9 +327,9 @@ class MobilitySim:
 
         self._traffic_zones = pd.DataFrame(df)
 
-
-    ############# Trip Generation #############
-    ###########################################
+    #######################################
+    ########## Trip Generation ############
+    #######################################
 
     def trip_generation(self, n_trips_per_inhabitant):
         print(f"INFO \t TRIP GENERATION")
@@ -351,10 +354,11 @@ class MobilitySim:
         print(f"INFO \t Trip generation done. Make sure to rerun trip distribution if needed.")
         print(f"\t Total number of trips: {df['n_outflows'].sum()}")
 
-    ############ Trip Distribution ############
-    ###########################################
+    #######################################
+    ######## Trip Distribution ############
+    #######################################
 
-    def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0):
+    def trip_distribution(self, model, ors_key, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0):
         print(f"INFO \t TRIP DISTRIBUTION")
 
         if self.state != "generation_done":
@@ -382,7 +386,7 @@ class MobilitySim:
             print(f"ALERT \t {num_coordinates} origins/destinations: this number is greater than the batch size set at {batch_size}. Multiple ORS requests are needed.")
 
         # Initialize ORS client
-        client = openrouteservice.Client(key=str(os.getenv("ORS_KEY")))  # Replace with your ORS API key
+        client = openrouteservice.Client(key=ors_key)  # Replace with your ORS API key
 
         # Split the coordinates into manageable batches
         coordinate_batches = [coordinates[i:i+batch_size] for i in range(0, len(coordinates), batch_size)]
@@ -618,10 +622,11 @@ class MobilitySim:
     def flows(self):
         return self._flows
 
-    ################# Routing #################
-    ###########################################
+    #######################################
+    ############## Routing ################
+    #######################################
 
-    def allocate_routes(self):
+    def allocate_routes(self, ors_key):
         print(f"INFO \t Allocation of ORS routes to origin-destination pairs (routing)")
 
         if self.state != "distribution_done":
@@ -634,7 +639,7 @@ class MobilitySim:
         flows['Geometry'] = None
 
         # Initialize ORS client
-        client = openrouteservice.Client(key=str(os.getenv("ORS_KEY")))  # Replace with your ORS API key
+        client = openrouteservice.Client(key=ors_key)  # Replace with your ORS API key
 
         # Create a dictionary to store previously calculated routes (avoids recalculating when origin and destination are swapped)
         route_cache = {}
@@ -685,11 +690,37 @@ class MobilitySim:
             # Adding a sleep time to avoid hitting the rate limit
             time.sleep(1.5)
 
-    ########### Save to pickle ############
+    #######################################
+    ############ Save to pickle ###########
     #######################################
 
     def to_pickle(self, pickle_filename):
         print("INFO \t Saving MobilitySim object to pickle file")
         with open(pickle_filename, 'wb') as file:
-            pickle.dump(self, file)  
+            pickle.dump(self, file)
+
+    #######################################
+    ### Post-processing & visualisation ###
+    #######################################
+
+    def vkt_histogram(self, n_bins):
+        centroid_distance = self.flows['Centroid Distance (km)']
+        travel_distance = self.flows['Travel Distance (km)']
+        weights = self.flows['Flow']
+
+        # Calculate the histogram
+        centroid_distance_counts, bin_edges = np.histogram(centroid_distance, bins=n_bins, weights=weights)
+        travel_distance_counts, bin_edges = np.histogram(travel_distance, bins=n_bins, weights=weights)
+
+        # Calculate the bin centers (optional)
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+        # Create a DataFrame to store the bin centers and counts
+        hist_df = pd.DataFrame({
+            'Distance (km)': bin_centers,
+            'Centroid ': centroid_distance_counts,
+            'Travel (road)': travel_distance_counts
+        })
+
+        return hist_df
         

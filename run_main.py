@@ -79,7 +79,7 @@ cost_feature = "distance_road"
 use_cached_data = False
 
 #############################################
-### MOBILITY SIMULATION (home-work-home) ####
+## MOBILITY SIMULATION 1 (home-work-home) ###
 #############################################
 
 # MobilitySim 
@@ -95,7 +95,7 @@ else:
 
     mobsim.setup_simulation(taz_target_width_km = 5, simulation_area_extension_km = 0, population_to_ignore_share = 0.05)
     mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)     
-    mobsim.trip_distribution(model = model, attraction_feature = attraction_feature, cost_feature = cost_feature, vkt_offset = vkt_offset)
+    mobsim.trip_distribution(model = model, ors_key = os.getenv("ORS_KEY"), attraction_feature = attraction_feature, cost_feature = cost_feature, vkt_offset = vkt_offset)
 
     mobsim.to_pickle(OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache.pkl")
 
@@ -108,26 +108,8 @@ mobsim.traffic_zones.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_TrafficAnalys
 
 # Histogram of VKTs 
 
-centroid_distance = mobsim.flows['Centroid Distance (km)']
-travel_distance = mobsim.flows['Travel Distance (km)']
-weights = mobsim.flows['Flow']
-
-# Calculate the histogram
-centroid_distance_counts, bin_edges = np.histogram(centroid_distance, bins=200, weights=weights)
-travel_distance_counts, bin_edges = np.histogram(travel_distance, bins=200, weights=weights)
-
-# Calculate the bin centers (optional)
-bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-
-# Create a DataFrame to store the bin centers and counts
-hist_df = pd.DataFrame({
-    'Distance (km)': bin_centers,
-    'Centroid ': centroid_distance_counts,
-    'Travel (road)': travel_distance_counts
-})
-
-# Save to CSV
-hist_df.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_DistanceDistribution.csv", index=False)
+vkt_distribution = mobsim.vkt_histogram(n_bins = 200)
+vkt_distribution.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_VKThistogram.csv", index=False)
 
 #############################################
 ############### CHARGING NEEDS ##############
