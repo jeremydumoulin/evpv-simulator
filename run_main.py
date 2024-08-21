@@ -103,10 +103,7 @@ else:
 
     # Setup the simulation
 
-    mobsim.setup_simulation(
-        taz_target_width_km = 5, 
-        simulation_area_extension_km = 0, 
-        population_to_ignore_share = 0.05)
+    mobsim.setup_simulation(taz_target_width_km = 5, simulation_area_extension_km = 0, population_to_ignore_share = 0.05)
 
     # 2. Trip generation from statistics    
 

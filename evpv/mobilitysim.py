@@ -54,6 +54,9 @@ class MobilitySim:
         self._traffic_zones = pd.DataFrame()
         self._flows = pd.DataFrame()
 
+        # Track the state of the object 
+        self.state = 'created'  
+
         print(f"INFO \t New MobilitySim object created")
 
     # Target area
@@ -136,7 +139,9 @@ class MobilitySim:
         self.set_taz_width(taz_target_width_km)
         self.init_taz(population_to_ignore_share)
 
-        print(f"INFO \t Simulation properties:")        
+        self.state = "initialized"
+
+        print(f"INFO \t Simulation setup done. Make sure to rerun trip generation and distribution if needed.")        
         print(f" \t Simulation area - Width: {self.simulation_area_width} km | Height: {self.simulation_area_height} km | Pop: {self.traffic_zones['population'].sum()} | Destinations: {self.traffic_zones['destinations'].sum()}")
         print(f" \t TAZ - Number: {len(self.traffic_zones)} | Width: {self.taz_width} km | Height: {self.taz_height} km ")
 
@@ -321,9 +326,11 @@ class MobilitySim:
     def trip_generation(self, n_trips_per_inhabitant):
         print(f"INFO \t TRIP GENERATION")
 
+        if self.state != "initialized":
+            raise RuntimeError(f"ERROR \t Trip generation must be performed right after simulation setup")
+
         if n_trips_per_inhabitant <= .0:
-            print(f"ERROR \t Trips per inhabitant must be greater than 0")
-            return
+            raise ValueError(f"ERROR \t Trips per inhabitant must be greater than 0")
 
         # Load the traffic_zones dataframe
 
@@ -334,13 +341,19 @@ class MobilitySim:
 
         self._traffic_zones = df
 
-        print(f"INFO \t Trip generation done. Total number of trips: {df['n_outflows'].sum()} ")
+        self.state = "generation_done"
+
+        print(f"INFO \t Trip generation done. Make sure to rerun trip distribution if needed.")
+        print(f"\t Total number of trips: {df['n_outflows'].sum()}")
 
     ############ Trip Distribution ############
     ###########################################
 
     def trip_distribution(self, model, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0):
         print(f"INFO \t TRIP DISTRIBUTION")
+
+        if self.state != "generation_done":
+            raise RuntimeError(f"ERROR \t Trip distribution must be performed right after trip generation")
 
         ############ Get TAZ data ############
 
@@ -479,8 +492,7 @@ class MobilitySim:
                 att_origin = self.traffic_zones.loc[self.traffic_zones['id'] == origin_id , 'destinations'].values[0]
                 dest_att_list = origin_rows['Destination'].apply(lambda x: self.traffic_zones.loc[self.traffic_zones['id'] == x, 'destinations'].values[0]).tolist()
             else:
-                print(f"ERROR \t Attraction feature is unknown.")
-                return
+                raise ValueError(f"ERROR \t Attraction feature is unknown.")
 
             # SIM input: cost
             if cost_feature == 'distance_road':
@@ -490,8 +502,7 @@ class MobilitySim:
             elif cost_feature == 'distance_centroid':
                 cost_list = origin_rows['Centroid Distance (km)'].tolist() # Extract the "Centroid Distance (km)" column into a list
             else:
-                print(f"ERROR \t Cost feature is unknown.")
-                return        
+                raise ValueError(f"ERROR \t Cost feature is unknown.")  
 
             # Calculate the flows depending on the model 
             if model == 'gravity_power_1':
@@ -537,8 +548,7 @@ class MobilitySim:
                     cost_list = cost_list,
                     radius = 6)
             else:
-                print(f"ERROR \t Spatial interaction model '{model}' is unknown.")
-                return   
+                raise ValueError(f"ERROR \t Spatial interaction model '{model}' is unknown.")
 
             # Update the flows column where row_id equals 1
             flows_df.loc[flows_df['Origin'] == origin_id, 'Flow'] = flows[:len(flows_df.loc[flows_df['Origin'] == origin_id])]
@@ -595,6 +605,8 @@ class MobilitySim:
         self._traffic_zones['vkt_outflows'] = vkt_outflows
         self._traffic_zones['vkt_inflows'] = vkt_inflows
 
+        self.state = "distribution_done"
+
         print(f"INFO \t Trip distribution done. FKT: {self.traffic_zones['fkt_outflows'].sum()} km | Av. VKT: {self.traffic_zones['fkt_inflows'].sum() / self.traffic_zones['n_inflows'].sum()} km")
 
     @property
@@ -606,6 +618,9 @@ class MobilitySim:
 
     def allocate_routes(self):
         print(f"INFO \t Allocation of ORS routes to origin-destination pairs (routing)")
+
+        if self.state != "distribution_done":
+            raise RuntimeError(f"ERROR \t Routing cannot be performed before trip distribution")
 
         flows = self.flows
         taz = self.traffic_zones
