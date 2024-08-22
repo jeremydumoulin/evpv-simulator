@@ -60,8 +60,7 @@ destinations_path = INPUT_PATH /  "workplaces.csv"
 
 taz_target_width_km = 3 # Desired TAZ width
 simulation_area_extension_km = 0
-
-percentage_population_to_ignore = 0
+population_to_ignore = 0
 
 share_active = 0.1
 share_unemployed = 0.227
@@ -93,11 +92,15 @@ else:
         population_density = population_density_path, 
         destinations = destinations_path)
 
-    mobsim.setup_simulation(taz_target_width_km = 5, simulation_area_extension_km = 0, population_to_ignore_share = 0.05)
+    mobsim.setup_simulation(taz_target_width_km = taz_target_width_km, simulation_area_extension_km = simulation_area_extension_km, population_to_ignore_share = population_to_ignore)
     mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)     
     mobsim.trip_distribution(model = model, ors_key = os.getenv("ORS_KEY"), attraction_feature = attraction_feature, cost_feature = cost_feature, vkt_offset = vkt_offset)
 
     mobsim.to_pickle(OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache.pkl")
+
+# Printing FKT and VKT
+print(f"FKT = ({mobsim.fkt} +/- {mobsim.fkt_error}) km")
+print(f"VKT = ({mobsim.vkt} +/- {mobsim.vkt_error}) km")
 
 # Storing outputs
 

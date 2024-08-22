@@ -137,8 +137,12 @@ class EVPVSynergies:
         return result / self.pv_production(day)
 
     def excess_pv_ratio(self, day='01-01'):
+        coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
+        result, error = integrate.quad(coincident_power, 0, 24)
 
-        return 1 - self.self_consumption_ratio(day)
+        pv_prod = self.pv_production(day)
+
+        return (pv_prod - result) / pv_prod
 
     def spearman_correlation(self, day='01-01', n_points = 100): 
         # Define the range and resolution

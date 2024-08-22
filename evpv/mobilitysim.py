@@ -618,11 +618,30 @@ class MobilitySim:
 
         self.state = "distribution_done"
 
-        print(f"INFO \t Trip distribution done. FKT: {self.traffic_zones['fkt_outflows'].sum()} km | Av. VKT: {self.traffic_zones['fkt_inflows'].sum() / self.traffic_zones['n_inflows'].sum()} km")
+        print(f"INFO \t Trip distribution done. FKT: {self.fkt} km | Av. VKT: {self.vkt} km")
 
     @property
     def flows(self):
         return self._flows
+
+    @property
+    def fkt(self):
+        return self.traffic_zones['fkt_outflows'].sum()
+
+    @property
+    def fkt_error(self):
+        flows = self.flows['Flow']
+        flows_squared = flows ** 2
+
+        return 2 * np.sqrt(self.taz_width**2 + self.taz_height**2) * np.sqrt(flows_squared.sum()) # Assuming the error on the distance of each trip is 2 times the diagonal of TAZ (Error propagation)
+
+    @property
+    def vkt_error(self):
+        return self.vkt * (self.fkt_error / self.fkt)
+
+    @property
+    def vkt(self):
+        return self.fkt / self.traffic_zones['n_outflows'].sum()
 
     #######################################
     ############## Routing ################
