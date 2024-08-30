@@ -360,7 +360,7 @@ class MobilitySim:
     ######## Trip Distribution ############
     #######################################
 
-    def trip_distribution(self, model, ors_key, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0):
+    def trip_distribution(self, model, ors_key = None, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0, road_to_euclidian_ratio = 1.63):
         print(f"INFO \t TRIP DISTRIBUTION")
 
         if self.state != "generation_done":
@@ -375,52 +375,58 @@ class MobilitySim:
             print(f"ERROR \t Traffic Analysis Zones do not contain the number of trips: trip generation must be performed before trip distribution.")
             return
 
-        ############ Get ORS data ############
+        ############ Get Road Distance ############
 
-        print(f"INFO \t Getting ORS data")
+        print(f"INFO \t Getting road distance")
 
         # Extract coordinates of the centroid
         coordinates = [list(coord) for coord in df['geometric_center']] 
         num_coordinates = len(coordinates)
 
-        # Check if the number of coordinates exceeds the batch size
-        if num_coordinates > batch_size:
-            print(f"ALERT \t {num_coordinates} origins/destinations: this number is greater than the batch size set at {batch_size}. Multiple ORS requests are needed.")
-
-        # Initialize ORS client
-        client = openrouteservice.Client(key=ors_key)  # Replace with your ORS API key
-
-        # Split the coordinates into manageable batches
-        coordinate_batches = [coordinates[i:i+batch_size] for i in range(0, len(coordinates), batch_size)]
-
         # Initialize the full matrices
         durations = np.zeros((num_coordinates, num_coordinates))
         distances = np.zeros((num_coordinates, num_coordinates))
 
-        # Make multiple requests to the ORS API for each batch
-        for i, batch in enumerate(coordinate_batches):
-            print(f"INFO \t Sending ORS request for {len(batch)} origins/destinations.")
+        # If the user provides an ORS key
+        if not ors_key == None:
+            print(f"INFO \t Calculating distance by road using ORS matrix request")
 
-            batch_matrix = client.distance_matrix(
-                locations=batch,
-                profile='driving-car',
-                metrics=['duration', 'distance'],
-                resolve_locations=True
-            )
-            
-            # Extract travel times and distances from the response
-            batch_durations = batch_matrix['durations']
-            batch_distances = batch_matrix['distances']
-            
-            # Determine the range of indices for this batch
-            batch_start = i * batch_size
-            batch_end = batch_start + len(batch)
-            
-            # Populate the corresponding section of the full matrices
-            durations[batch_start:batch_end, batch_start:batch_end] = batch_durations
-            distances[batch_start:batch_end, batch_start:batch_end] = batch_distances
-            
-            time.sleep(2)  # Introduce a delay between requests to avoid rate limiting
+            # Check if the number of coordinates exceeds the batch size
+            if num_coordinates > batch_size:
+                print(f"ALERT \t {num_coordinates} origins/destinations: this number is greater than the batch size set at {batch_size}. Multiple ORS requests are needed.")
+
+            # Initialize ORS client
+            client = openrouteservice.Client(key=ors_key)  # Replace with your ORS API key
+
+            # Split the coordinates into manageable batches
+            coordinate_batches = [coordinates[i:i+batch_size] for i in range(0, len(coordinates), batch_size)]
+
+            # Make multiple requests to the ORS API for each batch
+            for i, batch in enumerate(coordinate_batches):
+                print(f"INFO \t Sending ORS request for {len(batch)} origins/destinations.")
+
+                batch_matrix = client.distance_matrix(
+                    locations=batch,
+                    profile='driving-car',
+                    metrics=['duration', 'distance'],
+                    resolve_locations=True
+                )
+                
+                # Extract travel times and distances from the response
+                batch_durations = batch_matrix['durations']
+                batch_distances = batch_matrix['distances']
+                
+                # Determine the range of indices for this batch
+                batch_start = i * batch_size
+                batch_end = batch_start + len(batch)
+                
+                # Populate the corresponding section of the full matrices
+                durations[batch_start:batch_end, batch_start:batch_end] = batch_durations
+                distances[batch_start:batch_end, batch_start:batch_end] = batch_distances
+                
+                time.sleep(2)  # Introduce a delay between requests to avoid rate limiting
+        else:
+            print(f"INFO \t Distance by road calculated using empirical road-to-euclidian ratio equal to {road_to_euclidian_ratio}")
 
         # Define constants for distance and time within two points located in the same zone
         minx, miny, maxx, maxy = self.simulation_bbox
@@ -433,7 +439,7 @@ class MobilitySim:
         travel_distances = []
         travel_distances_euclidian = []
 
-        # Populate the data based on the matrix response
+        # Populate the data based on the matrix response or on the road/euclidian distance ratio
         ors_errors = 0
         for i, origin_id in enumerate(df['id']):
             for j, destination_id in enumerate(df['id']):
@@ -442,7 +448,7 @@ class MobilitySim:
 
                 flows.append(0.0)  # Placeholded for the flow for all origin-destination pairs                
 
-                # Euclidian travel distance 
+                # Calculate euclidian travel distance and append data
                 point1 = df.loc[df['id'] == origin_id, 'geometric_center'].iloc[0]
                 point2 = df.loc[df['id'] == destination_id, 'geometric_center'].iloc[0]
 
@@ -450,19 +456,23 @@ class MobilitySim:
 
                 travel_distances_euclidian.append(euclidian_distance)
 
-                # Check if ors errors. Display only once
+                # For all zero distances (the case for all combinations if ORS calculation has not been performed)
                 if (math.isnan(distances[i][j]) or distances[i][j] == .0) and (origin_id != destination_id):
-                    travel_distances.append(euclidian_distance)
-                    travel_times.append(euclidian_distance / 30 * 60)
+                    distance = euclidian_distance * road_to_euclidian_ratio
 
-                    ors_errors = ors_errors + 1
+                    travel_distances.append(euclidian_distance * road_to_euclidian_ratio)
+                    travel_times.append(distance / 30 * 60)
+
+                    # If ors calculation was done, calculate the number of unresolved locations
+                    if ors_key != None:
+                        ors_errors = ors_errors + 1
                         
                 else:
                     travel_distances.append(distances[i][j] / 1000)  # Convert meters to kilometer
                     travel_times.append(durations[i][j] / 60)  # Convert seconds to minutes
 
-        if ors_errors != 0:
-            print(f"ALERT \t ORS was unable to calculate distance or resolve {ors_errors} routes. Using euclidian distance instead and a travel speed of 30 km/h. This could affect the model reliability!")
+        if ors_errors:
+            print(f"ALERT \t ORS was unable to calculate distance or resolve {ors_errors} routes. Using road to euclidian distance ratio instead and a travel speed of 30 km/h. This could affect the model reliability!")
 
         # Create the resulting DataFrame
         flow_data = {
@@ -534,6 +544,12 @@ class MobilitySim:
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 0.1)
+            elif model == 'gravity_exp_02':
+                flows = hlp.prod_constrained_gravity_exp(
+                    origin_n_trips = n_outflows,
+                    dest_attractivity_list = dest_att_list,                
+                    cost_list = cost_list, 
+                    beta = 0.2)
             elif model == 'gravity_exp_016':
                 flows = hlp.prod_constrained_gravity_exp(
                     origin_n_trips = n_outflows,
@@ -545,7 +561,7 @@ class MobilitySim:
                     origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
-                    beta = 0.3 * (self.taz_width*self.taz_width)**(-0.18) )
+                    beta = 0.3 * (self.taz_width*self.taz_height)**(-0.18) )
             elif model == 'radiation':
                 flows = hlp.prod_constrained_radiation(
                     origin_n_trips = n_outflows,
@@ -618,7 +634,8 @@ class MobilitySim:
 
         self.state = "distribution_done"
 
-        print(f"INFO \t Trip distribution done. FKT: {self.fkt} km | Av. VKT: {self.vkt} km")
+        print(f"INFO \t Trip distribution done. FKT by road: {self.fkt} km | Av. VKT by road: {self.vkt} km")
+        print(f"INFO \t Trip distribution done. FKT centroid: {self.fkt_centroid} km | Av. VKT centroid: {self.vkt_centroid} km")
 
     @property
     def flows(self):
@@ -627,6 +644,10 @@ class MobilitySim:
     @property
     def fkt(self):
         return self.traffic_zones['fkt_outflows'].sum()
+
+    @property
+    def fkt_centroid(self):
+        return self.flows['Centroid Distance (km)'].dot(self.flows['Flow'])  
 
     @property
     def fkt_error(self):
@@ -642,6 +663,10 @@ class MobilitySim:
     @property
     def vkt(self):
         return self.fkt / self.traffic_zones['n_outflows'].sum()
+
+    @property
+    def vkt_centroid(self):
+        return np.average(self.flows['Centroid Distance (km)'], weights=self.flows['Flow'])
 
     #######################################
     ############## Routing ################
@@ -811,18 +836,18 @@ class MobilitySim:
 
         # Add markers
 
-        for idx, row in df.iterrows():
-            lat, lon = row['geometric_center']
-            folium.Marker(
-                location=[lon, lat],
-                icon=folium.Icon(color='red'),
-                popup=f"ID: {row['id']} - ({lat}, {lon}) - Pop: {int(row['population'])} - Dest: {int(row['destinations'])}"
-            ).add_to(m1)
+        # for idx, row in df.iterrows():
+        #     lat, lon = row['geometric_center']
+        #     folium.Marker(
+        #         location=[lon, lat],
+        #         icon=folium.Icon(color='red'),
+        #         popup=f"ID: {row['id']} - ({lat}, {lon}) - Pop: {int(row['population'])} - Dest: {int(row['destinations'])}"
+        #     ).add_to(m1)
 
         # Add destinations
 
         # Normalize data for color scaling
-        linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
+        linear1 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
 
         # Create a feature group for all polygons
         feature_group = folium.FeatureGroup(name='Destinations')
@@ -837,7 +862,7 @@ class MobilitySim:
                 bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
                 color=None,
                 fill=True,
-                fill_color=linear(row['destinations']),
+                fill_color=linear1(row['destinations']),
                 fill_opacity=0.7,
             )
 
@@ -850,7 +875,7 @@ class MobilitySim:
         # 6. Add Aggregateds Population
 
         # Normalize population data for color scaling
-        linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
+        linear2 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
 
         # Create a feature group for all polygons
         feature_group = folium.FeatureGroup(name='Population')
@@ -865,7 +890,7 @@ class MobilitySim:
                 bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
                 color=None,
                 fill=True,
-                fill_color=linear(row['population']),
+                fill_color=linear2(row['population']),
                 fill_opacity=0.7,
             )
 
@@ -874,6 +899,13 @@ class MobilitySim:
 
         # Add the feature group to the map
         feature_group.add_to(m1)
+
+        # Add the color scale legend to the map
+        linear1.caption = 'Number of destinations'
+        linear1.add_to(m1)
+
+        linear2.caption = 'Number of people'
+        linear2.add_to(m1)
 
         # Add Layer Control and Save 
 
@@ -952,6 +984,18 @@ class MobilitySim:
         print(f"INFO \t Generating folium map using trip distribution for trip id {trip_id}")        
 
         m3 = folium.Map(location=self.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+        # Add administrative boundaries
+
+        # Define style function to only show lines
+        def style_function(feature):
+            return {
+                'color': 'blue',  # Set line color
+                'weight': 3,      # Set line weight
+                'fillColor': 'none',  # Set fill color to 'none'
+            }
+
+        folium.GeoJson(self.target_area, name='Administrative boundary', style_function=style_function).add_to(m3)
 
         # Add TAZ boundaries
 

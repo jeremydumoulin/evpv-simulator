@@ -21,17 +21,13 @@ from shapely.geometry import shape, LineString, Point, Polygon, box, MultiPoint
 from shapely.ops import transform, nearest_points, snap
 import pyproj
 from pyproj import Geod
-from dotenv import load_dotenv
 import math
 import matplotlib.pyplot as plt
+import folium
+import branca.colormap as cm
 
 from evpv import helpers as hlp
 from evpv.mobilitysim import MobilitySim
-
-load_dotenv() # take environment variables from .env
-
-INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
-OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
 
 class ChargingScenario:
 
@@ -354,4 +350,282 @@ class ChargingScenario:
         self.charging_profile_destination = time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
 
 
+    #######################################
+    ### Post-processing & visualisation ###
+    #######################################
 
+    def chargingdemand_total_to_map(self):
+        df = self.charging_demand
+
+        # 1. Create an empty map
+
+        m = folium.Map(location=self.mobsim[0].centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+        # 2. Add TAZ boundaries
+
+        # Function to add rectangles to the map
+        def add_rectangle(row):
+            # Parse the WKT string to create a Polygon object
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+            
+            # Add rectangle to map
+            folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color='grey',
+                fill=True,
+                fill_color='grey',
+                fill_opacity=0.0
+            ).add_to(m)
+
+        # Apply the function to each row in the DataFrame
+        df.apply(add_rectangle, axis=1)
+
+        # 3. Charging AT ORIGIN
+
+        # Normalize data for color scaling
+        linear = cm.LinearColormap(["#edf8b1", "#7fcdbb", "#2c7fb8"], vmin=0, vmax=max(df['Etot_origin_kWh'].max(), df['Etot_destination_kWh'].max()) )
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Charging demand at Origin')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['Etot_origin_kWh']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # 4. Charging AT DESTINATION
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Charging demand at Destination')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['Etot_destination_kWh']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # Add the color scale legend to the map
+        linear.caption = 'Charging demand (kWh)'
+        linear.add_to(m)
+
+        # Add Layer Control and Save 
+
+        folium.LayerControl().add_to(m)
+
+        return m
+
+    def chargingdemand_pervehicle_to_map(self):
+        df = self.charging_demand
+
+        # 1. Create an empty map
+
+        m = folium.Map(location=self.mobsim[0].centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+        # 2. Add TAZ boundaries
+
+        # Function to add rectangles to the map
+        def add_rectangle(row):
+            # Parse the WKT string to create a Polygon object
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+            
+            # Add rectangle to map
+            folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color='grey',
+                fill=True,
+                fill_color='grey',
+                fill_opacity=0.0
+            ).add_to(m)
+
+        # Apply the function to each row in the DataFrame
+        df.apply(add_rectangle, axis=1)
+
+        # 3. Charging AT ORIGIN
+
+        # Normalize data for color scaling
+        linear = cm.LinearColormap(["#edf8b1", "#7fcdbb", "#2c7fb8"], vmin=0, vmax=max(df['E0_origin_kWh'].max(),df['E0_destination_kWh'].max()) )
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Charging need per vehicle at Origin')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['E0_origin_kWh']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # 4. Charging AT DESTINATION
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Charging need per vehicle at Destination')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['E0_destination_kWh']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # Add the color scale legend to the map
+        linear.caption = 'Charging needs (kWh/car)'
+        linear.add_to(m)
+
+        # Add Layer Control and Save 
+
+        folium.LayerControl().add_to(m)
+
+        return m
+
+    def chargingdemand_nvehicles_to_map(self):
+        df = self.charging_demand
+
+        # 1. Create an empty map
+
+        m = folium.Map(location=self.mobsim[0].centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+        # 2. Add TAZ boundaries
+
+        # Function to add rectangles to the map
+        def add_rectangle(row):
+            # Parse the WKT string to create a Polygon object
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+            
+            # Add rectangle to map
+            folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color='grey',
+                fill=True,
+                fill_color='grey',
+                fill_opacity=0.0
+            ).add_to(m)
+
+        # Apply the function to each row in the DataFrame
+        df.apply(add_rectangle, axis=1)
+
+        # 3. Charging AT ORIGIN
+
+        # Normalize data for color scaling
+        linear = cm.LinearColormap(["#edf8b1", "#7fcdbb", "#2c7fb8"], vmin=0, vmax=max(df['n_vehicles_origin'].max(), df['n_vehicles_destination'].max()) )
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Number of vehicles charging at Origin')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['n_vehicles_origin']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # 4. Charging AT DESTINATION
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Number of vehicles charging at Destination')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['n_vehicles_destination']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # Add the color scale legend to the map
+        linear.caption = 'Number of vehicles'
+        linear.add_to(m)
+
+        # Add Layer Control and Save 
+
+        folium.LayerControl().add_to(m)
+
+        return m

@@ -42,7 +42,8 @@ repository = https://gitlab.epfl.ch/PVLAB/SYSTEM/openmod4africa/gtfs4ev
 
 ### Open tasks
 
-- [ ] Find out why the OSMNX function to find the nearest road shows a warning 
+- [ ] Check whw ORS struggles with routing when the TAZ are getting small
+- [ ] Speed up routing when using the road to euclidian ratio
 
 ### Backlog
 
