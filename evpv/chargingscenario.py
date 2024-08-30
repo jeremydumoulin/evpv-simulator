@@ -298,7 +298,10 @@ class ChargingScenario:
                 num_cars_plugged_in[:end_idx] += 1
 
             if charging_duration <= self.time_step:
-                print("ALERT \t Charging duration is smaller than the timestep, this may lead to inaccurate results")
+                print("ALERT \t Charging duration is smaller than the timestep. This may lead to inaccurate results")
+
+            if (self.scenario_definition['Destination']['Charging time'][0] - 0.5) < end_time < self.scenario_definition['Destination']['Charging time'][0]:
+                print("ALERT \t Charging ends later than 30 min before average arrival time at destination. ")
 
         # Convert power demand to MWh
         power_demand_mwh = power_demand / 1000  # converting kW to MW
@@ -374,6 +377,10 @@ class ChargingScenario:
 
             if charging_duration <= self.time_step:
                 print("ALERT \t Charging duration is smaller than the timestep, this may lead to inaccurate results")
+
+            if (self.scenario_definition['Origin']['Charging time'][0] - 0.5) < end_time < self.scenario_definition['Origin']['Charging time'][0]:
+                print("ALERT \t Charging ends later than 30 min before average arrival time at origin. ")
+
 
         # Convert power demand to MWh
         power_demand_mwh = power_demand / 1000  # converting kW to MW

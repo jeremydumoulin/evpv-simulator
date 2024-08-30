@@ -129,15 +129,15 @@ cs = ChargingScenario(
     mobsim = [mobsim],
     ev_consumption = 0.2,
     charging_efficiency = 0.9,
-    time_step = 1/60,
+    time_step = 1/10,
     scenario_definition = {
     "Origin": {
-        "Share": 0.0, # Charging location share
-        "Charging power": [[3, 1.0]], # Charging powers and shares of each charger
+        "Share": 1.0, # Charging location share
+        "Charging power": [[11, 1.0]], # Charging powers and shares of each charger
         "Charging time": [18, 2] # Average charger plugin time and std deviation
     },
     "Destination": {
-        "Share": 1.0,
+        "Share": 0.0,
         "Charging power": [[70, 1.0]], 
         "Charging time": [9, 2]
     }
