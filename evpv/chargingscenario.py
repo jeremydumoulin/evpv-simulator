@@ -30,73 +30,49 @@ from evpv import helpers as hlp
 from evpv.mobilitysim import MobilitySim
 
 class ChargingScenario:
-
     #######################################
-    ############# ATTRIBUTES ##############
-    #######################################
-    
-    # Mobility Simulations used to feed the charging model
-    mobsim = []
-
-    # EV fuel consumption and charging efficiency
-    ev_consumption = .0
-    charging_efficiency = .0
-
-    # Charging scenario definition
-    charging_scenario = {}
-
-    # Outputs
-    taz_properties = pd.DataFrame() # Relevant properties from Mobility Simulation for each TAZ    
-    charging_demand = pd.DataFrame() # Charging need distribution across TAZs
-    charging_profile_origin = None # Charging curve for EVs 
-    charging_profile_destination = None # Charging curve for EVs 
-
-    #######################################
-    ############### METHODS ###############
-    #######################################
-    
     ############# Constructor #############
-    ####################################### 
+    #######################################
 
     def __init__(self, mobsim, ev_consumption, charging_efficiency, time_step, scenario_definition):
-        print("---")
-        print(f"INFO \t ChargingDemand object initialisation")
+        self.mobsim = mobsim
+        self.taz_properties = mobsim # Combine TAZ properties of each mobsim into a single effective TAZ properties df
 
-        self.set_mobsim(mobsim)
-        self.set_taz_properties() # Combine TAZ properties of each mobsim into a single effective TAZ properties df
+        self.charging_efficiency =charging_efficiency
+        self.ev_consumption = ev_consumption
 
-        self.set_charging_efficiency(charging_efficiency)
-        self.set_ev_consumption(ev_consumption)
+        self.time_step = time_step
+        self.scenario_definition = scenario_definition
 
-        self.set_time_step(time_step)
-        self.set_scenario_definition(scenario_definition)        
+        # Modeling results
 
-        print(f"INFO \t ChargingDemand object created")
+        self._charging_demand = pd.DataFrame()
+        self._charging_profile = pd.DataFrame()    
+
+        # Printing results
+
+        print(f"INFO \t ChargingDemand object created.")
         print(f" \t Number of trips: {self.taz_properties['n_inflows'].sum()} (n_in) // {self.taz_properties['n_outflows'].sum()} (n_out)")
         print(f" \t FKT (origin to destination): {self.taz_properties['fkt_inflows'].sum()} km")
-        print(f" \t Average VKT (origin to destination): {self.taz_properties['fkt_inflows'].sum() / self.taz_properties['n_inflows'].sum()} km")
+        print(f" \t Average VKT (origin to destination): {self.taz_properties['fkt_inflows'].sum() / self.taz_properties['n_inflows'].sum()} km")  
 
-        self.charging_demand()
+        # Printing results
+        self.spatial_charging_demand()
+        self.temporal_charging_demand()      
+        
 
-        print(f" \t Charging demand. At origin: {self.charging_demand['Etot_origin_kWh'].sum()} kWh - At destination: {self.charging_demand['Etot_destination_kWh'].sum()} kWh")
-        print(f" \t Vehicles charging. At origin: {self.charging_demand['n_vehicles_origin'].sum()} - At destination: {self.charging_demand['n_vehicles_destination'].sum()}")
+    #######################################
+    ###### Main Setters and Getters #######
+    #######################################
 
-        self.charging_profile_origin()
-        self.charging_profile_destination()
+    # Mobism
+    @property
+    def mobsim(self):
+        return self._mobsim
 
-        print(f"INFO \t Charging profile:")
-        print(f" \t Max. number of vehicles charging simultaneously. At origin: {self.charging_profile_origin[3]} - At destination: {self.charging_profile_destination[3]}")
-        print(f" \t Peak power. At origin: {np.max(self.charging_profile_origin[1])} MW - At destination: {np.max(self.charging_profile_destination[1])} MW")
-
-        print("---")
-
-    ############# Setters #############
-    ###################################
-
-    def set_mobsim(self, mobsim):
-        """ Setter for the mobsim attribute.
-        """
-        for mobsim_n in mobsim:
+    @mobsim.setter
+    def mobsim(self, mobsims):
+        for mobsim_n in mobsims:
             if not isinstance(mobsim_n, MobilitySim):
                 print(f"ERROR \t A MobilitySim object is required as an input.")
                 return
@@ -111,25 +87,18 @@ class ChargingScenario:
                 print(f"ERROR \t MobilitySim object - Trip Distribution has not been performed.")
                 return
 
-        self.mobsim = mobsim
+        self._mobsim = mobsims
 
-    def set_vkt_offset(self, vkt_offset):
-        """ Setter for the vkt_offset attribute.
-        """
-        self.vkt_offset = vkt_offset
+    # TAZ Properties
+    @property
+    def taz_properties(self):
+        return self._taz_properties
 
-    def set_ev_consumption(self, ev_consumption):
-        self.ev_consumption = ev_consumption
-
-    def set_charging_efficiency(self, charging_efficiency):
-        self.charging_efficiency = charging_efficiency
-
-    def set_taz_properties(self):
-        """ Setter for the taz_properties attribute by summing the relevant properties for each mobsim
-        """
+    @taz_properties.setter
+    def taz_properties(self, mobsim):
         # Create a list of TAZ properties
         df_list = []
-        for mobsim_n in self.mobsim:
+        for mobsim_n in mobsim:
             df_list.append(mobsim_n.traffic_zones)
 
         # List of columns to sum
@@ -142,22 +111,50 @@ class ChargingScenario:
         result_df = df_list[0][['id', 'geometric_center', 'bbox', 'is_within_target_area']].copy()
         result_df[columns_to_sum] = summed_df
 
-        self.taz_properties = result_df
+        self._taz_properties = result_df
 
-    def set_time_step(self, time_step):
-        """ Setter for the time_step property
-        """
-        self.time_step = time_step
+    # EV Consumption
+    @property
+    def ev_consumption(self):
+        return self._ev_consumption
 
-    def set_scenario_definition(self, scenario_definition):
-        """ Setter for the scenario_definition property
-        """
-        self.scenario_definition = scenario_definition
+    @ev_consumption.setter
+    def ev_consumption(self, ev_consumption_value):
+        self._ev_consumption = ev_consumption_value
 
-    ####### Charging Scenario #########
-    ###################################
-    def charging_demand(self):
-        print(f"INFO \t Computing the charging demand distribution")
+    # Charging Efficiency
+    @property
+    def charging_efficiency(self):
+        return self._charging_efficiency
+
+    @charging_efficiency.setter
+    def charging_efficiency(self, charging_efficiency_value):
+        self._charging_efficiency = charging_efficiency_value
+
+    # Time step
+    @property
+    def time_step(self):
+        return self._time_step
+
+    @time_step.setter
+    def time_step(self, time_step_value):
+        self._time_step = time_step_value
+
+    # Scenario definition
+    @property
+    def scenario_definition(self):
+        return self._scenario_definition
+
+    @scenario_definition.setter
+    def scenario_definition(self, scenario_definition_value):
+        self._scenario_definition= scenario_definition_value
+
+    #######################################
+    ####### Spatial Charging Demand #######
+    #######################################
+
+    def spatial_charging_demand(self):
+        print(f"INFO \t Computing the spatial charging demand for each TAZ")
 
         # Inputs
         share_origin = self.scenario_definition['Origin']['Share']
@@ -195,16 +192,53 @@ class ChargingScenario:
                 'Etot_origin_kWh': Etot_origin,
                 'Etot_destination_kWh': Etot_destination})
 
-        df = pd.DataFrame(data)
+        df = pd.DataFrame(data)        
         
-        self.charging_demand = df
+        self._charging_demand = df
 
-    def charging_profile_origin(self):
+        print(f" \t Charging demand. At origin: {self.charging_demand['Etot_origin_kWh'].sum()} kWh - At destination: {self.charging_demand['Etot_destination_kWh'].sum()} kWh")
+        print(f" \t Vehicles charging. At origin: {self.charging_demand['n_vehicles_origin'].sum()} - At destination: {self.charging_demand['n_vehicles_destination'].sum()}")
+
+    @property
+    def charging_demand(self):
+        return self._charging_demand
+
+    #######################################
+    ###### Temporal Charging Demand #######
+    #######################################
+
+    def temporal_charging_demand(self):
+        print(f"INFO \t Evaluating temporal charging profile")
+
+        time_origin, power_profile_origin, num_cars_plugged_in_origin, max_cars_plugged_in_origin = self.eval_charging_profile_origin()
+        time_destination, power_profile_destination, num_cars_plugged_in_destination, max_cars_plugged_in_destination = self.eval_charging_profile_destination()
+        
+        print(f" \t Max. number of vehicles charging simultaneously. At origin: {max_cars_plugged_in_origin} - At destination: {max_cars_plugged_in_destination}")
+        print(f" \t Peak power. At origin: {np.max(power_profile_origin)} MW - At destination: {np.max(power_profile_destination)} MW")
+
+        # Create DataFrames for each time series
+        df = pd.DataFrame({
+            'Time': time_origin,
+            'Power Profile Origin (MW)': power_profile_origin,
+            'Num Cars Plugged In Origin': num_cars_plugged_in_origin,
+            'Max Cars Plugged In Origin': max_cars_plugged_in_origin,
+            'Power Profile Destination (MW)': power_profile_destination,
+            'Num Cars Plugged In Destination': num_cars_plugged_in_destination,
+            'Total profile (MW)': power_profile_origin + power_profile_destination
+        })
+
+        self._charging_profile = df
+
+    @property
+    def charging_profile(self):
+        return self._charging_profile
+
+    def eval_charging_profile_origin(self):
         """ 1. Load and Understand the Data
             2. Model Arrival Times with Lognormal Distribution
             3. Distribute Charging Demand Over Time
         """
-        print(f"INFO \t Computing the aggregated charging curve for charging at origin")
+        print(f"INFO \t ... Charging at origin...")
 
         # 0. Parameters for lognormal distribution (mean and sigma)
 
@@ -272,14 +306,14 @@ class ChargingScenario:
         # Find the maximum number of cars plugged in at the same time
         max_cars_plugged_in = np.max(num_cars_plugged_in)
         
-        self.charging_profile_origin = time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
+        return time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
 
-    def charging_profile_destination(self):
+    def eval_charging_profile_destination(self):
         """ 1. Load and Understand the Data
             2. Model Arrival Times with Lognormal Distribution
             3. Distribute Charging Demand Over Time
         """
-        print(f"INFO \t Computing the aggregated charging curve for charging at destination")
+        print(f"INFO \t ... Charging at destination...")
 
         # 0. Parameters for lognormal distribution (mean and sigma)
 
@@ -347,8 +381,7 @@ class ChargingScenario:
         # Find the maximum number of cars plugged in at the same time
         max_cars_plugged_in = np.max(num_cars_plugged_in)
 
-        self.charging_profile_destination = time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
-
+        return time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
 
     #######################################
     ### Post-processing & visualisation ###

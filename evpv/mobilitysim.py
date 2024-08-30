@@ -68,6 +68,10 @@ class MobilitySim:
 
         print(f"INFO \t New MobilitySim object created")
 
+    #######################################
+    ####### Main Getters and Setters ######
+    #######################################
+
     # Target area
     @property
     def target_area(self):

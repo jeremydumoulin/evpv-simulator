@@ -143,26 +143,9 @@ cs = ChargingScenario(
     }
 })
 
-# Store aggregated TAZ features as csv
+# Store spatial and temporal results as CSV
 cs.charging_demand.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_Destination.csv", index=False) 
-
-# Store charging curve
-time_origin, power_profile_origin, num_cars_plugged_in_origin, max_cars_plugged_in_origin = cs.charging_profile_origin
-time_destination, power_profile_destination, num_cars_plugged_in_destination, max_cars_plugged_in_destination = cs.charging_profile_destination
-
-# Create DataFrames for each time series
-df = pd.DataFrame({
-    'Time': time_origin,
-    'Power Profile Origin (MW)': power_profile_origin,
-    'Num Cars Plugged In Origin': num_cars_plugged_in_origin,
-    'Max Cars Plugged In Origin': max_cars_plugged_in_origin,
-    'Power Profile Destination (MW)': power_profile_destination,
-    'Num Cars Plugged In Destination': num_cars_plugged_in_destination,
-    'Total profile (MW)': power_profile_origin + power_profile_destination
-})
-
-# Save to CSV
-df.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile_Destination.csv", index=False)
+cs.charging_profile.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile_Destination.csv", index=False)
 
 # Maps
 cs.chargingdemand_total_to_map().save(OUTPUT_PATH / "evpv_Result_ChargingScenario_TotalChargingDemand_Destination.html")
