@@ -132,13 +132,13 @@ cs = ChargingScenario(
     time_step = 1/10,
     scenario_definition = {
     "Origin": {
-        "Share": 1.0, # Charging location share
+        "Share": 0.5, # Charging location share
         "Charging power": [[11, 1.0]], # Charging powers and shares of each charger
         "Charging time": [18, 2] # Average charger plugin time and std deviation
     },
     "Destination": {
-        "Share": 0.0,
-        "Charging power": [[70, 1.0]], 
+        "Share": 0.5,
+        "Charging power": [[11, 1.0]], 
         "Charging time": [9, 2]
     }
 })
