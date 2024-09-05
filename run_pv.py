@@ -43,7 +43,7 @@ pv_calc = PVCalculator(
         'temperature_coefficient':-0.0035
         }, 
     installation = {
-        'tracking': 'fixed',
+        'tracking': 'singleaxis_horizontal',
         'tilt': None,
         'azimuth': None,
     })
@@ -53,7 +53,7 @@ pv_prod = pv_calc.compute_pv_production()
 
 
 # Assuming your DataFrame is named 'df'
-pv_prod['PV Production (W/m2)'].plot(figsize=(10, 6))
+pv_prod['Performance Ratio'].plot(figsize=(10, 6))
 
 plt.title('POA Global Over Time')
 plt.xlabel('Time')

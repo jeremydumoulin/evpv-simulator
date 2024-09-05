@@ -170,10 +170,13 @@ class PVCalculator:
         print(f"INFO \t > Diffuse POA irradiance: {(weather_data_poa['poa_diffuse'] * 1).sum() / 1000 } kWh/m2/yr ")
         print(f"INFO \t > Metadata: {meta} ")
 
-        # Update the angles
+        # # Update the angles (usefull only for fixed mounting to calculate AOI losses)
         if self.installation['tracking'] == 'fixed' and (self.installation['tilt'] == None or self.installation['azimuth'] == None):
             self._installation['tilt'] = meta['mounting_system']['fixed']['slope']['value']
             self._installation['azimuth'] = meta['mounting_system']['fixed']['azimuth']['value']
+        else:
+            self._installation['tilt'] = tilt
+            self._installation['azimuth'] = azimuth
 
         return weather_data_poa
 
@@ -190,9 +193,9 @@ class PVCalculator:
                 'eta_inv_nom': 1.0,  # Inverter efficiency of 100% (system losses are computed ex-post)
                 'ac_0': self.pv_module['efficiency'] * 1000  # AC power rating assumed equal to DC power rating
             },
-            temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['pvsyst'][self.installation['mounting']], # PVSyst temperature model
+            temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['pvsyst'][self.installation['mounting']], # PVSyst temperature model    
             surface_tilt = self.installation['tilt'], # Used for AOI losses
-            surface_azimuth = self.installation['azimuth'] # Used for AOI losses           
+            surface_azimuth = self.installation['azimuth'] # Used for AOI losses       
         )
 
         return system
