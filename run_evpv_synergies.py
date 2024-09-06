@@ -45,51 +45,50 @@ evpv_syn = EVPVSynergies(pv_capacity_factor = pv_capacity_factor, ev_charging_de
 
 # User selects a specific day for the second interpolation
 
-day = '01-11'  # MM-DD format, e.g., '01-01' for January 1st
-
+day = '01-01'  # MM-DD format, e.g., '01-01' for January 1st
 
 # EV-PV KPIs
 
-# Initialize a DataFrame to store the results
-results_df = pd.DataFrame(columns=['Installed Capacity (MW)', 'PV Production (MWh)', 'EV Demand (MWh)', 'ECR (%)', 'SSR (%)', 'SCR (%)'])
-capacities_to_investigate = range(10, 2001, 100)
+# # Initialize a DataFrame to store the results
+# results_df = pd.DataFrame(columns=['Installed Capacity (MW)', 'PV Production (MWh)', 'EV Demand (MWh)', 'ECR (%)', 'SSR (%)', 'SCR (%)'])
+# capacities_to_investigate = range(10, 2001, 100)
 
-# Loop through the parameters
-for capacity in capacities_to_investigate:
-    evpv_syn.set_pv_capacity_MW(capacity)
-    print(capacity)
+# # Loop through the parameters
+# for capacity in capacities_to_investigate:
+#     evpv_syn.pv_capacity_MW = capacity
+#     print(capacity)
 
-    # Calculate the indicators
-    pv_prod = evpv_syn.pv_production(day)
-    ev_demand = evpv_syn.ev_demand()
-    ecr = evpv_syn.energy_coverage_ratio(day)
-    ssr = evpv_syn.self_sufficiency_ratio(day)
-    scr = evpv_syn.self_consumption_ratio(day)
-    epr = evpv_syn.excess_pv_ratio(day)
+#     # Calculate the indicators
+#     pv_prod = evpv_syn.pv_production(day)
+#     ev_demand = evpv_syn.ev_demand()
+#     ecr = evpv_syn.energy_coverage_ratio(day)
+#     ssr = evpv_syn.self_sufficiency_ratio(day)
+#     scr = evpv_syn.self_consumption_ratio(day)
+#     epr = evpv_syn.excess_pv_ratio(day)
     
-    # Store the results in a dictionary
-    result = pd.DataFrame({
-        'Installed Capacity (MW)': [capacity],
-        'PV Production (MWh)': [pv_prod],
-        'EV Demand (MWh)': [ev_demand],
-        'ECR (%)': [ecr * 100],
-        'SSR (%)': [ssr * 100],
-        'SCR (%)': [scr * 100],
-        'EPR (%)': [epr * 100]
-    })
+#     # Store the results in a dictionary
+#     result = pd.DataFrame({
+#         'Installed Capacity (MW)': [capacity],
+#         'PV Production (MWh)': [pv_prod],
+#         'EV Demand (MWh)': [ev_demand],
+#         'ECR (%)': [ecr * 100],
+#         'SSR (%)': [ssr * 100],
+#         'SCR (%)': [scr * 100],
+#         'EPR (%)': [epr * 100]
+#     })
     
-    # Append the result to the DataFrame using pd.concat
-    results_df = pd.concat([results_df, result], ignore_index=True)
+#     # Append the result to the DataFrame using pd.concat
+#     results_df = pd.concat([results_df, result], ignore_index=True)
 
-# Save the DataFrame to a CSV file
-results_df.to_csv('evpv_results.csv', index=False)
+# # Save the DataFrame to a CSV file
+# results_df.to_csv('evpv_results.csv', index=False)
 
 
 # Plot for a given capacity
 
-pv_capacity_MW = 100
-evpv_syn.set_pv_capacity_MW(pv_capacity_MW)
-hour_range = np.linspace(0, 24, 1000)  # Hourly range from 0 to 23
+pv_capacity_MW = 1000
+evpv_syn.pv_capacity_MW = pv_capacity_MW
+hour_range = np.linspace(0, 23, 100)  # Hourly range from 0 to 23
 
 # Generate data points for the first interpolation function
 pv_production = evpv_syn.pv_power_MW(day)(hour_range)

@@ -1,10 +1,5 @@
 # coding: utf-8
 
-""" 
-EVPVSynergies
-
-"""
-
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -24,49 +19,42 @@ from pathlib import Path
 
 from evpv import helpers as hlp
 
-load_dotenv() # take environment variables from .env
-
-INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
-OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
-
 class EVPVSynergies:
-
     #######################################
-    ############# ATTRIBUTES ##############
-    #######################################
-    
-    pv_capacity_factor = {}
-    ev_charging_demand_MW = lambda x: None
-    pv_capacity_MW = .0
-
-    #######################################
-    ############### METHODS ###############
-    #######################################
-    
     ############# Constructor #############
-    ####################################### 
+    #######################################
 
     def __init__(self, 
         pv_capacity_factor, 
         ev_charging_demand_MW,
         pv_capacity_MW):
 
-        self.set_charging_demand_MW(ev_charging_demand_MW)
-        self.set_pv_capacity_factor(pv_capacity_factor) 
-        self.set_pv_capacity_MW(pv_capacity_MW)        
-       
+        self.ev_charging_demand_MW = ev_charging_demand_MW
+        self.pv_capacity_factor = pv_capacity_factor
+        self.pv_capacity_MW = pv_capacity_MW  
 
-    ############# Setters #############
-    ###################################
+    #######################################
+    ### Parameters Setters and Getters ####
+    #######################################
 
-    def set_charging_demand_MW(self, ev_charging_demand_MW):
+    @property
+    def ev_charging_demand_MW(self):
+        return self._ev_charging_demand_MW
+
+    @ev_charging_demand_MW.setter
+    def ev_charging_demand_MW(self, ev_charging_demand_MW):
         # Extract the 'Time' and 'Total profile (MW)' columns
         time = ev_charging_demand_MW['Time']
         profile = ev_charging_demand_MW['Total profile (MW)']
 
-        self.ev_charging_demand_MW = interp1d(time, profile, kind='linear', fill_value = 'extrapolate')
+        self._ev_charging_demand_MW = interp1d(time, profile, kind='linear', fill_value = 'extrapolate') 
 
-    def set_pv_capacity_factor(self, pv_capacity_factor):
+    @property
+    def pv_capacity_factor(self):
+        return self._pv_capacity_factor
+
+    @pv_capacity_factor.setter
+    def pv_capacity_factor(self, pv_capacity_factor):
         df = pv_capacity_factor
 
         # Rename the columns for convenience (optional, but helpful)
@@ -89,37 +77,45 @@ class EVPVSynergies:
         for day, group in grouped:
             hours = group['Hour']
             profile = group['Total profile (MW)']
-            
+
             # Create the interpolation function for this day
             interpolation_function = interp1d(hours, profile, kind='linear', fill_value = 'extrapolate')
             
             # Store the function in the dictionary with the day as the key
             interpolation_functions[day] = interpolation_function
 
-        self.capacity_factor = interpolation_functions
+        self._pv_capacity_factor = interpolation_functions
 
-    def set_pv_capacity_MW(self, pv_capacity_MW):
-        self.pv_capacity_MW = pv_capacity_MW
+    @property
+    def pv_capacity_MW(self):
+        return self._pv_capacity_MW
 
-    ########### PV Production #########
-    ###################################
+    @pv_capacity_MW.setter
+    def pv_capacity_MW(self, pv_capacity_MW):
+        self._pv_capacity_MW = pv_capacity_MW
+
+    #######################################
+    ########### PV Production #############
+    #######################################
 
     def pv_power_MW(self, day='01-01'):
-        return lambda x: self.capacity_factor[day](x-8) * self.pv_capacity_MW
+        return lambda x: self.pv_capacity_factor[day](x) * self.pv_capacity_MW
 
     def pv_production(self, day='01-01'):        
         result, error = integrate.quad(self.pv_power_MW(day), 0, 24)
         return result
 
-    ############# EV Demand ###########
-    ###################################
+    #######################################
+    ########### EV Charging Demand ########
+    #######################################
 
     def ev_demand(self):        
         result, error = integrate.quad(self.ev_charging_demand_MW, 0, 24)
         return result
 
-    ########## EV-PV Synergies ########
-    ###################################
+    #######################################
+    ############# EV-PV Synergies #########
+    #######################################
 
     def energy_coverage_ratio(self, day='01-01'):       
         return self.pv_production(day) / self.ev_demand()

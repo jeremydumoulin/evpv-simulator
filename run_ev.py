@@ -145,7 +145,7 @@ cs = ChargingScenario(
 
 # Store spatial and temporal results as CSV
 cs.charging_demand.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_Destination.csv", index=False) 
-cs.charging_profile.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile_Destination.csv", index=False)
+cs.charging_profile.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile.csv", index=False)
 
 # Maps
 cs.chargingdemand_total_to_map().save(OUTPUT_PATH / "evpv_Result_ChargingScenario_TotalChargingDemand_Destination.html")
