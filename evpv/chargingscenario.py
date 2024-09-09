@@ -210,21 +210,20 @@ class ChargingScenario:
     def temporal_charging_demand(self):
         print(f"INFO \t Evaluating temporal charging profile")
 
-        time_origin, power_profile_origin, num_cars_plugged_in_origin, max_cars_plugged_in_origin = self.eval_charging_profile(origin_or_destination = "Origin")
-        time_destination, power_profile_destination, num_cars_plugged_in_destination, max_cars_plugged_in_destination = self.eval_charging_profile(origin_or_destination = "Destination")
+        time_origin, power_profile_origin, num_cars_plugged_in_origin = self.eval_charging_profile(origin_or_destination = "Origin")
+        time_destination, power_profile_destination, num_cars_plugged_in_destination = self.eval_charging_profile(origin_or_destination = "Destination")
         
-        print(f" \t Max. number of vehicles charging simultaneously. At origin: {max_cars_plugged_in_origin} - At destination: {max_cars_plugged_in_destination}")
+        print(f" \t Max. number of vehicles charging simultaneously. At origin: {np.max(num_cars_plugged_in_origin)} - At destination: {np.max(num_cars_plugged_in_destination)}")
         print(f" \t Peak power. At origin: {np.max(power_profile_origin)} MW - At destination: {np.max(power_profile_destination)} MW")
 
         # Create DataFrames for each time series
         df = pd.DataFrame({
             'Time': time_origin,
-            'Power Profile Origin (MW)': power_profile_origin,
-            'Num Cars Plugged In Origin': num_cars_plugged_in_origin,
-            'Max Cars Plugged In Origin': max_cars_plugged_in_origin,
-            'Power Profile Destination (MW)': power_profile_destination,
-            'Num Cars Plugged In Destination': num_cars_plugged_in_destination,
-            'Total profile (MW)': power_profile_origin + power_profile_destination
+            'Charging profile at origin (MW)': power_profile_origin,
+            'Number of cars charging at origin': num_cars_plugged_in_origin,
+            'Charging profile at destination (MW)': power_profile_destination,
+            'Number of cars charging at destination': num_cars_plugged_in_destination,
+            'Total charging profile (MW)': power_profile_origin + power_profile_destination
         })
 
         self._charging_profile = df
@@ -234,103 +233,121 @@ class ChargingScenario:
         return self._charging_profile
 
     def eval_charging_profile(self, origin_or_destination = "Origin"):
-
         """
-        Charging at origin or destination
+        Inform if charging at origin or destination and get corresponding parameters 
         """
         if origin_or_destination == "Origin":
             print(f"INFO \t ... Charging at origin...")
-            charging_time = self.scenario_definition['Origin']['Charging time']
+            charging_time = self.scenario_definition['Origin']['Arrival time']
+            vehicle_counts = self.charging_demand['n_vehicles_origin'].sum()
+            charging_power = self.scenario_definition['Origin']['Charging power'] 
         elif origin_or_destination == "Destination":
             print(f"INFO \t ... Charging at destination...")
-            charging_time = self.scenario_definition['Destination']['Charging time']
+            charging_time = self.scenario_definition['Destination']['Arrival time']
+            vehicle_counts = self.charging_demand['n_vehicles_destination'].sum()
+            charging_power = self.scenario_definition['Destination']['Charging power'] 
         else:
-            print(f"ERROR \t Charging should be at origin or destination")
-            return
+            raise ValueError("Charging should be at origin or destination")
 
         """
-        Init output variables
+        Initialize output variables
         """
         # Final time series
         time = np.arange(0, 24, self.time_step)  # time array with specified intervals
         power_demand = np.zeros_like(time)
         num_cars_plugged_in = np.zeros_like(time)
 
-        # Charging demand and nfor all vehicles
-        vehicle_counts = self.charging_demand['n_vehicles_origin']
-        charging_demands = self.charging_demand['E0_origin_kWh']
-
-        # Create a list of charging demands repeated by the number of vehicles
-        all_charging_demands = []
-        for count, demand in zip(vehicle_counts, charging_demands):
-            all_charging_demands.extend([demand] * count)
-
-        all_charging_demands = np.array(all_charging_demands)
-
-        # Number of vehicles
-        num_vehicles = len(all_charging_demands)
+        # Charging demand and for all vehicles
+        charging_demands = np.zeros(vehicle_counts)
 
         """
-        Lognormal distribution parameters
+        Assign charging demand to each vehicle using VKT distribution
         """
-        sigma = np.sqrt(np.log(1 + (charging_time[1] / charging_time[0])**2))
-        # Calculate mu
-        mu = np.log(charging_time[0]) - 0.5 * sigma**2
+        # Aggregate mobility flows 
+        df_sum = self.mobsim[0].flows.copy()
+        for mobsim in self.mobsim[1:]:
+            df_sum = df_sum.add(mobsim.flows, fill_value=0)
+
+        # Group by "Travel Distance (km)" and sum the "Flow" for each distance
+        grouped_df = df_sum.groupby('Travel Distance (km)').agg({'Flow': 'sum'}).reset_index()
+
+        # Calculate the total flow
+        total_flow = grouped_df['Flow'].sum()
+
+        # Calculate the probability for each travel distance
+        grouped_df['Probability'] = grouped_df['Flow'] / total_flow
+
+        # Extract distances and probabilities
+        distances = grouped_df['Travel Distance (km)'].values
+        probabilities = grouped_df['Probability'].values
+
+        # Initialize charging_demands array with the correct shape
+        charging_demands = 2 * np.random.choice(distances, size=len(charging_demands), p=probabilities) * self.ev_consumption / self.charging_efficiency
 
         """
-        Model Arrival Times with Lognormal Distribution
-        """        
+        Assign arrival time to each vehicle using lognormal distribution
+        """
+        # Lognormal parameters from arrival time average and standard deviation
+        # Calculate mu and sigma for the lognormal distribution
+        mean = charging_time[0]
+        stddev = charging_time[1]
 
-        arrival_times = np.random.lognormal(mu, sigma, num_vehicles)
-        arrival_times = arrival_times % 24  # Wrap around to fit within 24 hours
+        #sigma = np.sqrt(np.log((stddev_lognormal**2 / mean_lognormal**2) + 1))
+        #mu = np.log(mean_lognormal) - 0.5 * sigma**2
+
+        arrival_times = np.random.normal(mean, stddev, vehicle_counts) % 24
 
         """
-        Charging demand and number of vehicles over time
-        """ 
+        Assign charging power to each vehicle using user-defined charging power
+        """
+        # Separate the values and the probabilities
+        available_charging_power = [item[0] for item in charging_power]
+        probabilities = [item[1] for item in charging_power]
 
-        for arrival_time, demand in zip(arrival_times, all_charging_demands):
-            # Charging at origin or destination
+        # Randomly pick a charging power based on the specified probabilities
+        charging_powers = np.random.choice(available_charging_power, size=len(charging_demands), p=probabilities)
 
-            if origin_or_destination == "Origin":
-                charging_power = self.scenario_definition['Origin']['Charging power'] 
-            elif origin_or_destination == "Destination":
-                charging_power = self.scenario_definition['Destination']['Charging power']
+        """
+        Compute the aggregated charging demand by looping over all vehicles
+        """
+        # Compute start and end indices for charging for each vehicle
+        # Wrap around to fit within 24 hours
+        start_indices = np.searchsorted(time, arrival_times)
+        charging_durations = charging_demands / charging_powers
+        end_times = (arrival_times + charging_durations) % 24
+        end_indices = np.searchsorted(time, end_times)
 
-            # Separate the values and the probabilities
-            charging_powers = [item[0] for item in charging_power]
-            probabilities = [item[1] for item in charging_power]
+        # Some preleminary checks
+        if np.any(charging_durations <= self.time_step):
+            print("ALERT \t Some charging duration are smaller than the timestep. This may lead to inaccurate result.")
 
-            # Randomly pick a charging power based on the specified probabilities
-            charging_power = random.choices(charging_powers, weights=probabilities, k=1)[0]
+        if np.any(charging_durations > 12):
+            print("ALERT \t Some charging duration are greater than 12 hours. This might not be consistent with departure/arrival times.")
 
-            # Calculate charging duration, start time (and id) and end time (end id)
-            charging_duration = demand / charging_power
-            start_idx = np.searchsorted(time, arrival_time)
-            end_time = (arrival_time + charging_duration) % 24  # Wrap around to fit within 24 hours
-            end_idx = np.searchsorted(time, end_time)
+        # Create masks for the ranges where the power demand should be applied
+        mask_wrap_around = end_indices < start_indices
+        mask_no_wrap = ~mask_wrap_around
 
-            if end_idx > start_idx:
-                power_demand[start_idx:end_idx] += charging_power
-                num_cars_plugged_in[start_idx:end_idx] += 1
-            else:
-                power_demand[start_idx:] += charging_power
-                num_cars_plugged_in[start_idx:] += 1
-                power_demand[:end_idx] += charging_power
-                num_cars_plugged_in[:end_idx] += 1
+        # Apply power demand for no-wrap cases
+        for i in np.where(mask_no_wrap)[0]:
+            power_demand[start_indices[i]:end_indices[i]] += charging_powers[i]
+            num_cars_plugged_in[start_indices[i]:end_indices[i]] += 1
 
-            if charging_duration <= self.time_step:
-                print("ALERT \t Charging duration is smaller than the timestep. This may lead to inaccurate results")
-
-            if charging_duration >= 10:
-                print("ALERT \t Charging duration is greater than 10 hours. ")
+        # Apply power demand for wrap-around cases
+        for i in np.where(mask_wrap_around)[0]:
+            power_demand[start_indices[i]:] += charging_powers[i]
+            num_cars_plugged_in[start_indices[i]:] += 1
+            power_demand[:end_indices[i]] += charging_powers[i]
+            num_cars_plugged_in[:end_indices[i]] += 1
 
         # Convert power demand to MWh
         power_demand_mwh = power_demand / 1000  # converting kW to MW
 
-        # Find the maximum number of cars plugged in at the same time
-        max_cars_plugged_in = np.max(num_cars_plugged_in)
-        
-        return time, power_demand_mwh, num_cars_plugged_in, max_cars_plugged_in
+        """
+        Return
+        """
+    
+        return time, power_demand_mwh, num_cars_plugged_in
 
     #######################################
     ### Post-processing & visualisation ###
