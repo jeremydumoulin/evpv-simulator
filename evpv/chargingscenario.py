@@ -38,7 +38,7 @@ class ChargingScenario:
         self.mobsim = mobsim
         self.taz_properties = mobsim # Combine TAZ properties of each mobsim into a single effective TAZ properties df
 
-        self.charging_efficiency =charging_efficiency
+        self.charging_efficiency = charging_efficiency
         self.ev_consumption = ev_consumption
 
         self.time_step = time_step
@@ -120,6 +120,10 @@ class ChargingScenario:
 
     @ev_consumption.setter
     def ev_consumption(self, ev_consumption_value):
+
+        if ev_consumption_value < 0.0:
+            raise ValueError("The EV consumption (kWh/km) should greater than 0")
+
         self._ev_consumption = ev_consumption_value
 
     # Charging Efficiency
@@ -129,6 +133,10 @@ class ChargingScenario:
 
     @charging_efficiency.setter
     def charging_efficiency(self, charging_efficiency_value):
+
+        if charging_efficiency_value < 0.0 or charging_efficiency_value > 1.0:
+            raise ValueError("The EV charging efficiency should be between 0 and 1")
+
         self._charging_efficiency = charging_efficiency_value
 
     # Time step
@@ -146,8 +154,20 @@ class ChargingScenario:
         return self._scenario_definition
 
     @scenario_definition.setter
-    def scenario_definition(self, scenario_definition_value):
-        self._scenario_definition= scenario_definition_value
+    def scenario_definition(self, cs):
+        if cs['Origin']['Share'] > 1.0 or cs['Origin']['Share'] < 0 or cs['Destination']['Share'] > 1.0 or cs['Destination']['Share'] < 0:
+            raise ValueError("Share of charging at origin or destination should be between 0 and 1")
+
+        if (cs['Origin']['Share'] + cs['Destination']['Share']) != 1.0:
+            raise ValueError("The total of the shares at the origin and destination does sum up to")
+
+        if cs['Origin']['Smart charging'] > 1.0 or cs['Origin']['Smart charging'] < 0 or cs['Destination']['Smart charging'] > 1.0 or cs['Destination']['Smart charging'] < 0 :
+            raise ValueError("Share of smart charging should be between 0 and 1")
+
+        if cs['Origin']['Arrival time'][0] > 24.0 or cs['Destination']['Arrival time'][0] > 24.0 or cs['Origin']['Arrival time'][0] < 0 or cs['Destination']['Arrival time'][0] < 0 :
+            raise ValueError("Average arrival time should be between 0 and 24")
+
+        self._scenario_definition = cs
 
     #######################################
     ####### Spatial Charging Demand #######
@@ -236,16 +256,22 @@ class ChargingScenario:
         """
         Inform if charging at origin or destination and get corresponding parameters 
         """
-        if origin_or_destination == "Origin":
-            print(f"INFO \t ... Charging at origin...")
-            charging_time = self.scenario_definition['Origin']['Arrival time']
+        if origin_or_destination == "Origin":            
+            arrival_time = self.scenario_definition['Origin']['Arrival time']
+            departure_time = self.scenario_definition['Destination']['Arrival time']
             vehicle_counts = self.charging_demand['n_vehicles_origin'].sum()
-            charging_power = self.scenario_definition['Origin']['Charging power'] 
-        elif origin_or_destination == "Destination":
-            print(f"INFO \t ... Charging at destination...")
-            charging_time = self.scenario_definition['Destination']['Arrival time']
+            charging_power = self.scenario_definition['Origin']['Charging power']
+            share_smart_charging = self.scenario_definition['Origin']['Smart charging']
+
+            print(f"INFO \t ... Charging at origin with {share_smart_charging*100}% of smart charging...")
+        elif origin_or_destination == "Destination":            
+            arrival_time  = self.scenario_definition['Destination']['Arrival time']
+            departure_time = self.scenario_definition['Origin']['Arrival time']
             vehicle_counts = self.charging_demand['n_vehicles_destination'].sum()
-            charging_power = self.scenario_definition['Destination']['Charging power'] 
+            charging_power = self.scenario_definition['Destination']['Charging power']
+            share_smart_charging = self.scenario_definition['Destination']['Smart charging']
+
+            print(f"INFO \t ... Charging at destination with {share_smart_charging*100}% of smart charging...")
         else:
             raise ValueError("Charging should be at origin or destination")
 
@@ -289,13 +315,14 @@ class ChargingScenario:
         """
         # Lognormal parameters from arrival time average and standard deviation
         # Calculate mu and sigma for the lognormal distribution
-        mean = charging_time[0]
-        stddev = charging_time[1]
+        mean_arrival = arrival_time[0]
+        stddev_arrival = arrival_time[1]
 
-        #sigma = np.sqrt(np.log((stddev_lognormal**2 / mean_lognormal**2) + 1))
-        #mu = np.log(mean_lognormal) - 0.5 * sigma**2
+        mean_departure = departure_time[0]
+        stddev_departure = departure_time[1]
 
-        arrival_times = np.random.normal(mean, stddev, vehicle_counts) % 24
+        arrival_times = np.random.normal(mean_arrival, stddev_arrival, vehicle_counts) % 24
+        departure_times = np.random.normal(mean_departure, stddev_departure-0.5, vehicle_counts) % 24
 
         """
         Assign charging power to each vehicle using user-defined charging power
@@ -306,6 +333,18 @@ class ChargingScenario:
 
         # Randomly pick a charging power based on the specified probabilities
         charging_powers = np.random.choice(available_charging_power, size=len(charging_demands), p=probabilities)
+
+        """
+        Assign vehicles with smart charging
+        """
+        # Number of vehicles with smart charging
+        num_true = int(len(charging_demands) * share_smart_charging)
+
+        # Create an array with num_true True values and the rest False
+        vehicles_with_smartcharging = np.array([True] * num_true + [False] * (len(charging_demands) - num_true))
+
+        # Shuffle the array to randomize the positions of True and False
+        np.random.shuffle(vehicles_with_smartcharging)
 
         """
         Compute the aggregated charging demand by looping over all vehicles
@@ -330,24 +369,88 @@ class ChargingScenario:
 
         # Apply power demand for no-wrap cases
         for i in np.where(mask_no_wrap)[0]:
+            if vehicles_with_smartcharging[i]:
+                continue
             power_demand[start_indices[i]:end_indices[i]] += charging_powers[i]
             num_cars_plugged_in[start_indices[i]:end_indices[i]] += 1
 
         # Apply power demand for wrap-around cases
         for i in np.where(mask_wrap_around)[0]:
+            if vehicles_with_smartcharging[i]:
+                continue
             power_demand[start_indices[i]:] += charging_powers[i]
             num_cars_plugged_in[start_indices[i]:] += 1
             power_demand[:end_indices[i]] += charging_powers[i]
             num_cars_plugged_in[:end_indices[i]] += 1
 
         # Convert power demand to MWh
-        power_demand_mwh = power_demand / 1000  # converting kW to MW
+        power_demand_mw = power_demand / 1000  # converting kW to MW
 
         """
-        Return
+        Smart charging 
         """
-    
-        return time, power_demand_mwh, num_cars_plugged_in
+        peak_power = 0  # Initialise le pic total de puissance à zéro
+        power_demand = np.zeros(len(time))
+        num_cars_plugged_in_smart = np.zeros(len(time))
+        
+        for i in range(len(arrival_times)):
+            if not vehicles_with_smartcharging[i]:
+                continue
+
+            # Calcul de l'intervalle de chargement
+            start_idx = np.searchsorted(time, arrival_times[i])
+            end_idx = np.searchsorted(time, departure_times[i])
+            if end_idx < start_idx:
+                end_idx += len(time) # Gérer le wrap-around pour une journée de 24 heures
+            
+            # Calcul initial de la demande de charge
+            remaining_demand = charging_demands[i]
+            max_power = charging_powers[i]
+
+            # Temporary array to track cars plugged in during uniform distribution
+            temp_num_cars_plugged_in = np.zeros(len(time))
+            
+            # Parcourir l'intervalle de temps pour minimiser le pic de puissance
+            for t in range(start_idx, end_idx):
+                current_time_idx = t % len(time)  # Boucle sur 24 heures
+                current_total_power = power_demand[current_time_idx]
+                
+                # Si la puissance actuelle est inférieure au pic total, charger au maximum permis
+                if current_total_power < peak_power:
+                    charge_power = min(peak_power - current_total_power, max_power)
+                    charge_energy = charge_power * self.time_step
+
+                    # S'assurer de ne pas charger plus que la demande restante
+                    if charge_energy > remaining_demand:
+                        charge_energy = remaining_demand
+                        charge_power = charge_energy / self.time_step  # Ajuster la puissance en fonction de l'énergie restante
+
+                    power_demand[current_time_idx] += charge_power 
+                    remaining_demand -= charge_energy
+                    num_cars_plugged_in_smart[current_time_idx] += 1  # Increment number of cars charging
+                    
+                    # Si toute l'énergie est chargée, passer au véhicule suivant
+                    if remaining_demand <= 0:
+                        break
+            
+            # Si de l'énergie reste à charger, répartir uniformément
+            if remaining_demand > 0:
+                charge_power_uniform = remaining_demand / (departure_times[i] - arrival_times[i])
+                for t in range(start_idx, end_idx):
+                    current_time_idx = t % len(time)
+                    power_demand[current_time_idx] += charge_power_uniform
+                    temp_num_cars_plugged_in[current_time_idx] += 1  # Increment temp count for cars plugged in
+        
+            # Mettre à jour le pic total de puissance si nécessaire
+            peak_power = np.max(power_demand)
+
+            # Combine temp_num_cars_plugged_in with num_cars_plugged_in
+            num_cars_plugged_in_smart = np.maximum(num_cars_plugged_in_smart, temp_num_cars_plugged_in)
+
+        power_demand_mw = power_demand_mw + (power_demand / 1000)  # Convertir de kW en MW
+        num_cars_plugged_in = num_cars_plugged_in + num_cars_plugged_in_smart
+
+        return time, power_demand_mw, num_cars_plugged_in
 
     #######################################
     ### Post-processing & visualisation ###

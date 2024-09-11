@@ -134,12 +134,14 @@ cs = ChargingScenario(
     "Origin": {
         "Share": 0.0, # Charging location share
         "Charging power": [[11, 1.0]], # Charging powers and shares of each charger
-        "Arrival time": [18, 2] # Average charger plugin time and std deviation
+        "Arrival time": [18, 2], # Average charger plugin time and std deviation
+        "Smart charging": .0 # Share of smart charging
     },
     "Destination": {
-        "Share": 0.01,
+        "Share": 1.0,
         "Charging power": [[11, 1.0]], 
-        "Arrival time": [12, 2]
+        "Arrival time": [9, 2],
+        "Smart charging": 0.1 
     }
 })
 
