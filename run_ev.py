@@ -57,7 +57,7 @@ Global parameters
 
 shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
 population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif" # Population density raster
-destinations_path = INPUT_PATH /  "workplaces.csv"
+destinations_path = INPUT_PATH /  "workplaces_with_attraction_outside_city.csv"
 
 taz_target_width_km = 3 # Desired TAZ width
 simulation_area_extension_km = 0
@@ -77,7 +77,7 @@ model = "gravity_exp_02"
 attraction_feature = "destinations"
 cost_feature = "distance_road"
 
-use_cached_data = True
+use_cached_data = False
 
 #############################################
 ## MOBILITY SIMULATION 1 (home-work-home) ###
@@ -117,7 +117,7 @@ vkt_distribution = mobsim.vkt_histogram(n_bins = 200)
 vkt_distribution.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_VKThistogram.csv", index=False)
 
 # Maps
-# mobsim.setup_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_SimulationSetup.html")
+mobsim.setup_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_SimulationSetup.html")
 mobsim.trip_generation_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripGeneration.html")
 mobsim.trip_distribution_to_map(trip_id = "6_1").save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
 
@@ -142,7 +142,7 @@ cs = ChargingScenario(
         "Share": 1.0,
         "Charging power": [[11, 1.0]], 
         "Arrival time": [9, 2],
-        "Smart charging": 0.5 
+        "Smart charging": 0.0 
     }
 })
 

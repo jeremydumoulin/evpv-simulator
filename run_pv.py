@@ -46,9 +46,7 @@ pv_calc = PVCalculator(
         'temperature_coefficient':-0.0035
         }, 
     installation = {
-        'tracking': 'fixed',
-        'tilt': None,
-        'azimuth': None,
+        'type': 'rooftop'
     })
 
 

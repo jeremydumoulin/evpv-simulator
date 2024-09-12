@@ -25,10 +25,8 @@ class PVCalculator:
 
         # Initialize the installation attributes
         self._installation = {
-            'tracking': installation.get('tracking', 'fixed'), # fixed, dualaxis, singleaxis_horizontal, singleaxis_vertical
-            'tilt': installation.get('tilt', None),
-            'azimuth': installation.get('azimuth', None),
-            'mounting': installation.get('mounting', 'freestanding'), # freestanding or insulated
+            'type': installation.get('type', 'groundmounted_fixed'), # groundmounted_fixed, groundmounted_dualaxis, groundmounted_singleaxis_horizontal, groundmounted_singleaxis_vertical
+            'shading_losses': installation.get('shading_losses', .0),
             'system_losses': installation.get('system_losses', 0.14)
         }
 
@@ -96,40 +94,29 @@ class PVCalculator:
     def _fetch_weather_data(self):
         """ Get weather data from PVGIS in Africa with POA irradiance """
 
-        print(f"INFO \t Fetching hourly weather data with POA irrdiance from PV GIS for the year {self.environment['year']} - Tracking: {self.installation['tracking']}")
+        print(f"INFO \t Fetching hourly weather data with POA irrdiance from PV GIS for the year {self.environment['year']} - Installation type: {self.installation['type']}")
 
         # Initialize tilt and azimuth
-        tilt = 0
-        azimuth = 180
+        tilt = 0 # Default value
+        azimuth = 180 # Default value 
         optimize_tilt = optimize_azimuth = True
 
         # Set the tracking and tilt/azimuth options
-        if self.installation['tracking'] == 'fixed':
+        if self.installation['type'] == 'groundmounted_fixed':
             trackingtype = 0
-
-            # Optimize or not tilt/azimuth angle depending on the user input
-            if self.installation['tilt'] == None:            
-                optimize_tilt = True
-                print(f"INFO \t > No tilt angle provided. The optimum tilt will be estimated using PVGIS.")
-            else:
-                tilt = self.installation['tilt']
-                optimize_tilt = False
-
-            if self.installation['azimuth'] == None:                
-                optimize_azimuth = True
-                print(f"INFO \t > No azimuth angle provided. Both the optimum tilt and azimuth will be estimated using PVGIS.")
-            else:
-                azimuth = self.installation['azimuth']
-                optimize_azimuth = False
-
-        elif self.installation['tracking'] == 'singleaxis_horizontal':
+        elif self.installation['type'] == 'groundmounted_singleaxis_horizontal':
             trackingtype = 1
-        elif self.installation['tracking'] == 'singleaxis_vertical':
+        elif self.installation['type'] == 'groundmounted_singleaxis_vertical':
             trackingtype = 3
-        elif self.installation['tracking'] == 'dualaxis':
+        elif self.installation['type'] == 'groundmounted_dualaxis':
             trackingtype = 2
+        if self.installation['type'] == 'rooftop':
+            trackingtype = 0
+            optimize_tilt = optimize_azimuth = False                 
+            azimuth = 180
+            tilt = 4
         else:
-            raise ValueError(f"Tracking type is unknown")
+            raise ValueError(f"PV installation type is unknown")
 
         # Get data from PVGIS
         weather_data_poa, meta, inputs = pvlib.iotools.get_pvgis_hourly(self.location.latitude, self.location.longitude, 
@@ -170,8 +157,8 @@ class PVCalculator:
         print(f"INFO \t > Diffuse POA irradiance: {(weather_data_poa['poa_diffuse'] * 1).sum() / 1000 } kWh/m2/yr ")
         print(f"INFO \t > Metadata: {meta} ")
 
-        # # Update the angles (usefull only for fixed mounting to calculate AOI losses)
-        if self.installation['tracking'] == 'fixed' and (self.installation['tilt'] == None or self.installation['azimuth'] == None):
+        # Update the angles (usefull only for fixed mounting to calculate AOI losses)
+        if self.installation['type'] == 'groundmounted_fixed':
             self._installation['tilt'] = meta['mounting_system']['fixed']['slope']['value']
             self._installation['azimuth'] = meta['mounting_system']['fixed']['azimuth']['value']
         else:
@@ -183,6 +170,12 @@ class PVCalculator:
     def _create_pv_system(self):
         """Create a PV System with parameters compatible with the PVWatts model"""
 
+        # Set moutning conditions for the thermal model
+        mounting = 'freestanding'
+
+        if self.installation['type'] == 'rooftop':
+            mounting = 'insulated'
+
         system = pvsystem.PVSystem(
             module_parameters={
                 'pdc0': self.pv_module['efficiency'] * 1000,  # Nominal DC power of 1 m2 of PV panel
@@ -193,7 +186,7 @@ class PVCalculator:
                 'eta_inv_nom': 1.0,  # Inverter efficiency of 100% (system losses are computed ex-post)
                 'ac_0': self.pv_module['efficiency'] * 1000  # AC power rating assumed equal to DC power rating
             },
-            temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['pvsyst'][self.installation['mounting']], # PVSyst temperature model    
+            temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['pvsyst'][mounting], # PVSyst temperature model    
             surface_tilt = self.installation['tilt'], # Used for AOI losses
             surface_azimuth = self.installation['azimuth'] # Used for AOI losses       
         )
@@ -210,7 +203,7 @@ class PVCalculator:
         print(f"INFO \t Computing the hourly PV production")
 
         # Include AOI losses if fixed tilt
-        if self.installation['tracking'] == 'fixed':
+        if self.installation['type'] == 'groundmounted_fixed':
             aoi_model='physical'
         else:
             aoi_model='no_loss'
