@@ -130,6 +130,7 @@ cs = ChargingScenario(
     ev_consumption = 0.2,
     charging_efficiency = 0.9,
     time_step = 1/10,
+    travel_time_origin_destination_hours = 0.5,
     scenario_definition = {
     "Origin": {
         "Share": 0.0, # Charging location share
@@ -141,7 +142,7 @@ cs = ChargingScenario(
         "Share": 1.0,
         "Charging power": [[11, 1.0]], 
         "Arrival time": [9, 2],
-        "Smart charging": 0.1 
+        "Smart charging": 0.5 
     }
 })
 

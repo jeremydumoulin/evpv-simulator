@@ -34,7 +34,7 @@ class ChargingScenario:
     ############# Constructor #############
     #######################################
 
-    def __init__(self, mobsim, ev_consumption, charging_efficiency, time_step, scenario_definition):
+    def __init__(self, mobsim, ev_consumption, charging_efficiency, time_step, travel_time_origin_destination_hours, scenario_definition):
         self.mobsim = mobsim
         self.taz_properties = mobsim # Combine TAZ properties of each mobsim into a single effective TAZ properties df
 
@@ -43,6 +43,8 @@ class ChargingScenario:
 
         self.time_step = time_step
         self.scenario_definition = scenario_definition
+
+        self.travel_time_origin_destination_hours = travel_time_origin_destination_hours
 
         # Modeling results
 
@@ -148,6 +150,15 @@ class ChargingScenario:
     def time_step(self, time_step_value):
         self._time_step = time_step_value
 
+    # Travel time
+    @property
+    def travel_time_origin_destination_hours(self):
+        return self._travel_time_origin_destination_hours
+
+    @travel_time_origin_destination_hours.setter
+    def travel_time_origin_destination_hours(self, travel_time_origin_destination_hours_value):
+        self._travel_time_origin_destination_hours = travel_time_origin_destination_hours_value
+
     # Scenario definition
     @property
     def scenario_definition(self):
@@ -230,8 +241,10 @@ class ChargingScenario:
     def temporal_charging_demand(self):
         print(f"INFO \t Evaluating temporal charging profile")
 
-        time_origin, power_profile_origin, num_cars_plugged_in_origin = self.eval_charging_profile(origin_or_destination = "Origin")
-        time_destination, power_profile_destination, num_cars_plugged_in_destination = self.eval_charging_profile(origin_or_destination = "Destination")
+        travel_time_origin_destination_hours = self.travel_time_origin_destination_hours
+
+        time_origin, power_profile_origin, num_cars_plugged_in_origin = self.eval_charging_profile(origin_or_destination = "Origin", travel_time_origin_destination_hours = travel_time_origin_destination_hours)
+        time_destination, power_profile_destination, num_cars_plugged_in_destination = self.eval_charging_profile(origin_or_destination = "Destination", travel_time_origin_destination_hours = travel_time_origin_destination_hours)
         
         print(f" \t Max. number of vehicles charging simultaneously. At origin: {np.max(num_cars_plugged_in_origin)} - At destination: {np.max(num_cars_plugged_in_destination)}")
         print(f" \t Peak power. At origin: {np.max(power_profile_origin)} MW - At destination: {np.max(power_profile_destination)} MW")
@@ -252,7 +265,7 @@ class ChargingScenario:
     def charging_profile(self):
         return self._charging_profile
 
-    def eval_charging_profile(self, origin_or_destination = "Origin"):
+    def eval_charging_profile(self, origin_or_destination = "Origin", travel_time_origin_destination_hours = 0.5):
         """
         Inform if charging at origin or destination and get corresponding parameters 
         """
@@ -322,7 +335,7 @@ class ChargingScenario:
         stddev_departure = departure_time[1]
 
         arrival_times = np.random.normal(mean_arrival, stddev_arrival, vehicle_counts) % 24
-        departure_times = np.random.normal(mean_departure, stddev_departure-0.5, vehicle_counts) % 24
+        departure_times = np.random.normal(mean_departure, stddev_departure - travel_time_origin_destination_hours, vehicle_counts) % 24
 
         """
         Assign charging power to each vehicle using user-defined charging power
