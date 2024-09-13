@@ -70,14 +70,14 @@ mode_share = 1.0
 vehicle_occupancy = 1.2
 ev_rate = 1.0 
 
-n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  (mode_share / vehicle_occupancy) * ev_rate
+n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  (mode_share) * ev_rate
 
 vkt_offset = 0
 model = "gravity_exp_02"
 attraction_feature = "destinations"
 cost_feature = "distance_road"
 
-use_cached_data = False
+use_cached_data = True
 
 #############################################
 ## MOBILITY SIMULATION 1 (home-work-home) ###
@@ -117,34 +117,48 @@ vkt_distribution = mobsim.vkt_histogram(n_bins = 200)
 vkt_distribution.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_VKThistogram.csv", index=False)
 
 # Maps
-mobsim.setup_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_SimulationSetup.html")
-mobsim.trip_generation_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripGeneration.html")
-mobsim.trip_distribution_to_map(trip_id = "6_1").save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
+# mobsim.setup_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_SimulationSetup.html")
+# mobsim.trip_generation_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripGeneration.html")
+# mobsim.trip_distribution_to_map(trip_id = "6_1").save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
 
 #############################################
 ############### CHARGING NEEDS ##############
 #############################################
+car = {
+    'ev_consumption': 0.2,
+    'vehicle_occupancy': 1.2,  
+    'charger_power': {
+        'Origin': [[11, 1.0]],
+        'Destination': [[11, 1.0]]
+    }
+}
+
+motorbike = {
+    'ev_consumption': 0.06,
+    'vehicle_occupancy': 1.0,  
+    'charger_power': {
+        'Origin': [[5, 1.0]],
+        'Destination': [[11, 1.0]]
+    }
+}
 
 cs = ChargingScenario(
     mobsim = [mobsim],
-    ev_consumption = 0.2,
-    charging_efficiency = 0.9,
-    time_step = 1/10,
-    travel_time_origin_destination_hours = 0.5,
+    ev_fleet = [[car, 1.0], [motorbike, 0.0]],
+    charging_efficiency = 0.9, # Charging efficiency
+    time_step = 1/10, # Time step in hours 
     scenario_definition = {
+    "Travel time origin-destination": 0.5, # Average travel time in hours from origin to destination (and destination to origin)
     "Origin": {
-        "Share": 0.0, # Charging location share
-        "Charging power": [[11, 1.0]], # Charging powers and shares of each charger
+        "Share": 1.0, # Charging location share
         "Arrival time": [18, 2], # Average charger plugin time and std deviation
-        "Smart charging": .0 # Share of smart charging
+        "Smart charging": .0 # Share of smart chargers 
     },
     "Destination": {
-        "Share": 1.0,
-        "Charging power": [[11, 1.0]], 
+        "Share": 0,
         "Arrival time": [9, 2],
         "Smart charging": 0.0 
-    }
-})
+    }})
 
 # Store spatial and temporal results as CSV
 cs.charging_demand.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_Destination.csv", index=False) 

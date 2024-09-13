@@ -34,17 +34,15 @@ class ChargingScenario:
     ############# Constructor #############
     #######################################
 
-    def __init__(self, mobsim, ev_consumption, charging_efficiency, time_step, travel_time_origin_destination_hours, scenario_definition):
-        self.mobsim = mobsim
-        self.taz_properties = mobsim # Combine TAZ properties of each mobsim into a single effective TAZ properties df
+    def __init__(self, mobsim, ev_fleet, charging_efficiency, time_step, scenario_definition):
+        self.mobsim = mobsim        
 
-        self.charging_efficiency = charging_efficiency
-        self.ev_consumption = ev_consumption
+        self.ev_fleet = ev_fleet
+        self.charging_efficiency = charging_efficiency 
+        self.taz_properties = mobsim # Combine TAZ properties of each mobsim into a single effective TAZ properties df       
 
         self.time_step = time_step
         self.scenario_definition = scenario_definition
-
-        self.travel_time_origin_destination_hours = travel_time_origin_destination_hours
 
         # Modeling results
 
@@ -113,20 +111,33 @@ class ChargingScenario:
         result_df = df_list[0][['id', 'geometric_center', 'bbox', 'is_within_target_area']].copy()
         result_df[columns_to_sum] = summed_df
 
+        # Correct the values based on the different vehicle share and occupancy 
+        tmp_n_outflows = 0
+        tmp_n_inflows = 0
+        tmp_fkt_outflows = 0
+        tmp_fkt_inflows = 0
+
+        for vehicle in self.ev_fleet:
+            tmp_n_outflows += result_df['n_outflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
+            tmp_n_inflows += result_df['n_inflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
+            tmp_fkt_outflows += result_df['fkt_outflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
+            tmp_fkt_inflows += result_df['fkt_inflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
+
+        result_df['n_outflows'] = tmp_n_outflows.apply(round)
+        result_df['n_inflows'] = tmp_n_inflows.apply(round)
+        result_df['fkt_outflows'] = tmp_fkt_outflows.apply(round)        
+        result_df['fkt_inflows'] = tmp_fkt_inflows.apply(round)
+
         self._taz_properties = result_df
 
-    # EV Consumption
+    # EV Fleet dictionnary
     @property
-    def ev_consumption(self):
-        return self._ev_consumption
+    def ev_fleet(self):
+        return self._ev_fleet
 
-    @ev_consumption.setter
-    def ev_consumption(self, ev_consumption_value):
-
-        if ev_consumption_value < 0.0:
-            raise ValueError("The EV consumption (kWh/km) should greater than 0")
-
-        self._ev_consumption = ev_consumption_value
+    @ev_fleet.setter
+    def ev_fleet(self, ev_fleet_value):
+        self._ev_fleet = ev_fleet_value
 
     # Charging Efficiency
     @property
@@ -149,15 +160,6 @@ class ChargingScenario:
     @time_step.setter
     def time_step(self, time_step_value):
         self._time_step = time_step_value
-
-    # Travel time
-    @property
-    def travel_time_origin_destination_hours(self):
-        return self._travel_time_origin_destination_hours
-
-    @travel_time_origin_destination_hours.setter
-    def travel_time_origin_destination_hours(self, travel_time_origin_destination_hours_value):
-        self._travel_time_origin_destination_hours = travel_time_origin_destination_hours_value
 
     # Scenario definition
     @property
@@ -204,9 +206,15 @@ class ChargingScenario:
             vehicles_origin = int( round((row['n_outflows']*share_origin)) )
             vehicles_destination = int( round((row['n_inflows']*share_destination)) )
 
-            # Total charging demand 
-            Etot_origin = 2 * row['fkt_outflows']*share_origin * self.ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
-            Etot_destination = 2 * row['fkt_inflows']*share_destination * self.ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
+            # Total charging demand
+
+            # Compute the vehicle share - weighted ev consumption 
+            average_ev_consumption = 0
+            for vehicle in self.ev_fleet:
+                average_ev_consumption += vehicle[0]['ev_consumption'] * vehicle[1]
+
+            Etot_origin = 2 * row['fkt_outflows'] * share_origin * average_ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
+            Etot_destination = 2 * row['fkt_inflows'] * share_destination * average_ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
 
             # Average charging demand per vehicle
             
@@ -241,7 +249,7 @@ class ChargingScenario:
     def temporal_charging_demand(self):
         print(f"INFO \t Evaluating temporal charging profile")
 
-        travel_time_origin_destination_hours = self.travel_time_origin_destination_hours
+        travel_time_origin_destination_hours = self.scenario_definition['Travel time origin-destination']
 
         time_origin, power_profile_origin, num_cars_plugged_in_origin = self.eval_charging_profile(origin_or_destination = "Origin", travel_time_origin_destination_hours = travel_time_origin_destination_hours)
         time_destination, power_profile_destination, num_cars_plugged_in_destination = self.eval_charging_profile(origin_or_destination = "Destination", travel_time_origin_destination_hours = travel_time_origin_destination_hours)
@@ -273,7 +281,6 @@ class ChargingScenario:
             arrival_time = self.scenario_definition['Origin']['Arrival time']
             departure_time = self.scenario_definition['Destination']['Arrival time']
             vehicle_counts = self.charging_demand['n_vehicles_origin'].sum()
-            charging_power = self.scenario_definition['Origin']['Charging power']
             share_smart_charging = self.scenario_definition['Origin']['Smart charging']
 
             print(f"INFO \t ... Charging at origin with {share_smart_charging*100}% of smart charging...")
@@ -281,7 +288,6 @@ class ChargingScenario:
             arrival_time  = self.scenario_definition['Destination']['Arrival time']
             departure_time = self.scenario_definition['Origin']['Arrival time']
             vehicle_counts = self.charging_demand['n_vehicles_destination'].sum()
-            charging_power = self.scenario_definition['Destination']['Charging power']
             share_smart_charging = self.scenario_definition['Destination']['Smart charging']
 
             print(f"INFO \t ... Charging at destination with {share_smart_charging*100}% of smart charging...")
@@ -296,11 +302,12 @@ class ChargingScenario:
         power_demand = np.zeros_like(time)
         num_cars_plugged_in = np.zeros_like(time)
 
-        # Charging demand and for all vehicles
+        # Charging demand and max charging power for all vehicles
         charging_demands = np.zeros(vehicle_counts)
+        charging_powers = np.zeros(vehicle_counts)
 
         """
-        Assign charging demand to each vehicle using VKT distribution
+        Assign charging demand and charging power to each vehicle  
         """
         # Aggregate mobility flows 
         df_sum = self.mobsim[0].flows.copy()
@@ -318,10 +325,52 @@ class ChargingScenario:
 
         # Extract distances and probabilities
         distances = grouped_df['Travel Distance (km)'].values
-        probabilities = grouped_df['Probability'].values
+        distance_probabilities = grouped_df['Probability'].values
 
-        # Initialize charging_demands array with the correct shape
-        charging_demands = 2 * np.random.choice(distances, size=len(charging_demands), p=probabilities) * self.ev_consumption / self.charging_efficiency
+        # Calculate a charging demand and power for each type of vehicle
+
+        tmp_charging_demands = [np.zeros(vehicle_counts)] * len(self.ev_fleet)
+        tmp_charging_powers = [np.zeros(vehicle_counts)] * len(self.ev_fleet)
+
+        # Loop over all vehicles a pick a random distribution of demand and charging power
+
+        i = 0
+        for vehicle in self.ev_fleet:
+            tmp_charging_demands[i] = 2 * np.random.choice(distances, size=len(charging_demands), p=distance_probabilities) * vehicle[0]['ev_consumption'] / self.charging_efficiency
+
+            # Randomly pick a charging power (depends on charging at origin or destination)
+            if origin_or_destination == "Origin": 
+                available_charging_power = [item[0] for item in vehicle[0]['charger_power']['Origin']]
+                probabilities = [item[1] for item in vehicle[0]['charger_power']['Origin']]
+            elif origin_or_destination == "Destination": 
+                available_charging_power = [item[0] for item in vehicle[0]['charger_power']['Destination']]
+                probabilities = [item[1] for item in vehicle[0]['charger_power']['Destination']]    
+
+            tmp_charging_powers[i] = np.random.choice(available_charging_power, size=len(charging_demands), p=probabilities)
+
+            i = i+1
+
+        # Create a single list of charging demand and power based on the share of each vehicle
+
+        # Probability of choosing a vechile
+        probabilities = np.array([item[1] for item in self.ev_fleet])
+
+        # Generate random choices based on probabilities
+        # Create an array of shape (n, 3) to hold the lists
+        choices = np.zeros((len(charging_demands), len(self.ev_fleet)), dtype=int)
+        
+        # Randomly choose one list per position to set as 1
+        random_indices = np.random.choice(len(self.ev_fleet), size=len(charging_demands), p=probabilities)
+        
+        # Set the chosen list index to 1 for each position
+        choices[np.arange((len(charging_demands))), random_indices] = 1
+
+        num_lists = choices.shape[1]
+        list_of_choices = [choices[:, i] for i in range(num_lists)]
+        
+        for i in range(len(tmp_charging_demands)):
+            charging_demands += list_of_choices[i] * tmp_charging_demands[i]
+            charging_powers += list_of_choices[i] * tmp_charging_powers[i]
 
         """
         Assign arrival time to each vehicle using lognormal distribution
@@ -336,16 +385,6 @@ class ChargingScenario:
 
         arrival_times = np.random.normal(mean_arrival, stddev_arrival, vehicle_counts) % 24
         departure_times = np.random.normal(mean_departure, stddev_departure - travel_time_origin_destination_hours, vehicle_counts) % 24
-
-        """
-        Assign charging power to each vehicle using user-defined charging power
-        """
-        # Separate the values and the probabilities
-        available_charging_power = [item[0] for item in charging_power]
-        probabilities = [item[1] for item in charging_power]
-
-        # Randomly pick a charging power based on the specified probabilities
-        charging_powers = np.random.choice(available_charging_power, size=len(charging_demands), p=probabilities)
 
         """
         Assign vehicles with smart charging

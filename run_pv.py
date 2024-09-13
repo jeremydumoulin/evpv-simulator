@@ -39,7 +39,7 @@ pv_calc = PVCalculator(
     environment = {
         'latitude': 9.005401,
         'longitude': 38.763611,
-        'year': 2020
+        'year': '2020'
         }, 
     pv_module = {
         'efficiency': 0.22,

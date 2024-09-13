@@ -19,7 +19,7 @@ class PVCalculator:
         self._environment = {
             'latitude': environment.get('latitude'),
             'longitude': environment.get('longitude'),
-            'year': environment.get('year', '2020'),
+            'year': environment.get('year'),
             'timezone': environment.get('timezone', self.get_timezone(environment.get('latitude'), environment.get('longitude')))
         }
 
@@ -114,7 +114,7 @@ class PVCalculator:
             trackingtype = 0
             optimize_tilt = optimize_azimuth = False                 
             azimuth = 180
-            tilt = 4
+            tilt = 0
         else:
             raise ValueError(f"PV installation type is unknown")
 
@@ -137,7 +137,7 @@ class PVCalculator:
         weather_data_poa.index = pd.to_datetime((weather_data_poa.index))
 
         # Convert the to local timezone
-        weather_data_poa= weather_data_poa.tz_convert(self.environment['timezone'])
+        weather_data_poa = weather_data_poa.tz_convert(self.environment['timezone'])
 
         # Because of the converting of the time zone, the last rows could be those of the next year
         # Here, we detect how many rows we have and shift them to the beginning of the data
