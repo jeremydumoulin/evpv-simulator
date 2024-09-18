@@ -98,7 +98,7 @@ class ChargingScenario:
             df_list.append(mobsim_n.traffic_zones)
 
         # List of columns to sum
-        columns_to_sum = ['n_outflows', 'n_inflows', 'fkt_outflows', 'fkt_inflows', 'vkt_outflows', 'vkt_inflows']
+        columns_to_sum = ['n_outflows', 'n_inflows', 'pkm_outflows', 'pkm_inflows', 'km_per_capita_outflows', 'km_per_capita_inflows']
 
         # Initialize a DataFrame by summing the columns across all DataFrames in the list
         summed_df = pd.concat([df[columns_to_sum] for df in df_list]).groupby(level=0).sum()
@@ -116,13 +116,16 @@ class ChargingScenario:
         for vehicle in self.ev_fleet:
             tmp_n_outflows += result_df['n_outflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
             tmp_n_inflows += result_df['n_inflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
-            tmp_fkt_outflows += result_df['fkt_outflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
-            tmp_fkt_inflows += result_df['fkt_inflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
+            tmp_fkt_outflows += result_df['pkm_outflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
+            tmp_fkt_inflows += result_df['pkm_inflows'] * vehicle[1] / vehicle[0]['vehicle_occupancy']
 
         result_df['n_outflows'] = tmp_n_outflows.apply(round)
         result_df['n_inflows'] = tmp_n_inflows.apply(round)
         result_df['fkt_outflows'] = tmp_fkt_outflows.apply(round)        
         result_df['fkt_inflows'] = tmp_fkt_inflows.apply(round)
+
+        result_df['vkt_inflows'] = result_df['km_per_capita_inflows']
+        result_df['vkt_outflows'] = result_df['km_per_capita_outflows']        
 
         self._taz_properties = result_df
 

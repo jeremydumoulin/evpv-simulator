@@ -11,7 +11,7 @@ class EVCalculator:
     ############# Constructor #############
     #######################################
 
-    def __init__(self, mobility_demand: dict, ev_fleet: list, charging_efficiency: float, charging_curve_params: dict):
+    def __init__(self, mobility_demand: dict, ev_fleet: list, charging_efficiency: float, charging_scenario: dict):
 
         # Initialize the mobility demand attributes
         self._mobility_demand = {
@@ -30,7 +30,7 @@ class EVCalculator:
             'spatial_interaction_model': mobility_demand.get('spatial_interaction_model', 'gravity_exp_scaled'), # Type of spatial interaction model to use ('gravity_exp_scaled' = autocalibrated gravity model)
             'attraction_feature': mobility_demand.get('attraction_feature', 'destinations'), # Attraction feature used in the spatial interaction model ('destinations', 'population')
             'cost_feature': mobility_demand.get('cost_feature', 'distance_road'), # Cost feature used in the spatial interaction model ('distance_road', 'distance_centroid', 'time_road')
-            'vkt_offset_km': mobility_demand.get('vkt_offset', 0.0), # Additionnal daily distance travelled (in km) from the origin to destination (one way)      
+            'km_per_capita_offset': mobility_demand.get('km_per_capita_offset', 0.0), # Additionnal daily distance travelled (in km) from the origin to destination (one way)      
         }
 
         # Initialize the EV fleet attributes
@@ -40,14 +40,14 @@ class EVCalculator:
         self._charging_efficiency = charging_efficiency # Charging efficiency between 0 and 1
 
         # Initialize the charging curve attributes
-        self._charging_curve_params = {
+        self._charging_scenario = {
             # REQUIRED
-            'Origin': charging_curve_params.get('Origin'), # Dictionnary containing the main parameters for charging at origin
-            'Destination': charging_curve_params.get('Destination'), # Dictionnary containing the main parameters for charging at destination
+            'Home': charging_scenario.get('Home'), # Dictionnary containing the main parameters for charging at origin (home)
+            'Work': charging_scenario.get('Work'), # Dictionnary containing the main parameters for charging at destination (work)
 
             # OPTIONAL
-            'travel_time_origin_destination_h': charging_curve_params.get('travel_time_origin_destination_h', 0.5), # Average travel time (in hours) form origin to/from destination (used for smart charging)
-            'time_step_h': charging_curve_params.get('time_step_h', 0.1), # Time step (in hours) for the charging curve
+            'travel_time_origin_destination_h': charging_scenario.get('travel_time_origin_destination_h', 0.5), # Average travel time (in hours) form origin to/from destination (used for smart charging)
+            'time_step_h': charging_scenario.get('time_step_h', 0.1), # Time step (in hours) for the charging curve
         }
 
         # Create MobilitySim object and run the mobility demand modelling
@@ -56,32 +56,37 @@ class EVCalculator:
         print("")
 
         # Create ChargingScenario object and run the scenario
-        self.charging_scenario = self._create_charging_scenario()
-        self.charging_scenario.spatial_charging_demand()
-        self.charging_scenario.temporal_charging_demand()
+        self.charging_demand = self._create_charging_scenario()
+        self.charging_demand.spatial_charging_demand()
+        self.charging_demand.temporal_charging_demand()
         print("")
 
     #######################################
     ########### EV presets ################
     #######################################
 
-    preset_car = {
-        'ev_consumption': 0.2,
-        'vehicle_occupancy': 1.2,  
-        'charger_power': {
-            'Origin': [[11, 1.0]],
-            'Destination': [[11, 1.0]]
-        }
-    }
-
-    preset_motorbike = {
-        'ev_consumption': 0.06,
-        'vehicle_occupancy': 1.0,  
-        'charger_power': {
-            'Origin': [[11, 1.0]],
-            'Destination': [[11, 1.0]]
-        }
-    }    
+    preset = {
+        'car': {
+        # Charging mix: https://doi.org/10.1016/j.rser.2023.114214
+        # Car occupancy: https://www.energy.gov/eere/vehicles/articles/fotw-1333-march-11-2024-2022-average-number-occupants-trip-household
+        # Electric consumption: https://doi.org/10.1016/j.trd.2017.04.013
+            'ev_consumption': 0.183,
+            'vehicle_occupancy': 1.4,  
+            'charger_power': {
+                'Origin': [[7, 0.68], [11, 0.3], [22, 0.02]],
+                'Destination': [[7, 0.68], [11, 0.3], [22, 0.02]]
+            }
+        },
+        'motorbike': {
+        # Electric consumption: https://doi.org/10.3390/en16176369
+            'ev_consumption': 0.058,
+            'vehicle_occupancy': 1.0,  
+            'charger_power': {
+                'Origin': [[7, 1.0]],
+                'Destination': [[7, 1.0]]
+            }
+        }  
+    }  
 
     #######################################
     ### Parameters Setters and Getters ####
@@ -118,15 +123,15 @@ class EVCalculator:
         self._charging_efficiency.update(value)
 
     @property
-    def charging_curve_params(self):
-        return self._charging_curve_params
+    def charging_scenario(self):
+        return self._charging_scenario
 
-    @charging_curve_params.setter
-    def charging_curve_params(self, value):
+    @charging_scenario.setter
+    def charging_scenario(self, value):
         if isinstance(value, dict):
-            self._charging_curve_params.update(value)
+            self._charging_scenario.update(value)
         else:
-            raise ValueError("charging_curve_params must be a dictionary")
+            raise ValueError("charging_scenario must be a dictionary")
 
     #######################################
     ########### Mobility Demand ###########
@@ -152,7 +157,7 @@ class EVCalculator:
             ors_key = self.mobility_demand['ORS_key'], 
             attraction_feature = self.mobility_demand['attraction_feature'], 
             cost_feature = self.mobility_demand['cost_feature'], 
-            vkt_offset = self.mobility_demand['vkt_offset_km'])
+            km_per_capita_offset = self.mobility_demand['km_per_capita_offset'])
 
     #######################################
     ########## Charging Scenario ##########
@@ -163,11 +168,11 @@ class EVCalculator:
             mobsim = [self.mobsim],
             ev_fleet = self.ev_fleet,
             charging_efficiency = self.charging_efficiency, 
-            time_step = self.charging_curve_params['time_step_h'], 
+            time_step = self.charging_scenario['time_step_h'], 
             scenario_definition = {
-                "Travel time origin-destination": self.charging_curve_params['travel_time_origin_destination_h'], 
-                "Origin": self.charging_curve_params['Origin'],
-                "Destination": self.charging_curve_params['Destination']
+                "Travel time origin-destination": self.charging_scenario['travel_time_origin_destination_h'], 
+                "Origin": self.charging_scenario['Home'],
+                "Destination": self.charging_scenario['Work']
             }
         )
 
@@ -184,7 +189,7 @@ class EVCalculator:
         self.mobsim.flows.to_csv(output_folder / f"{prefix}_MobilityDemand_OriginDestinationFlows.csv", index=False) # Store aggregated TAZ features as csv
         self.mobsim.traffic_zones.to_csv(output_folder / f"{prefix}_MobilityDemand_TrafficAnalysisZones.csv", index=False) # Store aggregated TAZ features as csv
 
-        vkt_distribution = self.mobsim.vkt_histogram(bin_width_km = 1)
+        vkt_distribution = self.mobsim.km_per_capita_histogram(bin_width_km = 1)
         vkt_distribution.to_csv(output_folder / f"{prefix}_MobilityDemand_VKTdistribution.csv", index=False)
 
         if maps:
@@ -193,10 +198,10 @@ class EVCalculator:
 
         # Charging demand
 
-        self.charging_scenario.charging_demand.to_csv(output_folder  / f"{prefix}_ChargingDemand_Spatial.csv", index=False) 
-        self.charging_scenario.charging_profile.to_csv(output_folder  / f"{prefix}_ChargingDemand_ChargingCurve.csv", index=False)
+        self.charging_demand.charging_demand.to_csv(output_folder  / f"{prefix}_ChargingDemand_Spatial.csv", index=False) 
+        self.charging_demand.charging_profile.to_csv(output_folder  / f"{prefix}_ChargingDemand_ChargingCurve.csv", index=False)
 
         if maps:
-            self.charging_scenario.chargingdemand_total_to_map().save(output_folder  / f"{prefix}_ChargingDemand_Total.html")
-            self.charging_scenario.chargingdemand_pervehicle_to_map().save(output_folder  / f"{prefix}_ChargingDemand_PerCar.html")
-            self.charging_scenario.chargingdemand_nvehicles_to_map().save(output_folder  / f"{prefix}_ChargingDemand_VehiclesToCharge.html")  
+            self.charging_demand.chargingdemand_total_to_map().save(output_folder  / f"{prefix}_ChargingDemand_Total.html")
+            self.charging_demand.chargingdemand_pervehicle_to_map().save(output_folder  / f"{prefix}_ChargingDemand_PerCar.html")
+            self.charging_demand.chargingdemand_nvehicles_to_map().save(output_folder  / f"{prefix}_ChargingDemand_VehiclesToCharge.html")  

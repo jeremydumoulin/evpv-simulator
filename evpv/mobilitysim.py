@@ -364,7 +364,7 @@ class MobilitySim:
     ######## Trip Distribution ############
     #######################################
 
-    def trip_distribution(self, model, ors_key = None, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, vkt_offset = 0, road_to_euclidian_ratio = 1.63):
+    def trip_distribution(self, model, ors_key = None, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, km_per_capita_offset = 0, road_to_euclidian_ratio = 1.63):
         print(f"INFO \t TRIP DISTRIBUTION")
 
         if self.state != "generation_done":
@@ -501,6 +501,8 @@ class MobilitySim:
         print(f"INFO \t Applying spatial interaction model")
 
         # Iterate over each origin and apply the model
+        unit_surface_alert = False # Flag in the case of the auto-calibrated gravity model
+
         for origin in flows_df['Origin'].unique():
             # Filter rows for the current origin
             origin_rows = flows_df[flows_df['Origin'] == origin]
@@ -561,11 +563,18 @@ class MobilitySim:
                     cost_list = cost_list, 
                     beta = 0.16)
             elif model == 'gravity_exp_scaled':
+                # Gravity model auto-calibrated 
+                # https://doi.org/10.1371/journal.pone.0045985
+                # https://doi.org/10.1016/j.jtrangeo.2015.12.008
+                unit_surface_km2 = self.taz_width*self.taz_height
+                if unit_surface_km2 < 5 and not unit_surface_alert:
+                    print("ALERT \t The average unit surface area is less than 5 km2, which may cause the scaling law of the gravity model to be invalid.")
+                    unit_surface_alert = True
                 flows = hlp.prod_constrained_gravity_exp(
                     origin_n_trips = n_outflows,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
-                    beta = 0.3 * (self.taz_width*self.taz_height)**(-0.18) )
+                    beta = 0.3 * unit_surface_km2**(-0.18) )
             elif model == 'radiation':
                 flows = hlp.prod_constrained_radiation(
                     origin_n_trips = n_outflows,
@@ -592,84 +601,85 @@ class MobilitySim:
 
         n_outflows = []
         n_inflows = [] 
-        fkt_outflows = []
-        fkt_inflows = []
-        vkt_outflows = []
-        vkt_inflows = []
+        pkm_outflows = []
+        pkm_inflows = []
+        km_per_capita_outflows = []
+        km_per_capita_inflows = []
 
         # Iterate over the TAZ and append data
         for index, row in df.iterrows():
 
             # Append values related to the origin (outflows)            
             out_df = flows_df[flows_df['Origin'] == row['id']].copy()
-            out_df['Distance_Flow_Product'] = (out_df['Travel Distance (km)'] + vkt_offset) * out_df['Flow']
+            out_df['Distance_Flow_Product'] = (out_df['Travel Distance (km)'] + km_per_capita_offset) * out_df['Flow']
 
             outflow_sum = out_df['Flow'].sum()
             distance_flow_product_sum_out = out_df['Distance_Flow_Product'].sum()
 
             n_outflows.append(outflow_sum)
-            fkt_outflows.append(distance_flow_product_sum_out)
+            pkm_outflows.append(distance_flow_product_sum_out)
             if outflow_sum != 0:
-                vkt_outflows.append(distance_flow_product_sum_out / outflow_sum)
+                km_per_capita_outflows.append(distance_flow_product_sum_out / outflow_sum)
             else:
-                vkt_outflows.append(0)
+                km_per_capita_outflows.append(0)
 
             # Append values related to the destination (inflows)            
             in_df = flows_df[flows_df['Destination'] == row['id']].copy()
-            in_df['Distance_Flow_Product'] = (in_df['Travel Distance (km)'] + vkt_offset) * in_df['Flow']
+            in_df['Distance_Flow_Product'] = (in_df['Travel Distance (km)'] + km_per_capita_offset) * in_df['Flow']
 
             inflow_sum = in_df['Flow'].sum()
             distance_flow_product_sum_in = in_df['Distance_Flow_Product'].sum()
 
             n_inflows.append(inflow_sum)
-            fkt_inflows.append(distance_flow_product_sum_in)
+            pkm_inflows.append(distance_flow_product_sum_in)
             if inflow_sum != 0:
-                vkt_inflows.append(distance_flow_product_sum_in / inflow_sum)
+                km_per_capita_inflows.append(distance_flow_product_sum_in / inflow_sum)
             else:
-                vkt_inflows.append(0)
+                km_per_capita_inflows.append(0)
 
         # Add a new column with values from the list
         self._traffic_zones['n_outflows'] = n_outflows
         self._traffic_zones['n_inflows'] = n_inflows
-        self._traffic_zones['fkt_outflows'] = fkt_outflows
-        self._traffic_zones['fkt_inflows'] = fkt_inflows
-        self._traffic_zones['vkt_outflows'] = vkt_outflows
-        self._traffic_zones['vkt_inflows'] = vkt_inflows
+        self._traffic_zones['pkm_outflows'] = pkm_outflows
+        self._traffic_zones['pkm_inflows'] = pkm_inflows
+        self._traffic_zones['km_per_capita_outflows'] = km_per_capita_outflows
+        self._traffic_zones['km_per_capita_inflows'] = km_per_capita_inflows
 
         self.state = "distribution_done"
 
-        print(f"INFO \t Trip distribution done. FKT by road: {self.fkt} km | Av. VKT by road: {self.vkt} km")
-        print(f"INFO \t Trip distribution done. FKT centroid: {self.fkt_centroid} km | Av. VKT centroid: {self.vkt_centroid} km")
+        print(f"INFO \t Trip distribution done.")
+        print(f"\t Passenger-km (road-based): {self.pkm} km | Av. distance travelled (road-based ): {self.km_per_capita} km")
+        print(f"\t Passenger-km (centroid-based): {self.pkm_centroid} km | Av. distance travelled (centroid-based): {self.km_per_capita_centroid} km")
 
     @property
     def flows(self):
         return self._flows
 
     @property
-    def fkt(self):
-        return self.traffic_zones['fkt_outflows'].sum()
+    def pkm(self):
+        return self.traffic_zones['pkm_outflows'].sum()
 
     @property
-    def fkt_centroid(self):
+    def pkm_centroid(self):
         return self.flows['Centroid Distance (km)'].dot(self.flows['Flow'])  
 
     @property
-    def fkt_error(self):
+    def pkm_error(self):
         flows = self.flows['Flow']
         flows_squared = flows ** 2
 
         return 2 * np.sqrt(self.taz_width**2 + self.taz_height**2) * np.sqrt(flows_squared.sum()) # Assuming the error on the distance of each trip is 2 times the diagonal of TAZ (Error propagation)
 
     @property
-    def vkt_error(self):
-        return self.vkt * (self.fkt_error / self.fkt)
+    def km_per_capita_error(self):
+        return self.km_per_capita * (self.pkm_error / self.pkm)
 
     @property
-    def vkt(self):
-        return self.fkt / self.traffic_zones['n_outflows'].sum()
+    def km_per_capita(self):
+        return self.pkm / self.traffic_zones['n_outflows'].sum()
 
     @property
-    def vkt_centroid(self):
+    def km_per_capita_centroid(self):
         return np.average(self.flows['Centroid Distance (km)'], weights=self.flows['Flow'])
 
     #######################################
@@ -753,7 +763,7 @@ class MobilitySim:
     ### Post-processing & visualisation ###
     #######################################
 
-    def vkt_histogram(self, bin_width_km):
+    def km_per_capita_histogram(self, bin_width_km):
         centroid_distance = self.flows['Centroid Distance (km)']
         travel_distance = self.flows['Travel Distance (km)']
         weights = self.flows['Flow']
