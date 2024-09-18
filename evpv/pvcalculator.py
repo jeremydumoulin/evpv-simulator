@@ -15,6 +15,9 @@ class PVCalculator:
     #######################################
 
     def __init__(self, environment, pv_module, installation):
+        print("")
+        print(f"INFO \t Creating a new PV Calculator object")
+
         # Initialize the environment attributes
         self._environment = {
             'latitude': environment.get('latitude'),

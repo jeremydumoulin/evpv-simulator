@@ -263,7 +263,7 @@ class ChargingScenario:
             'Number of cars charging at origin': num_cars_plugged_in_origin,
             'Charging profile at destination (MW)': power_profile_destination,
             'Number of cars charging at destination': num_cars_plugged_in_destination,
-            'Total charging profile (MW)': power_profile_origin + power_profile_destination
+            'Total (MW)': power_profile_origin + power_profile_destination
         })
 
         self._charging_profile = df

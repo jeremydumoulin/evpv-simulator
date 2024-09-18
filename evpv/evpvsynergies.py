@@ -29,6 +29,9 @@ class EVPVSynergies:
         ev_charging_demand_MW,
         pv_capacity_MW):
 
+        print("")
+        print(f"INFO \t Creating a new EVPVSynergies object")
+
         self.ev_charging_demand_MW = ev_charging_demand_MW
         self.pv_capacity_factor = pv_capacity_factor
         self.pv_capacity_MW = pv_capacity_MW  
@@ -45,7 +48,7 @@ class EVPVSynergies:
     def ev_charging_demand_MW(self, ev_charging_demand_MW):
         # Extract the 'Time' and 'Total profile (MW)' columns
         time = ev_charging_demand_MW['Time']
-        profile = ev_charging_demand_MW['Total profile (MW)']
+        profile = ev_charging_demand_MW['Total (MW)']
 
         self._ev_charging_demand_MW = interp1d(time, profile, kind='linear', fill_value = 'extrapolate') 
 
@@ -151,5 +154,44 @@ class EVPVSynergies:
         spearman_coef, p_value = spearmanr(pv_values, ev_values)
 
         return spearman_coef, p_value
-    
+
+
+    def daily_metrics(self, start_date, end_date, n_points=100):
+        print(f"INFO \t Computing all metrics over a given period. This might take some time...")
+
+        # Convert start and end dates from MM-DD to YYYY-MM-DD format
+        start_date = f'1901-{start_date}'
+        end_date = f'1901-{end_date}'
+        
+        # Generate a list of dates from start to end date in MM-DD format
+        date_range = pd.date_range(start=start_date, end=end_date)
+        filtered_days = [date.strftime('%m-%d') for date in date_range if date.strftime('%m-%d') in self.pv_capacity_factor]
+
+        # Initialize lists to hold results
+        results = []
+
+        for day in filtered_days:
+            print(day, end='\r')
+            spearman_coef, p_value = self.spearman_correlation(day, n_points)
+            pv_prod = self.pv_production(day)
+            ev_dmd = self.ev_demand()
+            energy_cov_ratio = self.energy_coverage_ratio(day)
+            self_cons_ratio = self.self_consumption_ratio(day)
+            excess_pv_rat = self.excess_pv_ratio(day)
+
+            results.append({
+                'Day': f'1901-{day}',                
+                'PV Production (MWh)': pv_prod,
+                'EV Demand (MWh)': ev_dmd,
+                'Spearman Coefficient': spearman_coef,
+                'P-Value': p_value,
+                'Energy Coverage Ratio': energy_cov_ratio,
+                'Self Consumption Ratio': self_cons_ratio,
+                'Excess PV Ratio': excess_pv_rat
+            })
+
+        # Create a DataFrame from the results
+        df = pd.DataFrame(results)
+
+        return df
         
