@@ -753,14 +753,16 @@ class MobilitySim:
     ### Post-processing & visualisation ###
     #######################################
 
-    def vkt_histogram(self, n_bins):
+    def vkt_histogram(self, bin_width_km):
         centroid_distance = self.flows['Centroid Distance (km)']
         travel_distance = self.flows['Travel Distance (km)']
         weights = self.flows['Flow']
 
+        bin_edges = np.arange(0, travel_distance.max()+1, bin_width_km)  # Bins of width 10, from 0 to 10
+
         # Calculate the histogram
-        centroid_distance_counts, bin_edges = np.histogram(centroid_distance, bins=n_bins, weights=weights)
-        travel_distance_counts, bin_edges = np.histogram(travel_distance, bins=n_bins, weights=weights)
+        centroid_distance_counts, bin_edges = np.histogram(centroid_distance, bins=bin_edges, weights=weights)
+        travel_distance_counts, bin_edges = np.histogram(travel_distance, bins=bin_edges, weights=weights)
 
         # Calculate the bin centers (optional)
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
@@ -780,139 +782,49 @@ class MobilitySim:
         df = self.traffic_zones
 
         # 1. Create an empty map
-        m1 = folium.Map(location=self.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+        m1 = folium.Map(location=self.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True)
 
-        # 2. Add administrative boundaries
-
-        # Define style function to only show lines
+        # 2. Add Administrative Boundaries
         def style_function(feature):
             return {
-                'color': 'blue',  # Set line color
-                'weight': 3,      # Set line weight
-                'fillColor': 'none',  # Set fill color to 'none'
+                'color': 'blue',
+                'weight': 3,
+                'fillColor': 'none',
             }
-
+        
         folium.GeoJson(self.target_area, name='Administrative boundary', style_function=style_function).add_to(m1)
 
         # 3. Add Simulation bbox
-
         minx, miny, maxx, maxy = self.simulation_bbox
+        folium.Rectangle(bounds=[[miny, minx], [maxy, maxx]], fill=True, fill_opacity=0, color='blue', weight=2).add_to(m1)
 
-        # Create a rectangle using the bounding box coordinates
-        rectangle = folium.Rectangle(
-            bounds=[[miny, minx], [maxy, maxx]],
-            fill=True,  # Fill the rectangle
-            fill_opacity=0,  # Set the opacity of the fill color
-            color='blue',  # Border color
-            weight=2,  # Border width
-        )
-
-        # Create a feature group to hold the rectangle and give it a name
-        feature_group = folium.FeatureGroup(name='Simulation Area')
-        rectangle.add_to(feature_group)
-        feature_group.add_to(m1)
-
-        # 4. Add Population data
-
-        m1 = hlp.add_raster_to_folium(self.population_density, m1)
-
-        # 5. Add TAZs
-
-        # Function to add rectangles to the map
-        def add_rectangle(row):
-            # Parse the WKT string to create a Polygon object
+        # 5. Add rectangles (using apply)
+        def add_rectangle(row, colormap, col, map_obj):
             bbox_polygon = row['bbox']
             bbox_coords = bbox_polygon.bounds
-            
-            # Add rectangle to map
             folium.Rectangle(
                 bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color='grey',
-                fill=True,
-                fill_color='grey',
-                fill_opacity=0.0
-            ).add_to(m1)
+                color=None, fill=True, fill_color=colormap(row[col]), fill_opacity=0.7
+            ).add_to(map_obj)
 
-        # # Apply the function to each row in the DataFrame
-        df.apply(add_rectangle, axis=1)
-
-        # Add center points
-
-        # Add markers
-
-        # for idx, row in df.iterrows():
-        #     lat, lon = row['geometric_center']
-        #     folium.Marker(
-        #         location=[lon, lat],
-        #         icon=folium.Icon(color='red'),
-        #         popup=f"ID: {row['id']} - ({lat}, {lon}) - Pop: {int(row['population'])} - Dest: {int(row['destinations'])}"
-        #     ).add_to(m1)
-
-        # Add destinations
-
-        # Normalize data for color scaling
+        # Normalize data for destinations and population
         linear1 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
-
-        # Create a feature group for all polygons
-        feature_group = folium.FeatureGroup(name='Destinations')
-
-        # Add polygons to the feature group
-        for idx, row in df.iterrows():
-            bbox_polygon = row['bbox']
-            bbox_coords = bbox_polygon.bounds
-
-            # Create a rectangle for each row
-            rectangle = folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color=None,
-                fill=True,
-                fill_color=linear1(row['destinations']),
-                fill_opacity=0.7,
-            )
-
-            # Add the rectangle to the feature group
-            rectangle.add_to(feature_group)
-
-        # Add the feature group to the map
-        feature_group.add_to(m1)
-
-        # 6. Add Aggregateds Population
-
-        # Normalize population data for color scaling
         linear2 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
 
-        # Create a feature group for all polygons
-        feature_group = folium.FeatureGroup(name='Population')
+        # Add destinations
+        df.apply(lambda row: add_rectangle(row, linear1, 'destinations', m1), axis=1)
 
-        # Add polygons to the feature group
-        for idx, row in df.iterrows():
-            bbox_polygon = row['bbox']
-            bbox_coords = bbox_polygon.bounds
+        # Add population
+        df.apply(lambda row: add_rectangle(row, linear2, 'population', m1), axis=1)
 
-            # Create a rectangle for each row
-            rectangle = folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color=None,
-                fill=True,
-                fill_color=linear2(row['population']),
-                fill_opacity=0.7,
-            )
-
-            # Add the rectangle to the feature group
-            rectangle.add_to(feature_group)
-
-        # Add the feature group to the map
-        feature_group.add_to(m1)
-
-        # Add the color scale legend to the map
+        # Add color scales
         linear1.caption = 'Number of destinations'
         linear1.add_to(m1)
-
+        
         linear2.caption = 'Number of people'
         linear2.add_to(m1)
 
-        # Add Layer Control and Save 
-
+        # 6. Add Layer Control
         folium.LayerControl().add_to(m1)
         
         return m1

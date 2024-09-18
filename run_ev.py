@@ -26,145 +26,41 @@ import os
 import folium
 from folium.plugins import AntPath
 from folium.plugins import HeatMap
-import pickle
-
-from dotenv import load_dotenv
-from pathlib import Path
-import osmnx as ox
-import branca.colormap as cm
 
 from evpv.mobilitysim import MobilitySim
 from evpv.chargingscenario import ChargingScenario
+from evpv.evcalculator import EVCalculator
 from evpv import helpers as hlp
 
-#############################################
-# PARAMETERS - MODIFY ACCORDING TO YOUR NEEDS
-#############################################
+##############################
+##### EV Charging Demand #####
+##############################
 
-"""
-Environment variables
-"""
-
-load_dotenv() # take environment variables from .env
-
-INPUT_PATH = Path( str(os.getenv("INPUT_PATH")) )
-OUTPUT_PATH = Path( str(os.getenv("OUTPUT_PATH")) )
-ORS_KEY = os.getenv("ORS_KEY")
-
-"""
-Global parameters 
-"""
-
-shapefile_path = INPUT_PATH / "gadm41_ETH_1_AddisAbeba.json" # Addis Ababa administrative boundaries
-population_density_path = INPUT_PATH / "GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif" # Population density raster
-destinations_path = INPUT_PATH /  "workplaces_with_attraction_outside_city.csv"
-
-taz_target_width_km = 3 # Desired TAZ width
-simulation_area_extension_km = 0
-population_to_ignore = 0.00
-
-share_active = 0.626
-share_unemployed = 0.23
-share_home_office = 0.0
-mode_share = 1.0
-vehicle_occupancy = 1.2
-ev_rate = 1.0 
-
-n_trips_per_inhabitant = (share_active * (1 - share_unemployed) * (1 - share_home_office)) *  (mode_share) * ev_rate
-
-vkt_offset = 0
-model = "gravity_exp_02"
-attraction_feature = "destinations"
-cost_feature = "distance_road"
-
-use_cached_data = True
-
-#############################################
-## MOBILITY SIMULATION 1 (home-work-home) ###
-#############################################
-
-# MobilitySim 
-
-if os.path.isfile(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl") and use_cached_data:
-    mobsim = MobilitySim.from_pickle(OUTPUT_PATH / "evpv_Tmp_MobilitySim_Cache.pkl")
-
-else:
-    mobsim = MobilitySim(
-        target_area = shapefile_path,
-        population_density = population_density_path, 
-        destinations = destinations_path)
-
-    mobsim.setup_simulation(taz_target_width_km = taz_target_width_km, simulation_area_extension_km = simulation_area_extension_km, population_to_ignore_share = population_to_ignore)
-    mobsim.trip_generation(n_trips_per_inhabitant = n_trips_per_inhabitant)     
-    mobsim.trip_distribution(model = model, ors_key = ORS_KEY, attraction_feature = attraction_feature, cost_feature = cost_feature, vkt_offset = vkt_offset)
-
-    mobsim.to_pickle(OUTPUT_PATH / f"evpv_Tmp_MobilitySim_Cache.pkl")
-
-# Printing FKT and VKT
-# print(f"FKT = ({mobsim.fkt} +/- {mobsim.fkt_error}) km")
-# print(f"VKT = ({mobsim.vkt} +/- {mobsim.vkt_error}) km")
-
-# Storing outputs
-
-# All flows and TAZ properties
-
-mobsim.flows.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_OriginDestinationFlows.csv", index=False) # Store aggregated TAZ features as csv
-mobsim.traffic_zones.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_TrafficAnalysisZones.csv", index=False) # Store aggregated TAZ features as csv
-
-# Histogram of VKTs 
-
-vkt_distribution = mobsim.vkt_histogram(n_bins = 200)
-vkt_distribution.to_csv(OUTPUT_PATH / "evpv_Result_MobilitySim_VKThistogram.csv", index=False)
-
-# Maps
-# mobsim.setup_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_SimulationSetup.html")
-# mobsim.trip_generation_to_map().save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripGeneration.html")
-# mobsim.trip_distribution_to_map(trip_id = "6_1").save(OUTPUT_PATH / "evpv_Result_MobilitySim_TripDistribution.html")
-
-#############################################
-############### CHARGING NEEDS ##############
-#############################################
-car = {
-    'ev_consumption': 0.2,
-    'vehicle_occupancy': 1.2,  
-    'charger_power': {
-        'Origin': [[11, 1.0]],
-        'Destination': [[11, 1.0]]
-    }
-}
-
-motorbike = {
-    'ev_consumption': 0.06,
-    'vehicle_occupancy': 1.0,  
-    'charger_power': {
-        'Origin': [[5, 1.0]],
-        'Destination': [[11, 1.0]]
-    }
-}
-
-cs = ChargingScenario(
-    mobsim = [mobsim],
-    ev_fleet = [[car, 1.0], [motorbike, 0.0]],
-    charging_efficiency = 0.9, # Charging efficiency
-    time_step = 1/10, # Time step in hours 
-    scenario_definition = {
-    "Travel time origin-destination": 0.5, # Average travel time in hours from origin to destination (and destination to origin)
-    "Origin": {
-        "Share": 1.0, # Charging location share
-        "Arrival time": [18, 2], # Average charger plugin time and std deviation
-        "Smart charging": .0 # Share of smart chargers 
+# Create a new EV Calculator and compute both the mobility and charging demands in a given scenario
+ev = EVCalculator(
+    mobility_demand = {
+        'target_area_geojson': 'input/gadm41_ETH_1_AddisAbeba.json', 
+        'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif', 
+        'destinations_csv': 'input/workplaces.csv', 
+        'trips_per_inhabitant': 0.01, 
+        'zone_width_km': 4,
+        'ORS_key': None #'5b3ce3597851110001cf6248879c0a16f2754562898e0826e061a1a3'
     },
-    "Destination": {
-        "Share": 0,
-        "Arrival time": [9, 2],
-        "Smart charging": 0.0 
-    }})
+    ev_fleet = [[EVCalculator.preset_car, 1.0], [EVCalculator.preset_motorbike, 0.0]],
+    charging_efficiency = 0.9,
+    charging_curve_params = {
+        "Origin": {
+            "Share": 0.0, 
+            "Arrival time": [18, 2], 
+            "Smart charging": 1.0 
+        },
+        "Destination": {
+            "Share": 1.0,
+            "Arrival time": [9, 2],
+            "Smart charging": 1.0 
+        }}
+    )
 
-# Store spatial and temporal results as CSV
-cs.charging_demand.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_Destination.csv", index=False) 
-cs.charging_profile.to_csv(OUTPUT_PATH / "evpv_Result_ChargingDemand_PowerProfile.csv", index=False)
+# Save the results
+ev.save_results(output_folder = "output", prefix = "Scenario1")
 
-# Maps
-cs.chargingdemand_total_to_map().save(OUTPUT_PATH / "evpv_Result_ChargingScenario_TotalChargingDemand_Destination.html")
-cs.chargingdemand_pervehicle_to_map().save(OUTPUT_PATH / "evpv_Result_ChargingScenario_ChargingDemandPerCar_Destination.html")
-cs.chargingdemand_nvehicles_to_map().save(OUTPUT_PATH / "evpv_Result_ChargingScenario_NumberOfVehicles_Destination.html")

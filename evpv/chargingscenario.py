@@ -51,14 +51,10 @@ class ChargingScenario:
 
         # Printing results
 
-        print(f"INFO \t ChargingDemand object created.")
-        print(f" \t Number of trips: {self.taz_properties['n_inflows'].sum()} (n_in) // {self.taz_properties['n_outflows'].sum()} (n_out)")
+        print(f"INFO \t New ChargingDemand object created")
+        print(f" \t Number of vehicles: {self.taz_properties['n_inflows'].sum()} (n_in) // {self.taz_properties['n_outflows'].sum()} (n_out)")
         print(f" \t FKT (origin to destination): {self.taz_properties['fkt_inflows'].sum()} km")
         print(f" \t Average VKT (origin to destination): {self.taz_properties['fkt_inflows'].sum() / self.taz_properties['n_inflows'].sum()} km")  
-
-        # Printing results
-        self.spatial_charging_demand()
-        self.temporal_charging_demand()      
         
 
     #######################################
@@ -187,7 +183,7 @@ class ChargingScenario:
     #######################################
 
     def spatial_charging_demand(self):
-        print(f"INFO \t Computing the spatial charging demand for each TAZ")
+        print(f"INFO \t COMPUTING THE SPATIAL CHARGING DEMAND")
 
         # Inputs
         share_origin = self.scenario_definition['Origin']['Share']
@@ -247,7 +243,7 @@ class ChargingScenario:
     #######################################
 
     def temporal_charging_demand(self):
-        print(f"INFO \t Evaluating temporal charging profile")
+        print(f"INFO \t COMPUTING THE TEMPORAL CHARGING DEMAND (CHARGING CURVE)")
 
         travel_time_origin_destination_hours = self.scenario_definition['Travel time origin-destination']
 
@@ -454,7 +450,7 @@ class ChargingScenario:
             end_idx = np.searchsorted(time, departure_times[i])
             if end_idx < start_idx:
                 end_idx += len(time) # Gérer le wrap-around pour une journée de 24 heures
-            
+        
             # Calcul initial de la demande de charge
             remaining_demand = charging_demands[i]
             max_power = charging_powers[i]
@@ -487,7 +483,16 @@ class ChargingScenario:
             
             # Si de l'énergie reste à charger, répartir uniformément
             if remaining_demand > 0:
-                charge_power_uniform = remaining_demand / (departure_times[i] - arrival_times[i])
+                # Manage the case where the departure time is smaller than the arrival time
+                if departure_times[i] < arrival_times[i]:
+                    # Charging spans over midnight
+                    charging_duration = (24 - arrival_times[i]) + departure_times[i]
+                else:
+                    # No wrap-around
+                    charging_duration = departure_times[i] - arrival_times[i]
+
+                charge_power_uniform = remaining_demand / charging_duration
+
                 for t in range(start_idx, end_idx):
                     current_time_idx = t % len(time)
                     power_demand[current_time_idx] += charge_power_uniform
