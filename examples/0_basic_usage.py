@@ -29,8 +29,8 @@ ev = EVCalculator(
         'target_area_geojson': 'input/gadm41_ETH_1_AddisAbeba.json', 
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif', 
         'destinations_csv': 'input/workplaces.csv', 
-        'trips_per_inhabitant': 0.01, 
-        'zone_width_km': 5,
+        'trips_per_inhabitant': 0.1, 
+        'zone_width_km': 3,
         # Optional
         'ORS_key': None, #'5b3ce3597851110001cf6248879c0a16f2754562898e0826e061a1a3'
     },
@@ -45,10 +45,10 @@ ev = EVCalculator(
             "Arrival time": [18, 2], 
             "Smart charging": 0.0 
         },
-        "Work": {
+        "Destination": {
             "Share": 1.0,
             "Arrival time": [9, 2],
-            "Smart charging": 0.0 
+            "Smart charging": 1.0 
         }}
     )
 
@@ -71,7 +71,7 @@ pv = PVCalculator(
         'temperature_coefficient': -0.0035
         }, 
     installation = {
-        'type': 'rooftop'
+        'type': 'groundmounted_fixed'
     })
 
 # Run the PV simulation
@@ -92,12 +92,12 @@ charging_curve = ev.charging_demand.charging_profile[['Time', 'Total (MW)']]
 evpv = EVPVSynergies(
     pv_capacity_factor = capacity_factor, 
     ev_charging_demand_MW = charging_curve, 
-    pv_capacity_MW = 10)
+    pv_capacity_MW = 280)
 
 # One example KPI for a single day
 print(evpv.self_sufficiency_ratio(day='01-01'))
 
 # All KPIs over a given period
-daily_kpis = evpv.daily_metrics(start_date = '01-01', end_date = '01-26')
+daily_kpis = evpv.daily_metrics(start_date = '01-01', end_date = '12-31')
 daily_kpis.to_csv(f"output/{sc}_EVPV_KPIs.csv")
 
