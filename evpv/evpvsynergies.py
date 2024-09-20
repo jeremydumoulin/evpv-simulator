@@ -176,6 +176,7 @@ class EVPVSynergies:
             pv_prod = self.pv_production(day)
             ev_dmd = self.ev_demand()
             energy_cov_ratio = self.energy_coverage_ratio(day)
+            self_suf_ratio = self.self_sufficiency_ratio(day)            
             self_cons_ratio = self.self_consumption_ratio(day)
             excess_pv_rat = self.excess_pv_ratio(day)
 
@@ -186,6 +187,7 @@ class EVPVSynergies:
                 'Spearman Coefficient': spearman_coef,
                 'P-Value': p_value,
                 'Energy Coverage Ratio': energy_cov_ratio,
+                'Self Sufficiency Ratio': self_suf_ratio,                
                 'Self Consumption Ratio': self_cons_ratio,
                 'Excess PV Ratio': excess_pv_rat
             })

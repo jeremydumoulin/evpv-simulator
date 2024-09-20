@@ -113,7 +113,7 @@ class PVCalculator:
             trackingtype = 3
         elif self.installation['type'] == 'groundmounted_dualaxis':
             trackingtype = 2
-        if self.installation['type'] == 'rooftop':
+        elif self.installation['type'] == 'rooftop':
             trackingtype = 0
             optimize_tilt = optimize_azimuth = False                 
             azimuth = 180

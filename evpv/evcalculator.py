@@ -19,7 +19,7 @@ class EVCalculator:
             'target_area_geojson': mobility_demand.get('target_area_geojson'), # Path to the geojson containing the path to the target area (or region of interest)
             'population_raster': mobility_demand.get('population_raster'), # Path to raster file (.tif) with the population density
             'destinations_csv': mobility_demand.get('destinations_csv'), # Path to the csv file with the list of potential destinations
-            'trips_per_inhabitant': mobility_demand.get('trips_per_inhabitant'), # Average number of trips per inhabitant (from origin to destination, e.g., home to work)
+            'trips_per_inhabitant': mobility_demand.get('trips_per_inhabitant'), # Average number of trips per inhabitant (from origin to destination, e.g., home to Destination)
             'zone_width_km': mobility_demand.get('zone_width_km'), # Target width (in km) of the zones that mesh the simulation zone (i.e., spatial resolution) - will be slighlty adapted by the algorithm
 
             # OPTIONAL
@@ -43,7 +43,7 @@ class EVCalculator:
         self._charging_scenario = {
             # REQUIRED
             'Home': charging_scenario.get('Home'), # Dictionnary containing the main parameters for charging at origin (home)
-            'Work': charging_scenario.get('Work'), # Dictionnary containing the main parameters for charging at destination (work)
+            'Destination': charging_scenario.get('Destination'), # Dictionnary containing the main parameters for charging at destination (eg work)
 
             # OPTIONAL
             'travel_time_origin_destination_h': charging_scenario.get('travel_time_origin_destination_h', 0.5), # Average travel time (in hours) form origin to/from destination (used for smart charging)
@@ -172,7 +172,7 @@ class EVCalculator:
             scenario_definition = {
                 "Travel time origin-destination": self.charging_scenario['travel_time_origin_destination_h'], 
                 "Origin": self.charging_scenario['Home'],
-                "Destination": self.charging_scenario['Work']
+                "Destination": self.charging_scenario['Destination']
             }
         )
 

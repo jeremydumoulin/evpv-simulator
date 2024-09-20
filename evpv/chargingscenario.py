@@ -523,6 +523,16 @@ class ChargingScenario:
 
         m = folium.Map(location=self.mobsim[0].centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
 
+        # 2. Add Administrative Boundaries
+        def style_function(feature):
+            return {
+                'color': 'blue',
+                'weight': 3,
+                'fillColor': 'none',
+            }
+        
+        folium.GeoJson(self.mobsim[0].target_area, name='Administrative boundary', style_function=style_function).add_to(m)
+
         # 2. Add TAZ boundaries
 
         # Function to add rectangles to the map
@@ -615,6 +625,16 @@ class ChargingScenario:
 
         m = folium.Map(location=self.mobsim[0].centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
 
+        # 2. Add Administrative Boundaries
+        def style_function(feature):
+            return {
+                'color': 'blue',
+                'weight': 3,
+                'fillColor': 'none',
+            }
+        
+        folium.GeoJson(self.mobsim[0].target_area, name='Administrative boundary', style_function=style_function).add_to(m)
+
         # 2. Add TAZ boundaries
 
         # Function to add rectangles to the map
@@ -638,7 +658,7 @@ class ChargingScenario:
         # 3. Charging AT ORIGIN
 
         # Normalize data for color scaling
-        linear = cm.LinearColormap(["#edf8b1", "#7fcdbb", "#2c7fb8"], vmin=0, vmax=max(df['E0_origin_kWh'].max(),df['E0_destination_kWh'].max()) )
+        linear = cm.LinearColormap(["#ffeda0", "#feb24c", "#f03b20"], vmin=0, vmax=max(df['E0_origin_kWh'].max(),df['E0_destination_kWh'].max()) )
 
         # Create a feature group for all polygons
         feature_group = folium.FeatureGroup(name='Charging need per vehicle at Origin')
@@ -707,6 +727,16 @@ class ChargingScenario:
 
         m = folium.Map(location=self.mobsim[0].centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
 
+        # 2. Add Administrative Boundaries
+        def style_function(feature):
+            return {
+                'color': 'blue',
+                'weight': 3,
+                'fillColor': 'none',
+            }
+        
+        folium.GeoJson(self.mobsim[0].target_area, name='Administrative boundary', style_function=style_function).add_to(m)
+
         # 2. Add TAZ boundaries
 
         # Function to add rectangles to the map
@@ -730,7 +760,7 @@ class ChargingScenario:
         # 3. Charging AT ORIGIN
 
         # Normalize data for color scaling
-        linear = cm.LinearColormap(["#edf8b1", "#7fcdbb", "#2c7fb8"], vmin=0, vmax=max(df['n_vehicles_origin'].max(), df['n_vehicles_destination'].max()) )
+        linear = cm.LinearColormap(["#e0ecf4", "#9ebcda", "#8856a7"], vmin=0, vmax=max(df['n_vehicles_origin'].max(), df['n_vehicles_destination'].max()) )
 
         # Create a feature group for all polygons
         feature_group = folium.FeatureGroup(name='Number of vehicles charging at Origin')

@@ -821,11 +821,19 @@ class MobilitySim:
         linear1 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
         linear2 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
 
-        # Add destinations
-        df.apply(lambda row: add_rectangle(row, linear1, 'destinations', m1), axis=1)
+        # Create FeatureGroups for destinations and population
+        destinations_group = folium.FeatureGroup(name='Number of Destinations', show=False)
+        population_group = folium.FeatureGroup(name='Number of People', show=False)
 
-        # Add population
-        df.apply(lambda row: add_rectangle(row, linear2, 'population', m1), axis=1)
+        # Add destinations rectangles to the group
+        df.apply(lambda row: add_rectangle(row, linear1, 'destinations', destinations_group), axis=1)
+
+        # Add population rectangles to the group
+        df.apply(lambda row: add_rectangle(row, linear2, 'population', population_group), axis=1)
+
+        # Add the FeatureGroups to the map
+        destinations_group.add_to(m1)
+        population_group.add_to(m1)
 
         # Add color scales
         linear1.caption = 'Number of destinations'
@@ -846,6 +854,16 @@ class MobilitySim:
 
         # 1. Create an empty map
         m2 = folium.Map(location=self.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
+
+        # 2. Add Administrative Boundaries
+        def style_function(feature):
+            return {
+                'color': 'blue',
+                'weight': 3,
+                'fillColor': 'none',
+            }
+        
+        folium.GeoJson(self.target_area, name='Administrative boundary', style_function=style_function).add_to(m2)
 
         # 2. Add TAZ boundaries
 
