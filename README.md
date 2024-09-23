@@ -26,9 +26,12 @@ The EV-PV model has three main objectives and corresponding outputs (as shown in
 ## Installation
 
 ### Requirements
-- **Python**: Ensure Python is installed on your system (). 
-- **Miniconda** (optional, but recommended): Use Conda for managing Python environments and dependencies. You can install Conda via [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/distribution).
+- **Python**: Ensure Python is installed on your system. 
+- **Conda** (optional, but recommended): Use Conda for managing Python environments and dependencies. 
 - **Open Route Service API key** (optional, but recommended to perform realistic road-based distance estimation): Sign up for an API key at [OpenRouteService](https://openrouteservice.org/sign-up/).
+
+> :bulb: If you are new to python and conda environments, we recommand installing python and conda via the [Miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution. During the installation, make sure to select "Add Miniconda to PATH" for ease of use.
+> :thumbsdown: If you do not want to use conda, we strongly recommend using an other virtual environment manager (venv, ...). However, you can also manually install all the python dependencies (not recommended) using the list of required modules in the `environment.yml` file (Note that the code was developed and tested using python 3.12, so other python version might not work).
 
 ### Installation with conda
 1. Clone the latest version of the code on GitHub on your local machine. If you are not familiar with git, you can also manually download the folder from GitHub and then run the code. However, you won't be able to contribute to the project.
@@ -36,11 +39,10 @@ The EV-PV model has three main objectives and corresponding outputs (as shown in
 $ git clone https://github.com/jeremydumoulin/evpv.git
 ```
 
-2. Create a conda environment with the required dependencies and activate it. 
+2. Open an Anaconda prompt and create a mew conda environment with the required dependencies. 
 ```bash
 $ conda env create -f environment.yml -n your_environment_name
 ```
-> :thumbsdown: If you do not want to use conda, we strongly recommend using an other virtual environment. However, if you prefer, you can also manually install the python dependencies (not recommended). The code was developed and tested using python 3.12, and the list of all required modules is available in the `environment.yml` file.
 
 3. Activate the conda environment (assuming the environment is named `your_environment_name`). 
 ```bash
