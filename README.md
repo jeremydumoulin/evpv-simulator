@@ -1,3 +1,35 @@
+# EVPV
+**EVPV is ...**
+
+Authors = Jeremy Dumoulin, Alejandro Pena-Bello, Noémie Jeannin, Nicolas Wyrsch
+
+Lead institution = EPFL PV-LAB, Switzerland
+
+Contact = jeremy.dumoulin@epfl.ch 
+
+Langage = python 3 
+
+> :bulb: This `README.md` provides a quick start guide for basic usage of the project. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
+
+## Installation
+
+## Project structure
+
+## Usage
+
+## Features
+
+## Contributing
+
+## Scientific publications
+
+## Acknowledgment 
+
+## Good to know
+
+## License
+
+
 # GTFS4EV
 **GTFS4EV (GTFS for Electric Vehicles) is a python code simulating the daily electric energy demand of a transport system powered by electric vehicles using GTFS data. It also comes wit helper functions and scripts to estimate the main environmental (exposure to air pollution, reduction in CO2 emissions) and economic benefits (savings for owner-operators) of vehicle electrification.** 
 
