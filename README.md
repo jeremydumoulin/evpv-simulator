@@ -21,7 +21,7 @@ The EV-PV model has three overarching goals
 The next figure illustrate the general inputs, outputs, and processing done in a EV-PV simulation.
 
 <center>
-	<img src="doc/model_overview.png" width="600"> 
+	<img src="doc/model_overview.png" width="100%"> 
 	<p><font size="-1">EV-PV Model overview</font></p>
 </center>
 
