@@ -12,12 +12,14 @@ import csv
 from scipy.interpolate import interp1d
 import scipy.integrate as integrate
 from scipy.stats import spearmanr
+from scipy.integrate import IntegrationWarning
 import matplotlib.pyplot as plt
-
-from dotenv import load_dotenv
 from pathlib import Path
 
 from evpv import helpers as hlp
+
+# Suppress repeated IntegrationWarning
+warnings.filterwarnings("once", category=IntegrationWarning)
 
 class EVPVSynergies:
     #######################################

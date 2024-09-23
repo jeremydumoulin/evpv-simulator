@@ -8,7 +8,6 @@ from timezonefinder import TimezoneFinder
 import pytz
 from datetime import datetime
 
-
 class PVCalculator:
     #######################################
     ############# Constructor #############

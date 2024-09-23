@@ -7,18 +7,14 @@ A class to simulate the daily travel demand for different road-based transport m
 mobility chains specified by the user (home-work-home, home-school-home, etc)
 """
 
-import numpy as np
-import pandas as pd
-import geopandas as gpd
 import json
 import os
 import rasterio
-from rasterio.mask import mask
-from pathlib import Path
+import pandas as pd
+import geopandas as gpd
+import numpy as np
 from shapely.geometry import shape, LineString, Point, Polygon, box, MultiPoint
 from shapely.ops import transform, nearest_points, snap
-import pyproj
-from pyproj import Geod
 from geopy.distance import geodesic, distance
 import openrouteservice
 import time
@@ -277,7 +273,7 @@ class MobilitySim:
                 # Read the population raster
                 with rasterio.open(population_raster_path) as src:
                     # Clip the raster using the bounding box
-                    out_image, out_transform = mask(src, [bbox_gdf.geometry.values[0]], crop=True)
+                    out_image, out_transform = rasterio.mask.mask(src, [bbox_gdf.geometry.values[0]], crop=True)
                     out_meta = src.meta
 
                 # Calculate the total population within the bounding box

@@ -1,22 +1,15 @@
 # coding: utf-8
 
 """ 
-Some useful generic functions for gtfs4ev classes.
+Some useful generic functions for evpv classes.
 """
 
-import pandas as pd
-from shapely.geometry import LineString, Point, shape, Polygon, box
 import numpy as np
 import rasterio
-from rasterio.features import geometry_mask
 from rasterio.mask import mask
-from rasterio.plot import reshape_as_image
-from pyproj import Geod
-from PIL import Image
-import tempfile
+from shapely.geometry import box
 import folium
 import branca.colormap as cm
-from matplotlib import colors as colors
 import math
 import hashlib
 
