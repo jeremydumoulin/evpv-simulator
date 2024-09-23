@@ -16,7 +16,7 @@ from evpv.evpvsynergies import EVPVSynergies
 ###### Scenario Name (Optional) ######
 ######################################
 
-sc = 'S1'
+sc = '00'
 
 ######################################
 ##### STEP 1: EV Charging Demand #####

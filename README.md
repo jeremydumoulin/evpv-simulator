@@ -70,8 +70,58 @@ $ conda activate your_environment_name
 │   └───...
 └───scripts/
 ```  
+### Available Modules
+In the `evpv/` folder, you will find the following modules:
+
+- **Core Classes** (required for any basic usage):
+  - **EVCalculator**: Simulates the EV charging demand.
+  - **PVCalculator**: Simulates the PV production potential.
+  - **EVPVSynergies**: Calculates EV-PV synergy metrics based on the results from the other two classes.
+
+- **Additional Classes** :
+  - MobilitySim: Provides mobility demand simulations (for advanced usage).
+  - ChargingScenario: Allows simulation of different charging scenarios (for advanced usage).
+  - helpers.py: Contains various functions used internally by the other classes (internal use).
+
+### Examples
+In the `examples/` folder, you will find various examples illustrating basic and more advanced use cases. We recommend looking at the various scripts, starting with the more basic ones.
+
+### Scripts
+In the `scripts/` folder, you will find additionnal helpful scripts, notably a script to fetch georeferenced workplaces from OpenStreetMap.
 
 ## Usage
+
+To run the code, create a new Python script and import the necessary modules from the `evpv/` folder.
+
+### Basic Usage
+
+For basic usage, you only need to import the three core classes:
+
+```python
+from evpv.evcalculator import EVCalculator
+from evpv.pvcalculator import PVCalculator
+from evpv.evpvsynergies import EVPVSynergies
+```
+
+**Description of Core Classes:**
+
+- **EVCalculator**: EV charging demand simulation. 
+- **PVCalculator**: PV production simulation.
+- **EVPVSynergies**: EV-PV synergy metrics.
+
+> :bulb: **Tip:** For a quick start, check the example scripts in the `examples/` folder. We recommend starting with the script `00_basic_usage.py`, which demonstrates how to use the three core classes with a minimal set of input parameters. Additionally, the files `01_evcalculator.py`, `02_pvcalculator.py`, and `03_evpvsynergies.py` show how to use the classes including also the optional parameters.
+
+### Advanced Usage
+
+For advanced usage, you can also import the `MobilitySim` and `ChargingScenario` classes. These classes provide greater control over the EV charging demand estimation by separating mobility demand simulation from charging scenario simulation. In contrast, the `EVCalculator` class performs both tasks in a single step. This can be particularly useful for running mobility demand simulations independently of the EV demand. For example, you can conduct multiple mobility simulations for different types of trips, such as home-to-work and home-to-study, and then aggregate the results to use them in a `ChargingScenario`.
+
+> :bulb: **Info:** Under the hood, the `EVCalculator` class is simply a wrapper class facilitating the use of the `MobilitySim` and the `ChargingScenario` classes.
+
+```python
+from evpv.mobilitysim import MobilitySim
+from evpv.chargingscenario import ChargingScenario
+```
+
 
 ## Features
 
