@@ -51,6 +51,23 @@ $ conda activate your_environment_name
 ```
 
 ## Project structure
+├───environment.yml
+├───LICENSE.md
+├───README.md
+├───doc/
+├───evpv/
+│   ├───chargingscenario.py
+│   ├───evcalculator.py
+│   ├───evpvsynergies.py
+│   ├───helpers.py
+│   ├───mobilitysim.py
+│   └───pvcalculator.py
+├───examples/
+│   ├───input/
+│   ├───output/
+│   ├───00_basic_usage.py
+│   └───...
+└───scripts/
 
 ## Usage
 
