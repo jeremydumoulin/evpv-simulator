@@ -13,16 +13,14 @@ Langage = python 3
 
 ## Overview of the model
 
-The EV-PV model has three overarching goals
-1. EV
-2. PV
-3. EV-PV
-
-The next figure illustrate the general inputs, outputs, and processing done in a EV-PV simulation.
+The EV-PV model has three main objectives and related outputs (see the next figure illustrating the main inputs, outputs, and the processing of the model):
+1. **Estimate the spatial and temporal charging demand for electric vehicles.** This is done by first calculating the mobility demand within the area of interest. To do so, the later is divided into sub-zones (zoning), and the passenger flows between these zones are estimated, focusing specifically on trips between home and the destinations people travel to for their daily commute (e.g., workplaces, park-and-ride facilities, universities, ...). Based on this, the user can input scenario parameters related to the electric vehicle fleet and the charging behavior to estimate the charging needs.
+2. **Calculate the PV power production potential for the area of interest.** This can be done for different configurations (rooftop, ground-mounted, etc.) and relies on the PVLib toolbox. The output primarily includes an hourly capacity factor over a year, along with other standard PV metrics (performance ratio, production in W/m², etc.).
+2. **Analyze potential synergies between EVs and PV energy.** This involves evaluating various indicators by combining the PV capacity factor with the EV charging curve for a given PV capacity.
 
 <center>
 	<img src="doc/model_overview.png" width="100%"> 
-	<p><font size="-1">EV-PV Model overview</font></p>
+	<p><font size="-1">EV-PV Model overvie. Note that many optional input parameters and additionnal outputs (e.g., mobility demand outputs such as daily distance travelled or total passenger-km) are not shown.</font></p>
 </center>
 
 ## Installation
