@@ -9,9 +9,21 @@ Contact = jeremy.dumoulin@epfl.ch
 
 Langage = python 3 
 
-> :bulb: This `README.md` provides a quick start guide for basic usage of the EVPV model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
+> :bulb: This `README.md` provides a quick start guide for basic usage of the EV-PV model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
 
-## Overview on the model
+## Overview of the model
+
+The EV-PV model has three overarching goals
+1. EV
+2. PV
+3. EV-PV
+
+The next figure illustrate the general inputs, outputs, and processing done in a EV-PV simulation.
+
+<center>
+	<img src="doc/model_overview.png" width="600"> 
+	<p><font size="-1">EV-PV Model overview</font></p>
+</center>
 
 ## Installation
 
