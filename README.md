@@ -51,6 +51,7 @@ $ conda activate your_environment_name
 ```
 
 ## Project structure
+```bash
 ├───environment.yml
 ├───LICENSE.md
 ├───README.md
@@ -68,6 +69,7 @@ $ conda activate your_environment_name
 │   ├───00_basic_usage.py
 │   └───...
 └───scripts/
+```  
 
 ## Usage
 
