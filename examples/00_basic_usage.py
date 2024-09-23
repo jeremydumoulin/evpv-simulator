@@ -30,7 +30,7 @@ ev = EVCalculator(
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif', 
         'destinations_csv': 'input/workplaces.csv', 
         'trips_per_inhabitant': 0.1, 
-        'zone_width_km': 2,
+        'zone_width_km': 5,
         # Optional
         'ORS_key': None, #'5b3ce3597851110001cf6248879c0a16f2754562898e0826e061a1a3'
     },
@@ -48,7 +48,7 @@ ev = EVCalculator(
         "Destination": {
             "Share": 1.0,
             "Arrival time": [9, 2],
-            "Smart charging": 1.0 
+            "Smart charging": 0.0 
         }}
     )
 
