@@ -122,17 +122,33 @@ from evpv.mobilitysim import MobilitySim
 from evpv.chargingscenario import ChargingScenario
 ```
 
-
 ## Features
+[To be completed]
+
+### Main features
+
+### Limitations
 
 ## Contributing
+[To be completed]
+
+### Open tasks
+
+- [ ] Finalize the README file
+- [ ] Add more advanced examples
+- [ ] Enhance inline code documentation
+- [ ] Create a readthedocs
+- [ ] Make a contributing guide
+- [ ] Write some unit tests 
 
 ## Scientific publications
+[To be completed]
 
 ## Acknowledgment 
 This project was supported by the HORIZON [OpenMod4Africa](https://openmod4africa.eu/) project (Grant number 101118123), with funding from the European Union and the State Secretariat for Education, Research and Innovation (SERI) for the Swiss partners. We also gratefully acknowledge the support of OpenMod4Africa partners for their contributions and collaboration.
 
 ## Good to know
+[To be completed]
 
 ## License
 
