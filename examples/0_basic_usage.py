@@ -30,9 +30,9 @@ ev = EVCalculator(
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif', 
         'destinations_csv': 'input/workplaces.csv', 
         'trips_per_inhabitant': 0.1, 
-        'zone_width_km': 3,
+        'zone_width_km': 4,
         # Optional
-        'ORS_key': None, #'5b3ce3597851110001cf6248879c0a16f2754562898e0826e061a1a3'
+        'ORS_key': '5b3ce3597851110001cf6248879c0a16f2754562898e0826e061a1a3'
     },
     ev_fleet = [
         [EVCalculator.preset['car'], 1.0], 
@@ -98,6 +98,6 @@ evpv = EVPVSynergies(
 print(evpv.self_sufficiency_ratio(day='01-01'))
 
 # All KPIs over a given period
-daily_kpis = evpv.daily_metrics(start_date = '01-01', end_date = '12-31')
+daily_kpis = evpv.daily_metrics(start_date = '01-01', end_date = '01-30')
 daily_kpis.to_csv(f"output/{sc}_EVPV_KPIs.csv")
 
