@@ -1,5 +1,5 @@
-# EVPV
-**EVPV is ...**
+# EV-PV
+**The EV-PV (Electric Vehicles - Photovoltaics) model is an open-source Python tool designed to calculate the charging needs of privately-owned electric vehicles (EVs), the potential for photovoltaic power generation (PV), and possible synergies between the two (self-sufficiency, self-consumption, ...) in a specific area. The tool primarily focuses on estimating the charging needs for daily commuting. It calculates the mobility demand for this purpose endogenously by combining georeferenced data with transport demand modeling.**
 
 Authors = Jeremy Dumoulin, Alejandro Pena-Bello, Noémie Jeannin, Nicolas Wyrsch
 
@@ -9,7 +9,9 @@ Contact = jeremy.dumoulin@epfl.ch
 
 Langage = python 3 
 
-> :bulb: This `README.md` provides a quick start guide for basic usage of the project. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
+> :bulb: This `README.md` provides a quick start guide for basic usage of the EVPV model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
+
+## Overview on the model
 
 ## Installation
 
@@ -24,6 +26,7 @@ Langage = python 3
 ## Scientific publications
 
 ## Acknowledgment 
+This project was supported by the HORIZON [OpenMod4Africa](https://openmod4africa.eu/) project (Grant number 101118123), with funding from the European Union and the State Secretariat for Education, Research and Innovation (SERI) for the Swiss partners. We also gratefully acknowledge the support of OpenMod4Africa partners for their contributions and collaboration.
 
 ## Good to know
 
