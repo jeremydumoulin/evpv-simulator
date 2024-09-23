@@ -13,17 +13,39 @@ Langage = python 3
 
 ## Overview of the model
 
-The EV-PV model has three main objectives and related outputs (see the next figure illustrating the main inputs, outputs, and the processing of the model):
+The EV-PV model has three main objectives and corresponding outputs (as shown in the following figure, which illustrates the model’s key inputs, outputs, and processing steps):
 1. **Estimate the spatial and temporal charging demand for electric vehicles.** This is done by first calculating the mobility demand within the area of interest. To do so, the later is divided into sub-zones (zoning), and the passenger flows between these zones are estimated, focusing specifically on trips between home and the destinations people travel to for their daily commute (e.g., workplaces, park-and-ride facilities, universities, ...). Based on this, the user can input scenario parameters related to the electric vehicle fleet and the charging behavior to estimate the charging needs.
 2. **Calculate the PV power production potential for the area of interest.** This can be done for different configurations (rooftop, ground-mounted, etc.) and relies on the PVLib toolbox. The output primarily includes an hourly capacity factor over a year, along with other standard PV metrics (performance ratio, production in W/m², etc.).
 2. **Analyze potential synergies between EVs and PV energy.** This involves evaluating various indicators by combining the PV capacity factor with the EV charging curve for a given PV capacity.
 
 <center>
-	<img src="doc/model_overview.png" width="100%"> 
-	<p><font size="-1">EV-PV Model overvie. Note that many optional input parameters and additionnal outputs (e.g., mobility demand outputs such as daily distance travelled or total passenger-km) are not shown.</font></p>
+	<img src="doc/model_overview.png" width="95%"> 
+	<p><font size="-1">EV-PV Model overview. Note that many optional input parameters and additionnal outputs (e.g., mobility demand outputs such as daily distance travelled or total passenger-km) are not shown.</font></p>
 </center>
 
 ## Installation
+
+### Requirements
+- **Python**: Ensure Python is installed on your system (). 
+- **Miniconda** (optional, but recommended): Use Conda for managing Python environments and dependencies. You can install Conda via [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/distribution).
+- **Open Route Service API key** (optional, but recommended to perform realistic road-based distance estimation): Sign up for an API key at [OpenRouteService](https://openrouteservice.org/sign-up/).
+
+### Installation with conda
+1. Clone the latest version of the code on GitHub on your local machine. If you are not familiar with git, you can also manually download the folder from GitHub and then run the code. However, you won't be able to contribute to the project.
+```bash
+$ git clone https://github.com/jeremydumoulin/evpv.git
+```
+
+2. Create a conda environment with the required dependencies and activate it. 
+```bash
+$ conda env create -f environment.yml -n your_environment_name
+```
+> :thumbsdown: If you do not want to use conda, we strongly recommend using an other virtual environment. However, if you prefer, you can also manually install the python dependencies (not recommended). The code was developed and tested using python 3.12, and the list of all required modules is available in the `environment.yml` file.
+
+3. Activate the conda environment (assuming the environment is named `your_environment_name`). 
+```bash
+$ conda activate your_environment_name
+```
 
 ## Project structure
 
