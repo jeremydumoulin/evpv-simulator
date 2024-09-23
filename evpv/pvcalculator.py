@@ -19,22 +19,23 @@ class PVCalculator:
 
         # Initialize the environment attributes
         self._environment = {
+            # REQUIRED
             'latitude': environment.get('latitude'),
             'longitude': environment.get('longitude'),
             'year': environment.get('year'),
+            # OPTIONAL
             'timezone': environment.get('timezone', self.get_timezone(environment.get('latitude'), environment.get('longitude')))
         }
 
         # Initialize the installation attributes
         self._installation = {
             'type': installation.get('type', 'groundmounted_fixed'), # groundmounted_fixed, groundmounted_dualaxis, groundmounted_singleaxis_horizontal, groundmounted_singleaxis_vertical
-            'shading_losses': installation.get('shading_losses', .0),
             'system_losses': installation.get('system_losses', 0.14)
         }
 
         # Initialize the PV device attributes
         self._pv_module = {
-            'efficiency': pv_module.get('efficiency', 0.22),
+            'efficiency': pv_module.get('efficiency'),
             'temperature_coefficient': pv_module.get('temperature_coefficient', -0.0035)
         }
 

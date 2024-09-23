@@ -109,7 +109,7 @@ from evpv.evpvsynergies import EVPVSynergies
 - **PVCalculator**: PV production simulation.
 - **EVPVSynergies**: EV-PV synergy metrics.
 
-> :bulb: **Tip:** For a quick start, check the example scripts in the `examples/` folder. We recommend starting with the script `00_basic_usage.py`, which demonstrates how to use the three core classes with a minimal set of input parameters. Additionally, the files `01_evcalculator.py`, `02_pvcalculator.py`, and `03_evpvsynergies.py` show how to use the classes including also the optional parameters.
+> :bulb: **Tip:** For a quick start, check the example scripts in the `examples/` folder. We recommend starting with the script `00_basic_usage.py`, which demonstrates how to use the three core classes with a minimal set of input parameters. Additionally, the files `01_evcalculator.py` and `02_pvcalculator.py` illustrate the usage of the `EVCalculator` and `PVCalculator` classes in more detail, including all available parameters (required and optional). There is no specific example file for the `EVPVSynergies` class since its complete usage is illustrated in `00_basic_usage.py`.
 
 ### Advanced Usage
 

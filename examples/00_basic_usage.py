@@ -67,8 +67,7 @@ pv = PVCalculator(
         'year': '2020'
         }, 
     pv_module = {
-        'efficiency': 0.22,
-        'temperature_coefficient': -0.0035
+        'efficiency': 0.22
         }, 
     installation = {
         'type': 'groundmounted_fixed'
