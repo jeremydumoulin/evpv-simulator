@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>evpv package &#8212; EV-PV  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=61cd365c" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "displayMath": [["$$", "$$"], ["\\[", "\\]"]], "processEscapes": true}, "options": {"skipStartupTypeset": true}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to evpv’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="evpv-package">
+<h1>evpv package<a class="headerlink" href="#evpv-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-evpv.chargingscenario">
+<span id="evpv-chargingscenario-module"></span><h2>evpv.chargingscenario module<a class="headerlink" href="#module-evpv.chargingscenario" title="Link to this heading">¶</a></h2>
+<p>ChargingDemand</p>
+<p>A class to simulate the daily charging demand using mobility simulation and assumptions 
+regarding the charging scenario and the EV fuel consumption and charging efficiency</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evpv.chargingscenario.</span></span><span class="sig-name descname"><span class="pre">ChargingScenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mobsim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev_fleet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charging_efficiency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_definition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.charging_demand">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">charging_demand</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.charging_demand" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.charging_efficiency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">charging_efficiency</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.charging_efficiency" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.charging_profile">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">charging_profile</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.charging_profile" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.chargingdemand_nvehicles_to_map">
+<span class="sig-name descname"><span class="pre">chargingdemand_nvehicles_to_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario.chargingdemand_nvehicles_to_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.chargingdemand_nvehicles_to_map" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.chargingdemand_pervehicle_to_map">
+<span class="sig-name descname"><span class="pre">chargingdemand_pervehicle_to_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario.chargingdemand_pervehicle_to_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.chargingdemand_pervehicle_to_map" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.chargingdemand_total_to_map">
+<span class="sig-name descname"><span class="pre">chargingdemand_total_to_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario.chargingdemand_total_to_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.chargingdemand_total_to_map" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.ev_fleet">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ev_fleet</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.ev_fleet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.eval_charging_profile">
+<span class="sig-name descname"><span class="pre">eval_charging_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin_or_destination</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Origin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">travel_time_origin_destination_hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario.eval_charging_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.eval_charging_profile" title="Link to this definition">¶</a></dt>
+<dd><p>Inform if charging at origin or destination and get corresponding parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.mobsim">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mobsim</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.mobsim" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.scenario_definition">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scenario_definition</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.scenario_definition" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.spatial_charging_demand">
+<span class="sig-name descname"><span class="pre">spatial_charging_demand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario.spatial_charging_demand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.spatial_charging_demand" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.taz_properties">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">taz_properties</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.taz_properties" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.temporal_charging_demand">
+<span class="sig-name descname"><span class="pre">temporal_charging_demand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/chargingscenario.html#ChargingScenario.temporal_charging_demand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.temporal_charging_demand" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.chargingscenario.ChargingScenario.time_step">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_step</span></span><a class="headerlink" href="#evpv.chargingscenario.ChargingScenario.time_step" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-evpv.evcalculator">
+<span id="evpv-evcalculator-module"></span><h2>evpv.evcalculator module<a class="headerlink" href="#module-evpv.evcalculator" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evpv.evcalculator.</span></span><span class="sig-name descname"><span class="pre">EVCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mobility_demand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev_fleet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charging_efficiency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charging_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evcalculator.html#EVCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evcalculator.EVCalculator" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.charging_efficiency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">charging_efficiency</span></span><a class="headerlink" href="#evpv.evcalculator.EVCalculator.charging_efficiency" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.charging_scenario">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">charging_scenario</span></span><a class="headerlink" href="#evpv.evcalculator.EVCalculator.charging_scenario" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.compute_mobility_demand">
+<span class="sig-name descname"><span class="pre">compute_mobility_demand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evcalculator.html#EVCalculator.compute_mobility_demand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evcalculator.EVCalculator.compute_mobility_demand" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.ev_fleet">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ev_fleet</span></span><a class="headerlink" href="#evpv.evcalculator.EVCalculator.ev_fleet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.mobility_demand">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mobility_demand</span></span><a class="headerlink" href="#evpv.evcalculator.EVCalculator.mobility_demand" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.preset">
+<span class="sig-name descname"><span class="pre">preset</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'car':</span> <span class="pre">{'charger_power':</span> <span class="pre">{'Destination':</span> <span class="pre">[[7,</span> <span class="pre">0.68],</span> <span class="pre">[11,</span> <span class="pre">0.3],</span> <span class="pre">[22,</span> <span class="pre">0.02]],</span> <span class="pre">'Origin':</span> <span class="pre">[[7,</span> <span class="pre">0.68],</span> <span class="pre">[11,</span> <span class="pre">0.3],</span> <span class="pre">[22,</span> <span class="pre">0.02]]},</span> <span class="pre">'ev_consumption':</span> <span class="pre">0.183,</span> <span class="pre">'vehicle_occupancy':</span> <span class="pre">1.4},</span> <span class="pre">'motorbike':</span> <span class="pre">{'charger_power':</span> <span class="pre">{'Destination':</span> <span class="pre">[[7,</span> <span class="pre">1.0]],</span> <span class="pre">'Origin':</span> <span class="pre">[[7,</span> <span class="pre">1.0]]},</span> <span class="pre">'ev_consumption':</span> <span class="pre">0.058,</span> <span class="pre">'vehicle_occupancy':</span> <span class="pre">1.0}}</span></em><a class="headerlink" href="#evpv.evcalculator.EVCalculator.preset" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evcalculator.EVCalculator.save_results">
+<span class="sig-name descname"><span class="pre">save_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evcalculator.html#EVCalculator.save_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evcalculator.EVCalculator.save_results" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-evpv.evpvsynergies">
+<span id="evpv-evpvsynergies-module"></span><h2>evpv.evpvsynergies module<a class="headerlink" href="#module-evpv.evpvsynergies" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evpv.evpvsynergies.</span></span><span class="sig-name descname"><span class="pre">EVPVSynergies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pv_capacity_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev_charging_demand_MW</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pv_capacity_MW</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.daily_metrics">
+<span class="sig-name descname"><span class="pre">daily_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.daily_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.daily_metrics" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.energy_coverage_ratio">
+<span class="sig-name descname"><span class="pre">energy_coverage_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.energy_coverage_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.energy_coverage_ratio" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.ev_charging_demand_MW">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ev_charging_demand_MW</span></span><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.ev_charging_demand_MW" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.ev_demand">
+<span class="sig-name descname"><span class="pre">ev_demand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.ev_demand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.ev_demand" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.excess_pv_ratio">
+<span class="sig-name descname"><span class="pre">excess_pv_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.excess_pv_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.excess_pv_ratio" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.pv_capacity_MW">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pv_capacity_MW</span></span><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.pv_capacity_MW" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.pv_capacity_factor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pv_capacity_factor</span></span><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.pv_capacity_factor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.pv_power_MW">
+<span class="sig-name descname"><span class="pre">pv_power_MW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.pv_power_MW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.pv_power_MW" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.pv_production">
+<span class="sig-name descname"><span class="pre">pv_production</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.pv_production"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.pv_production" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.self_consumption_ratio">
+<span class="sig-name descname"><span class="pre">self_consumption_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.self_consumption_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.self_consumption_ratio" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.self_sufficiency_ratio">
+<span class="sig-name descname"><span class="pre">self_sufficiency_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.self_sufficiency_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.self_sufficiency_ratio" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.evpvsynergies.EVPVSynergies.spearman_correlation">
+<span class="sig-name descname"><span class="pre">spearman_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'01-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/evpvsynergies.html#EVPVSynergies.spearman_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.evpvsynergies.EVPVSynergies.spearman_correlation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-evpv.helpers">
+<span id="evpv-helpers-module"></span><h2>evpv.helpers module<a class="headerlink" href="#module-evpv.helpers" title="Link to this heading">¶</a></h2>
+<p>Helper functions for the other classes of the evpv model</p>
+<p>This module notably includes functions to facilitate operations on georeferenced objects and
+folium maps. It also holds the formulation of the various spatial interaction models (gravity, 
+raditation, …) involved in mobility demand modelling.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.add_raster_to_folium">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">add_raster_to_folium</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folium_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Map</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Map</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#add_raster_to_folium"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.add_raster_to_folium" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a raster overlay to a Folium map.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>raster_path (str): The path to the raster file to be added.
+folium_map (folium.Map): The Folium map instance to which the raster will be added.</p>
+</dd>
+<dt>Returns:</dt><dd><p>folium.Map: The updated Folium map with the raster overlay.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.create_unique_id">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">create_unique_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#create_unique_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.create_unique_id" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a unique identifier based on the input variables.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>variables (list): A list of variables to generate a unique ID from.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: A unique hash string representing the combined input variables.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.crop_raster">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">crop_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_raster_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#crop_raster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.crop_raster" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new raster cropped to the specified bounding box.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>raster_path (str): The path to the input raster file.
+bbox (tuple): A tuple of four floats representing the bounding box (minx, miny, maxx, maxy).
+output_raster_path (str): The path where the output cropped raster will be saved.</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.get_graph_bbox">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">get_graph_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#get_graph_bbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.get_graph_bbox" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the bounding box of a graph.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>G: The graph from which to calculate the bounding box.</p>
+</dd>
+<dt>Returns:</dt><dd><p>tuple: A tuple of four floats representing (north, south, east, west) boundaries of the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.prod_constrained_gravity_exp">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">prod_constrained_gravity_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin_n_trips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_attractivity_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#prod_constrained_gravity_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.prod_constrained_gravity_exp" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>origin_n_trips (float): The total number of trips originating from the origin.
+dest_attractivity_list (list[float]): A list of attractivity values for each destination.
+cost_list (list[float]): A list of cost values corresponding to each destination.
+beta (float, optional): The exponent applied to the cost in the calculation.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray: An array of estimated flows to each destination.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.prod_constrained_gravity_power">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">prod_constrained_gravity_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin_n_trips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_attractivity_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#prod_constrained_gravity_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.prod_constrained_gravity_power" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates flows from origin to destinations using a production-constrained gravity model with a power law cost.</p>
+<p>The is a a special case of a spatial interaction model, where the total number of outflows $T_{i,out}$ 
+from origin $i$ is known (production-constrained), thus imposing the value of the constant $C_i$, and
+the cost function $f(d_{ij})$ follows a power law</p>
+<div class="math notranslate nohighlight">
+\[T_{ij} = T_{i,out} C_i A_j f(d_{ij})\]</div>
+<div class="math notranslate nohighlight">
+\[C_i = 1/\sum_{k \neq i} A_j f(d_{ij})\]</div>
+<div class="math notranslate nohighlight">
+\[f(d_{ij})=d_{ij}^{-\gamma}\]</div>
+<p>with $T_{ij}$ the number of trips from origin $i$ to destination $j$, and $A_j$ the attractivity 
+of destination $j$. Note note that $T_{ii}$ can not be calculated with this model as $d_{ii}$ is 
+generally not well defined.</p>
+<p>For an introduction to spatial interaction models, we recommend the following book chapter:  
+Griffith, D.A., Fischer, M.M. (2016). Constrained Variants of the Gravity Model and Spatial 
+Dependence: Model Specification and Estimation Issues.https://doi.org/10.1007/978-3-319-30196-9_3</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>origin_n_trips (float): The total number of trips originating from the origin.
+dest_attractivity_list (list[float]): A list of attractivity values for each destination.
+cost_list (list[float]): A list of cost values corresponding to each destination.
+gamma (float, optional): The exponent applied to the cost in the calculation. Defaults to 1.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray: An array of estimated flows to each destination.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.prod_constrained_radiation">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">prod_constrained_radiation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin_n_trips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_attractivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_attractivity_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#prod_constrained_radiation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.prod_constrained_radiation" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates flows from origin to destinations using a production-constrained radiation model.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>origin_n_trips (float): The total number of trips originating from the origin.
+origin_attractivity (float): The attractivity of the origin.
+dest_attractivity_list (list[float]): A list of attractivity values for each destination.
+cost_list (list[float]): A list of cost values corresponding to each destination.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray: An array of estimated flows to each destination.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evpv.helpers.prod_constrained_radius">
+<span class="sig-prename descclassname"><span class="pre">evpv.helpers.</span></span><span class="sig-name descname"><span class="pre">prod_constrained_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin_n_trips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_attractivity_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/evpv/helpers.html#prod_constrained_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.helpers.prod_constrained_radius" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates flows from origin to destinations using a production-constrained model based on distance radius.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>origin_n_trips (float): The total number of trips originating from the origin.
+dest_attractivity_list (list[float]): A list of attractivity values for each destination.
+cost_list (list[float]): A list of cost values corresponding to each destination.
+radius (float, optional): The maximum distance for attractivity.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray: An array of estimated flows to each destination.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-evpv.mobilitysim">
+<span id="evpv-mobilitysim-module"></span><h2>evpv.mobilitysim module<a class="headerlink" href="#module-evpv.mobilitysim" title="Link to this heading">¶</a></h2>
+<p>MobilitySim</p>
+<p>A class to simulate the daily travel demand for different road-based transport modes (car, motorbike) for various
+mobility chains specified by the user (home-work-home, home-school-home, etc)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evpv.mobilitysim.</span></span><span class="sig-name descname"><span class="pre">MobilitySim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destinations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.allocate_routes">
+<span class="sig-name descname"><span class="pre">allocate_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ors_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.allocate_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.allocate_routes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.centroid_coords">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">centroid_coords</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.centroid_coords" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.destinations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">destinations</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.destinations" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.flows">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flows</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.flows" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.from_pickle">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pickle_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.from_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.from_pickle" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.init_taz">
+<span class="sig-name descname"><span class="pre">init_taz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population_to_ignore_share</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.init_taz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.init_taz" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.km_per_capita">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">km_per_capita</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.km_per_capita" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.km_per_capita_centroid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">km_per_capita_centroid</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.km_per_capita_centroid" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.km_per_capita_error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">km_per_capita_error</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.km_per_capita_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.km_per_capita_histogram">
+<span class="sig-name descname"><span class="pre">km_per_capita_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bin_width_km</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.km_per_capita_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.km_per_capita_histogram" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.n_subdivisions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_subdivisions</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.n_subdivisions" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.pkm">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pkm</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.pkm" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.pkm_centroid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pkm_centroid</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.pkm_centroid" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.pkm_error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pkm_error</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.pkm_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.population_density">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population_density</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.population_density" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.set_simulation_bbox">
+<span class="sig-name descname"><span class="pre">set_simulation_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_area_extension_km</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.set_simulation_bbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.set_simulation_bbox" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.set_taz_width">
+<span class="sig-name descname"><span class="pre">set_taz_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taz_target_width_km</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.set_taz_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.set_taz_width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.setup_simulation">
+<span class="sig-name descname"><span class="pre">setup_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taz_target_width_km</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_area_extension_km</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_to_ignore_share</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.setup_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.setup_simulation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.setup_to_map">
+<span class="sig-name descname"><span class="pre">setup_to_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.setup_to_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.setup_to_map" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.simulation_area_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulation_area_height</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.simulation_area_height" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.simulation_area_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulation_area_width</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.simulation_area_width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.simulation_bbox">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulation_bbox</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.simulation_bbox" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.target_area">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_area</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.target_area" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.taz_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">taz_height</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.taz_height" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.taz_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">taz_width</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.taz_width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.to_pickle">
+<span class="sig-name descname"><span class="pre">to_pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pickle_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.to_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.to_pickle" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.traffic_zones">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">traffic_zones</span></span><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.traffic_zones" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.trip_distribution">
+<span class="sig-name descname"><span class="pre">trip_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ors_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attraction_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'population'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distance_road'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">km_per_capita_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">road_to_euclidian_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.63</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.trip_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.trip_distribution" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.trip_distribution_to_map">
+<span class="sig-name descname"><span class="pre">trip_distribution_to_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trip_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.trip_distribution_to_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.trip_distribution_to_map" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.trip_generation">
+<span class="sig-name descname"><span class="pre">trip_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_trips_per_inhabitant</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.trip_generation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.trip_generation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.mobilitysim.MobilitySim.trip_generation_to_map">
+<span class="sig-name descname"><span class="pre">trip_generation_to_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/mobilitysim.html#MobilitySim.trip_generation_to_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.mobilitysim.MobilitySim.trip_generation_to_map" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-evpv.pvcalculator">
+<span id="evpv-pvcalculator-module"></span><h2>evpv.pvcalculator module<a class="headerlink" href="#module-evpv.pvcalculator" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="evpv.pvcalculator.PVCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evpv.pvcalculator.</span></span><span class="sig-name descname"><span class="pre">PVCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pv_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/pvcalculator.html#PVCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.pvcalculator.PVCalculator" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.pvcalculator.PVCalculator.compute_pv_production">
+<span class="sig-name descname"><span class="pre">compute_pv_production</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/pvcalculator.html#PVCalculator.compute_pv_production"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.pvcalculator.PVCalculator.compute_pv_production" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the PV production and main KPIs using POA weather data</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.pvcalculator.PVCalculator.environment">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">environment</span></span><a class="headerlink" href="#evpv.pvcalculator.PVCalculator.environment" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evpv.pvcalculator.PVCalculator.get_timezone">
+<span class="sig-name descname"><span class="pre">get_timezone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evpv/pvcalculator.html#PVCalculator.get_timezone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evpv.pvcalculator.PVCalculator.get_timezone" title="Link to this definition">¶</a></dt>
+<dd><p>Get timezone string based on latitude and longitude.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.pvcalculator.PVCalculator.installation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">installation</span></span><a class="headerlink" href="#evpv.pvcalculator.PVCalculator.installation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evpv.pvcalculator.PVCalculator.pv_module">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pv_module</span></span><a class="headerlink" href="#evpv.pvcalculator.PVCalculator.pv_module" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-evpv">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-evpv" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">EV-PV</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">evpv package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv.chargingscenario">evpv.chargingscenario module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv.evcalculator">evpv.evcalculator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv.evpvsynergies">evpv.evpvsynergies module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv.helpers">evpv.helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv.mobilitysim">evpv.mobilitysim module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv.pvcalculator">evpv.pvcalculator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-evpv">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to evpv’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Jeremy Dumoulin.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/evpv.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
