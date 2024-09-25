@@ -52,6 +52,9 @@ ev = EVCalculator(
         }}
     )
 
+# Run the EV demand simulation
+ev.compute_ev_demand()
+
 # Save the results
 ev.save_results(output_folder = "output", prefix = sc)
 

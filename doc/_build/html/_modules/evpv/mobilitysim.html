@@ -32,13 +32,6 @@
   <h1>Source code for evpv.mobilitysim</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding: utf-8</span>
 
-<span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">MobilitySim </span>
-
-<span class="sd">A class to simulate the daily travel demand for different road-based transport modes (car, motorbike) for various</span>
-<span class="sd">mobility chains specified by the user (home-work-home, home-school-home, etc)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">rasterio</span>
@@ -61,42 +54,47 @@
 <div class="viewcode-block" id="MobilitySim">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim">[docs]</a>
 <span class="k">class</span> <span class="nc">MobilitySim</span><span class="p">:</span>
-    <span class="c1">#######################################</span>
-    <span class="c1">############ Class Methods ############</span>
-    <span class="c1">#######################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to simulate the daily travel demand for various road-based transport modes (e.g., car, motorbike) from home (origin) </span>
+<span class="sd">    to commuting destinations (e.g., workplaces, park-and-ride facilities, ...). </span>
 
-<div class="viewcode-block" id="MobilitySim.from_pickle">
-<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.from_pickle">[docs]</a>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pickle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> MobilitySim object loaded from pickle file&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">obj</span></div>
-
+<span class="sd">    The model operates as follows:</span>
+<span class="sd">    1. Traffic Zone Division: The target area is divided into traffic analysis zones.</span>
+<span class="sd">    2. Transport Demand Modelling:</span>
+<span class="sd">    - Trip Generation: Based on georeferenced population density and the average number of people commuting.</span>
+<span class="sd">    - Trip Distribution: Calculated origin-destination flows from home to user-defined georeferenced destinations using a </span>
+<span class="sd">    spatial interaction model (such as gravity or radiation) populated with road-based distances between traffic zones (using Open Route Service). </span>
+<span class="sd">    An self-calibrated gravity model is also available to avoid the need for model calibration when no data is available.</span>
+<span class="sd">        </span>
+<span class="sd">    The class also includes some methods for post-processing and visualization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">#######################################</span>
     <span class="c1">############# Constructor #############</span>
     <span class="c1">####################################### </span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_area</span><span class="p">,</span> <span class="n">population_density</span><span class="p">,</span> <span class="n">destinations</span><span class="p">):</span>
-        <span class="c1"># Input data</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_area</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">population_density</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">destinations</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new instance of the MobilitySim class.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            target_area (str): Path to the GeoJSON file representing the target area.</span>
+<span class="sd">            population_density (str): Path to the file with population density data.</span>
+<span class="sd">            destinations (str): Path to the CSV file with destination points and their weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_area</span> <span class="o">=</span> <span class="n">target_area</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">population_density</span> <span class="o">=</span> <span class="n">population_density</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">destinations</span> <span class="o">=</span> <span class="n">destinations</span>
-            
-        <span class="c1"># Transport model setup </span>
 
+        <span class="c1"># Transport model setup </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_bbox</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_taz_width</span> <span class="o">=</span> <span class="mf">.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taz_width</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="c1"># Transport model results</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
-        <span class="c1"># Track the state of the object </span>
+        <span class="c1"># Track the state of the object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;created&#39;</span>  
 
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> New MobilitySim object created&quot;</span><span class="p">)</span>
@@ -107,15 +105,29 @@
 
     <span class="c1"># Target area</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">target_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">target_area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the target area as a shapely Polygon.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Polygon: The target area polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_area</span>
 
     <span class="nd">@target_area</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">target_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">target_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the target area by loading a GeoJSON file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to the GeoJSON file.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: If the GeoJSON file does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> The geojson at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Load the GeoJSON file</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">geojson_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -127,23 +139,53 @@
 
     <span class="c1"># Population density</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">population_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">population_density</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the path to the population density file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The file path for population density data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population_density</span>
 
     <span class="nd">@population_density</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">population_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">population_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the population density file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to the population density file.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: If the file does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> The population density at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
-
+        
         <span class="bp">self</span><span class="o">.</span><span class="n">_population_density</span> <span class="o">=</span> <span class="n">path</span>
 
     <span class="c1"># Destinations</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">destinations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">destinations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the destination points with weights.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of tuples representing destination points (longitude, latitude).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_destinations</span>
 
     <span class="nd">@destinations</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">destinations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">destinations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the destinations by loading a CSV file with destination points and weights.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to the CSV file with destinations.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: If the CSV file does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> The CSV for destinations at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
         
@@ -160,19 +202,22 @@
                 <span class="k">if</span> <span class="n">weight</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Skipping </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> due to non-positive weight: </span><span class="si">{</span><span class="n">weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>
-                    
+
                 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">weight</span><span class="p">):</span>
                     <span class="n">center_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">longitude</span><span class="p">,</span> <span class="n">latitude</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_destinations</span> <span class="o">=</span> <span class="n">center_points</span>             
+        <span class="bp">self</span><span class="o">.</span><span class="n">_destinations</span> <span class="o">=</span> <span class="n">center_points</span>
 
     <span class="c1"># Target Area Centroid Coordinates</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">centroid_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    
-        <span class="c1"># Get the centroid of the shape</span>
+    <span class="k">def</span> <span class="nf">centroid_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the coordinates of the centroid of the target area.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: The (latitude, longitude) coordinates of the centroid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">centroid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_area</span><span class="o">.</span><span class="n">centroid</span>
-        
-        <span class="c1"># Return the coordinates of the centroid</span>
         <span class="k">return</span> <span class="n">centroid</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">centroid</span><span class="o">.</span><span class="n">x</span>
 
     <span class="c1">#######################################</span>
@@ -181,7 +226,16 @@
 
 <div class="viewcode-block" id="MobilitySim.setup_simulation">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.setup_simulation">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taz_target_width_km</span><span class="p">,</span> <span class="n">simulation_area_extension_km</span><span class="p">,</span> <span class="n">population_to_ignore_share</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setup_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taz_target_width_km</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">simulation_area_extension_km</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">population_to_ignore_share</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the simulation by configuring the simulation bounding box (bbox), transportation analysis zone (TAZ) width, </span>
+<span class="sd">        and initializing the TAZ based on population.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taz_target_width_km (float): Target width of each TAZ in kilometers.</span>
+<span class="sd">            simulation_area_extension_km (float): Extension in kilometers to apply to the simulation bounding box.</span>
+<span class="sd">            population_to_ignore_share (float): The share of the population to ignore during the setup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> SIMULATION SETUP&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_simulation_bbox</span><span class="p">(</span><span class="n">simulation_area_extension_km</span><span class="p">)</span>
@@ -197,19 +251,43 @@
 
     <span class="c1"># Simulation bbox</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">simulation_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">simulation_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current simulation bounding box (bbox).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: Coordinates of the bounding box as (minx, miny, maxx, maxy).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_bbox</span>
 
 <div class="viewcode-block" id="MobilitySim.set_simulation_bbox">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.set_simulation_bbox">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_simulation_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_area_extension_km</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_simulation_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_area_extension_km</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the simulation bounding box (bbox) by extending the target area boundaries.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            simulation_area_extension_km (float): Distance in kilometers by which to extend the simulation bbox.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Extending the simulation bbox by </span><span class="si">{</span><span class="n">simulation_area_extension_km</span><span class="si">}</span><span class="s2"> km&quot;</span><span class="p">)</span>
 
-        <span class="c1">#Get the bounding box of the shapefile defininf the target area</span>
+        <span class="c1"># Get the bounding box of the shapefile defining the target area</span>
         <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_area</span><span class="o">.</span><span class="n">bounds</span>
 
-        <span class="c1"># Calculate the new boundaries by extending them</span>
-        <span class="k">def</span> <span class="nf">extend_bbox</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">,</span> <span class="n">km_extension</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">extend_bbox</span><span class="p">(</span><span class="n">minx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">miny</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">maxx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">maxy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">km_extension</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Extend the bounding box (bbox) by a given extension in kilometers.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                minx (float): Minimum x-coordinate (longitude).</span>
+<span class="sd">                miny (float): Minimum y-coordinate (latitude).</span>
+<span class="sd">                maxx (float): Maximum x-coordinate (longitude).</span>
+<span class="sd">                maxy (float): Maximum y-coordinate (latitude).</span>
+<span class="sd">                km_extension (float): Extension distance in kilometers.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                tuple: New extended bbox as (minx, miny, maxx, maxy).</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="c1"># Extend minx and maxx by the km_extension in the longitudinal direction</span>
             <span class="n">left_point</span> <span class="o">=</span> <span class="n">geodesic</span><span class="p">(</span><span class="n">kilometers</span><span class="o">=</span><span class="n">km_extension</span><span class="p">)</span><span class="o">.</span><span class="n">destination</span><span class="p">((</span><span class="n">miny</span><span class="p">,</span> <span class="n">minx</span><span class="p">),</span> <span class="mi">270</span><span class="p">)</span>
             <span class="n">right_point</span> <span class="o">=</span> <span class="n">geodesic</span><span class="p">(</span><span class="n">kilometers</span><span class="o">=</span><span class="n">km_extension</span><span class="p">)</span><span class="o">.</span><span class="n">destination</span><span class="p">((</span><span class="n">maxy</span><span class="p">,</span> <span class="n">maxx</span><span class="p">),</span> <span class="mi">90</span><span class="p">)</span>
@@ -227,29 +305,52 @@
 
         <span class="n">new_minx</span><span class="p">,</span> <span class="n">new_miny</span><span class="p">,</span> <span class="n">new_maxx</span><span class="p">,</span> <span class="n">new_maxy</span> <span class="o">=</span> <span class="n">extend_bbox</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">,</span> <span class="n">simulation_area_extension_km</span><span class="p">)</span>
 
-        <span class="c1"># Return the coordinates of the centroid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_bbox</span> <span class="o">=</span> <span class="n">new_minx</span><span class="p">,</span> <span class="n">new_miny</span><span class="p">,</span> <span class="n">new_maxx</span><span class="p">,</span> <span class="n">new_maxy</span></div>
 
 
     <span class="c1"># Simulation Area: Width and Height</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">simulation_area_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">simulation_area_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the width of the simulation area based on the bounding box.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The width of the simulation area in kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_bbox</span>
         <span class="k">return</span> <span class="n">geodesic</span><span class="p">((</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">),</span> <span class="p">(</span><span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">))</span><span class="o">.</span><span class="n">kilometers</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">simulation_area_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">simulation_area_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the height of the simulation area based on the bounding box.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The height of the simulation area in kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_bbox</span>
         <span class="k">return</span> <span class="n">geodesic</span><span class="p">((</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">),</span> <span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">))</span><span class="o">.</span><span class="n">kilometers</span>
 
     <span class="c1"># TAZ: Width, Height, Number of zones</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">taz_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">taz_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current width of each transportation analysis zone (TAZ).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The width of the TAZ in kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taz_width</span>
 
 <div class="viewcode-block" id="MobilitySim.set_taz_width">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.set_taz_width">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_taz_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taz_target_width_km</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_taz_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taz_target_width_km</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the width of the transportation analysis zones (TAZ) based on the target width.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taz_target_width_km (float): Target width of each TAZ in kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Compute the number of integer segments close to the target width</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_area_width</span> <span class="o">/</span> <span class="n">taz_target_width_km</span><span class="p">)</span>
 
@@ -260,37 +361,67 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">taz_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">taz_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the height of each transportation analysis zone (TAZ).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The height of the TAZ in kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_area_height</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subdivisions</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_subdivisions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">n_subdivisions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of subdivisions (TAZ zones) along the height of the simulation area.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of subdivisions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_area_width</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">taz_width</span><span class="p">)</span>
 
     <span class="c1"># TAZ Initialization</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">traffic_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">traffic_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the DataFrame representing the traffic zones (TAZ).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing traffic zone data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span>
 
 <div class="viewcode-block" id="MobilitySim.init_taz">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.init_taz">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_taz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_to_ignore_share</span> <span class="o">=</span> <span class="mf">.0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init_taz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_to_ignore_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the Traffic Analysis Zones (TAZs) and sets up associated features.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            population_to_ignore_share (float): Fraction of total population to ignore </span>
+<span class="sd">                (between 0 and 1). TAZs with cumulative population below this share will </span>
+<span class="sd">                be removed. Default is 0.0.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Prints:</span>
+<span class="sd">            Information logs during the setup process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Setting up traffic analysis zones (TAZs) and associated features&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Split the area into n x n zones </span>
-
+        <span class="c1"># Split the area into n x n zones</span>
         <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_bbox</span>
-
         <span class="n">width_bbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_area_width</span>
         <span class="n">size_unit_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taz_width</span>
         <span class="n">num_squares</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subdivisions</span>
-    
+
         <span class="c1"># Calculate the width and height of each zone</span>
         <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxx</span> <span class="o">-</span> <span class="n">minx</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_squares</span>
         <span class="n">height</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxy</span> <span class="o">-</span> <span class="n">miny</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_squares</span>
-        
+
         <span class="n">grid_data</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="c1"># Loop to create grid and calculate center of each square        </span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_squares</span><span class="p">):</span>     
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_squares</span><span class="p">):</span>
@@ -302,7 +433,6 @@
                 <span class="n">center_lat</span> <span class="o">=</span> <span class="n">minx</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">width</span>
 
                 <span class="c1"># 2. Bounding box </span>
-
                 <span class="n">lower_left_x</span> <span class="o">=</span> <span class="n">minx</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">width</span>
                 <span class="n">lower_left_y</span> <span class="o">=</span> <span class="n">miny</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="n">height</span>
                 <span class="n">upper_right_x</span> <span class="o">=</span> <span class="n">lower_left_x</span> <span class="o">+</span> <span class="n">width</span>
@@ -337,21 +467,26 @@
                 <span class="n">n_destinations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points_within_bbox</span><span class="p">)</span>
 
                 <span class="c1"># 5. Check if the TAZ is inside the target area</span>
-                
                 <span class="n">shapefile_geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_area</span>
                 <span class="n">center_point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">((</span><span class="n">center_lat</span><span class="p">,</span> <span class="n">center_lon</span><span class="p">))</span>
 
                 <span class="c1"># Check if the point is within the MultiPolygon</span>
                 <span class="n">is_within</span> <span class="o">=</span> <span class="n">shapefile_geometry</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">center_point</span><span class="p">)</span>
 
-                <span class="c1"># 5. Append everything</span>
-
-                <span class="n">grid_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">zone_id</span><span class="p">,</span> <span class="s1">&#39;geometric_center&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">center_lat</span><span class="p">,</span> <span class="n">center_lon</span><span class="p">),</span> <span class="s1">&#39;bbox&#39;</span><span class="p">:</span> <span class="n">bbox_geom</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="n">total_population</span><span class="p">,</span> <span class="s1">&#39;destinations&#39;</span><span class="p">:</span> <span class="n">n_destinations</span><span class="p">,</span> <span class="s1">&#39;is_within_target_area&#39;</span><span class="p">:</span> <span class="n">is_within</span><span class="p">})</span>
+                <span class="c1"># 6. Append everything</span>
+                <span class="n">grid_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">zone_id</span><span class="p">,</span> 
+                    <span class="s1">&#39;geometric_center&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">center_lat</span><span class="p">,</span> <span class="n">center_lon</span><span class="p">),</span> 
+                    <span class="s1">&#39;bbox&#39;</span><span class="p">:</span> <span class="n">bbox_geom</span><span class="p">,</span> 
+                    <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="n">total_population</span><span class="p">,</span> 
+                    <span class="s1">&#39;destinations&#39;</span><span class="p">:</span> <span class="n">n_destinations</span><span class="p">,</span> 
+                    <span class="s1">&#39;is_within_target_area&#39;</span><span class="p">:</span> <span class="n">is_within</span>
+                <span class="p">})</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
 
-        <span class="c1"># Delete the sparsely TAZs, such that the sum of the less populated is below a threshold</span>
-        <span class="k">if</span> <span class="n">population_to_ignore_share</span>  <span class="o">&gt;</span> <span class="mf">.0</span> <span class="ow">and</span> <span class="n">population_to_ignore_share</span>  <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="c1"># Delete the sparsely populated TAZs, such that the sum of the less populated is below a threshold</span>
+        <span class="k">if</span> <span class="n">population_to_ignore_share</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">population_to_ignore_share</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Deleting sparsely populated TAZs&quot;</span><span class="p">)</span>
 
             <span class="c1"># Calculate the total population</span>
@@ -375,6 +510,7 @@
             <span class="c1"># Optionally, remove the cumulative_population column</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cumulative_population&#39;</span><span class="p">])</span>
 
+        <span class="c1"># Assign the DataFrame to the traffic zones</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
 
 
@@ -384,26 +520,47 @@
 
 <div class="viewcode-block" id="MobilitySim.trip_generation">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.trip_generation">[docs]</a>
-    <span class="k">def</span> <span class="nf">trip_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_trips_per_inhabitant</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">trip_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_trips_per_inhabitant</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates the number of trips for each traffic zone based on the population and trips per inhabitant.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_trips_per_inhabitant (float): Number of trips per inhabitant in each traffic zone.</span>
+<span class="sd">                Must be greater than 0.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If the trip generation is not performed after simulation setup.</span>
+<span class="sd">            ValueError: If the number of trips per inhabitant is not greater than 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Prints:</span>
+<span class="sd">            Information logs during and after trip generation, including the total number of trips.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> TRIP GENERATION&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Check if the simulation is in the correct state</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;initialized&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Trip generation must be performed right after simulation setup&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">n_trips_per_inhabitant</span> <span class="o">&lt;=</span> <span class="mf">.0</span><span class="p">:</span>
+        <span class="c1"># Check for valid trips per inhabitant</span>
+        <span class="k">if</span> <span class="n">n_trips_per_inhabitant</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Trips per inhabitant must be greater than 0&quot;</span><span class="p">)</span>
 
         <span class="c1"># Load the traffic_zones dataframe</span>
-
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span>
 
-        <span class="c1"># Calculate the number of trips and append them to the df</span>
-        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">n_trips_per_inhabitant</span><span class="p">)</span> <span class="p">)</span>
+        <span class="c1"># Calculate the number of trips and append them to the dataframe</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">n_trips_per_inhabitant</span><span class="p">))</span>
 
+        <span class="c1"># Update the traffic zones with the new trip data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="n">df</span>
 
+        <span class="c1"># Update the state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;generation_done&quot;</span>
 
+        <span class="c1"># Print summary information</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Trip generation done. Make sure to rerun trip distribution if needed.&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Total number of trips: </span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -414,7 +571,42 @@
 
 <div class="viewcode-block" id="MobilitySim.trip_distribution">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.trip_distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">trip_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">ors_key</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">attraction_feature</span> <span class="o">=</span> <span class="s2">&quot;population&quot;</span><span class="p">,</span> <span class="n">cost_feature</span> <span class="o">=</span> <span class="s2">&quot;distance_road&quot;</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">49</span><span class="p">,</span> <span class="n">km_per_capita_offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">road_to_euclidian_ratio</span> <span class="o">=</span> <span class="mf">1.63</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">trip_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ors_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">attraction_feature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;population&quot;</span><span class="p">,</span> <span class="n">cost_feature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;distance_road&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">49</span><span class="p">,</span> <span class="n">km_per_capita_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">road_to_euclidian_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.63</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Distributes trips between Traffic Analysis Zones (TAZ) based on a spatial interaction model.</span>
+
+<span class="sd">        This function performs road distance calculations using either the OpenRouteService (ORS) or an empirical road-to-Euclidean </span>
+<span class="sd">        ratio, and computes flows between zones. The function supports multiple spatial interaction models (gravity models, radiation </span>
+<span class="sd">        model, and radius-based models), allowing the user to choose an appropriate one based on the desired behavior of the trips.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (str): The type of spatial interaction model to apply for trip distribution. Available models are:</span>
+<span class="sd">                - &#39;gravity_power_1&#39;</span>
+<span class="sd">                - &#39;gravity_exp_1&#39;</span>
+<span class="sd">                - &#39;gravity_exp_01&#39;</span>
+<span class="sd">                - &#39;gravity_exp_scaled&#39;</span>
+<span class="sd">                - &#39;radiation&#39;</span>
+
+<span class="sd">            ors_key (str): OpenRouteService API key for obtaining road distances. If None, road distance will be estimated using the road-to-Euclidean ratio. Default is None.</span>
+
+<span class="sd">            attraction_feature (str): Feature used for the attraction calculation in the spatial interaction model. Options are &#39;population&#39; or &#39;destinations&#39;. Default is &#39;population&#39;.</span>
+
+<span class="sd">            cost_feature (str): Feature used for the cost calculation in the spatial interaction model. Default is &#39;distance_road&#39;. Options are:</span>
+<span class="sd">                - &#39;distance_road&#39;: Road distance between TAZ</span>
+<span class="sd">                - &#39;time_road&#39;: Travel time by road</span>
+<span class="sd">                - &#39;distance_centroid&#39;: Euclidean distance between TAZ centroids</span>
+
+<span class="sd">            batch_size (int): The number of origins/destinations processed per ORS request if `ors_key` is provided. Default is 49.</span>
+
+<span class="sd">            km_per_capita_offset (float): Offset added to the per capita kilometers in inflows/outflows calculation. Default is 0.</span>
+
+<span class="sd">            road_to_euclidean_ratio (float): Empirical ratio to estimate road distance based on Euclidean distance if `ors_key` is not used. Default is 1.63.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If trip generation has not been completed before distribution.</span>
+<span class="sd">            ValueError: If an unknown attraction or cost feature is specified, or if an unknown spatial interaction model is specified. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> TRIP DISTRIBUTION&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;generation_done&quot;</span><span class="p">:</span>
@@ -600,18 +792,6 @@
                     <span class="n">dest_attractivity_list</span> <span class="o">=</span> <span class="n">dest_att_list</span><span class="p">,</span>                
                     <span class="n">cost_list</span> <span class="o">=</span> <span class="n">cost_list</span><span class="p">,</span> 
                     <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_exp_02&#39;</span><span class="p">:</span>
-                <span class="n">flows</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">prod_constrained_gravity_exp</span><span class="p">(</span>
-                    <span class="n">origin_n_trips</span> <span class="o">=</span> <span class="n">n_outflows</span><span class="p">,</span>
-                    <span class="n">dest_attractivity_list</span> <span class="o">=</span> <span class="n">dest_att_list</span><span class="p">,</span>                
-                    <span class="n">cost_list</span> <span class="o">=</span> <span class="n">cost_list</span><span class="p">,</span> 
-                    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_exp_016&#39;</span><span class="p">:</span>
-                <span class="n">flows</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">prod_constrained_gravity_exp</span><span class="p">(</span>
-                    <span class="n">origin_n_trips</span> <span class="o">=</span> <span class="n">n_outflows</span><span class="p">,</span>
-                    <span class="n">dest_attractivity_list</span> <span class="o">=</span> <span class="n">dest_att_list</span><span class="p">,</span>                
-                    <span class="n">cost_list</span> <span class="o">=</span> <span class="n">cost_list</span><span class="p">,</span> 
-                    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.16</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_exp_scaled&#39;</span><span class="p">:</span>
                 <span class="c1"># Gravity model auto-calibrated </span>
                 <span class="c1"># https://doi.org/10.1371/journal.pone.0045985</span>
@@ -631,12 +811,6 @@
                     <span class="n">origin_attractivity</span> <span class="o">=</span> <span class="n">att_origin</span><span class="p">,</span>
                     <span class="n">dest_attractivity_list</span> <span class="o">=</span> <span class="n">dest_att_list</span><span class="p">,</span>                
                     <span class="n">cost_list</span> <span class="o">=</span> <span class="n">cost_list</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;radius_6km&#39;</span><span class="p">:</span>
-                <span class="n">flows</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">prod_constrained_radius</span><span class="p">(</span>
-                    <span class="n">origin_n_trips</span> <span class="o">=</span> <span class="n">n_outflows</span><span class="p">,</span>
-                    <span class="n">dest_attractivity_list</span> <span class="o">=</span> <span class="n">dest_att_list</span><span class="p">,</span>                
-                    <span class="n">cost_list</span> <span class="o">=</span> <span class="n">cost_list</span><span class="p">,</span>
-                    <span class="n">radius</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Spatial interaction model &#39;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&#39; is unknown.&quot;</span><span class="p">)</span>
 
@@ -704,33 +878,75 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">flows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the flows DataFrame.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: The flows data containing various metrics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pkm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the total person-kilometers-moved (PKM) from traffic zones.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The total PKM, which is the sum of outflows from traffic zones.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s1">&#39;pkm_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pkm_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the weighted centroid distance for PKM.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The weighted average distance (in kilometers) of flows from the centroid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Centroid Distance (km)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">])</span>  
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pkm_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimate the error in PKM calculation based on flow and TAZ dimensions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The estimated error in PKM, calculated using error propagation based on TAZ width and height.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">flows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
         <span class="n">flows_squared</span> <span class="o">=</span> <span class="n">flows</span> <span class="o">**</span> <span class="mi">2</span>
 
-        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">taz_width</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">taz_height</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">flows_squared</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="c1"># Assuming the error on the distance of each trip is 2 times the diagonal of TAZ (Error propagation)</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">taz_width</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">taz_height</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">flows_squared</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">km_per_capita_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the error in kilometers per capita based on PKM error.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The estimated error in kilometers per capita.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">km_per_capita</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkm_error</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkm</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">km_per_capita</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate kilometers per capita based on total PKM and outflows.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average kilometers per capita, calculated as PKM divided by total outflows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkm</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">km_per_capita_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the weighted average kilometers per capita based on centroid distances.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average kilometers per capita weighted by flow from the centroid distance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Centroid Distance (km)&#39;</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">])</span>
 
     <span class="c1">#######################################</span>
@@ -739,7 +955,25 @@
 
 <div class="viewcode-block" id="MobilitySim.allocate_routes">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.allocate_routes">[docs]</a>
-    <span class="k">def</span> <span class="nf">allocate_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ors_key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">allocate_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ors_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allocate ORS routes to origin-destination pairs based on flow data.</span>
+
+<span class="sd">        This function computes the routes between specified origins and destinations</span>
+<span class="sd">        using the OpenRouteService API. The computed routes are stored in the &#39;Geometry&#39;</span>
+<span class="sd">        column of the flows DataFrame. The function caches previously computed routes to</span>
+<span class="sd">        improve efficiency.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ors_key (str): The API key for accessing OpenRouteService.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If the trip distribution has not been completed before routing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This function modifies the flows DataFrame in place by adding a </span>
+<span class="sd">                  &#39;Geometry&#39; column with the route geometries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Allocation of ORS routes to origin-destination pairs (routing)&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;distribution_done&quot;</span><span class="p">:</span>
@@ -759,7 +993,7 @@
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">flows</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Allocation: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> out of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">flows</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -804,17 +1038,6 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span></div>
 
 
-    <span class="c1">#######################################</span>
-    <span class="c1">############ Save to pickle ###########</span>
-    <span class="c1">#######################################</span>
-
-<div class="viewcode-block" id="MobilitySim.to_pickle">
-<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.to_pickle">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_filename</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Saving MobilitySim object to pickle file&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></div>
-
 
     <span class="c1">#######################################</span>
     <span class="c1">### Post-processing &amp; visualisation ###</span>
@@ -822,7 +1045,17 @@
 
 <div class="viewcode-block" id="MobilitySim.km_per_capita_histogram">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.km_per_capita_histogram">[docs]</a>
-    <span class="k">def</span> <span class="nf">km_per_capita_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_width_km</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">km_per_capita_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_width_km</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a histogram of centroid and travel distances per capita.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bin_width_km (float): The width of the bins in kilometers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing the distance bins, centroid distance counts, </span>
+<span class="sd">                           and travel distance counts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">centroid_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Centroid Distance (km)&#39;</span><span class="p">]</span>
         <span class="n">travel_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
@@ -848,7 +1081,14 @@
 
 <div class="viewcode-block" id="MobilitySim.setup_to_map">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.setup_to_map">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setup_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a folium map with simulation setup properties, including administrative boundaries, </span>
+<span class="sd">        simulation bounding box, and feature groups for destinations and population.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            folium.Map: A folium map object with the specified properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Generating folium map with simulation setup properties&quot;</span><span class="p">)</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span>
@@ -912,7 +1152,14 @@
 
 <div class="viewcode-block" id="MobilitySim.trip_generation_to_map">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.trip_generation_to_map">[docs]</a>
-    <span class="k">def</span> <span class="nf">trip_generation_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">trip_generation_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a folium map from trip generation results, including administrative boundaries </span>
+<span class="sd">        and TAZ boundaries, and visualizing the number of outflows.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            folium.Map: A folium map object showing trip generation results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Generating folium map from trip generation results&quot;</span><span class="p">)</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span>
@@ -992,7 +1239,17 @@
 
 <div class="viewcode-block" id="MobilitySim.trip_distribution_to_map">
 <a class="viewcode-back" href="../../evpv.html#evpv.mobilitysim.MobilitySim.trip_distribution_to_map">[docs]</a>
-    <span class="k">def</span> <span class="nf">trip_distribution_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trip_id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">trip_distribution_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trip_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a folium map using trip distribution for a specified trip ID, visualizing the number </span>
+<span class="sd">        of trips from the given trip ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trip_id (int): The ID of the trip to visualize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            folium.Map: A folium map object showing trip distribution for the specified trip ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Generating folium map using trip distribution for trip id </span><span class="si">{</span><span class="n">trip_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>        
 
         <span class="n">m3</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_coords</span><span class="p">,</span> <span class="n">zoom_start</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">tiles</span><span class="o">=</span><span class="s1">&#39;CartoDB Positron&#39;</span><span class="p">,</span> <span class="n">control_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Create the map</span>

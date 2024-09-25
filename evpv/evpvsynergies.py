@@ -22,15 +22,27 @@ from evpv import helpers as hlp
 warnings.filterwarnings("once", category=IntegrationWarning)
 
 class EVPVSynergies:
+    """
+    A class to assess the main EV-PV synergy metrics (self-sufficiency, ...) for a given day or a given timeframe, based on 
+    a PV hourly capacity factor, EV hourly charging demand, an PV installed capacity.
+    
+    """
+
     #######################################
     ############# Constructor #############
     #######################################
 
     def __init__(self, 
-        pv_capacity_factor, 
-        ev_charging_demand_MW,
-        pv_capacity_MW):
+                 pv_capacity_factor: pd.DataFrame, 
+                 ev_charging_demand_MW: pd.DataFrame,
+                 pv_capacity_MW: float):
+        """Initialize the EVPVSynergies object.
 
+        Args:
+            pv_capacity_factor (pd.DataFrame): DataFrame containing PV hourly capacity factors over the year.
+            ev_charging_demand_MW (pd.DataFrame): DataFrame containing EV hourly charging demand over a day.
+            pv_capacity_MW (float): PV capacity in megawatts (MW).
+        """
         print("")
         print(f"INFO \t Creating a new EVPVSynergies object")
 
@@ -43,23 +55,43 @@ class EVPVSynergies:
     #######################################
 
     @property
-    def ev_charging_demand_MW(self):
+    def ev_charging_demand_MW(self) -> interp1d:
+        """Get the EV charging demand interpolation function.
+
+        Returns:
+            interp1d: Interpolation function for EV charging demand.
+        """
         return self._ev_charging_demand_MW
 
     @ev_charging_demand_MW.setter
-    def ev_charging_demand_MW(self, ev_charging_demand_MW):
+    def ev_charging_demand_MW(self, ev_charging_demand_MW: pd.DataFrame) -> None:
+        """Set the EV charging demand and create an interpolation function.
+
+        Args:
+            ev_charging_demand_MW (pd.DataFrame): DataFrame containing time and total profile in MW.
+        """
         # Extract the 'Time' and 'Total profile (MW)' columns
         time = ev_charging_demand_MW['Time']
         profile = ev_charging_demand_MW['Total (MW)']
 
-        self._ev_charging_demand_MW = interp1d(time, profile, kind='linear', fill_value = 'extrapolate') 
+        self._ev_charging_demand_MW = interp1d(time, profile, kind='linear', fill_value='extrapolate') 
 
     @property
-    def pv_capacity_factor(self):
+    def pv_capacity_factor(self) -> dict:
+        """Get the PV capacity factor interpolation functions.
+
+        Returns:
+            dict: Dictionary of interpolation functions for PV capacity factors by day.
+        """
         return self._pv_capacity_factor
 
     @pv_capacity_factor.setter
-    def pv_capacity_factor(self, pv_capacity_factor):
+    def pv_capacity_factor(self, pv_capacity_factor: pd.DataFrame) -> None:
+        """Set the PV capacity factor and create interpolation functions for each day.
+
+        Args:
+            pv_capacity_factor (pd.DataFrame): DataFrame containing PV capacity factors.
+        """
         df = pv_capacity_factor
 
         # Rename the columns for convenience (optional, but helpful)
@@ -84,7 +116,7 @@ class EVPVSynergies:
             profile = group['Total profile (MW)']
 
             # Create the interpolation function for this day
-            interpolation_function = interp1d(hours, profile, kind='linear', fill_value = 'extrapolate')
+            interpolation_function = interp1d(hours, profile, kind='linear', fill_value='extrapolate')
             
             # Store the function in the dictionary with the day as the key
             interpolation_functions[day] = interpolation_function
@@ -92,21 +124,47 @@ class EVPVSynergies:
         self._pv_capacity_factor = interpolation_functions
 
     @property
-    def pv_capacity_MW(self):
+    def pv_capacity_MW(self) -> float:
+        """Get the PV capacity in megawatts.
+
+        Returns:
+            float: PV capacity in megawatts (MW).
+        """
         return self._pv_capacity_MW
 
     @pv_capacity_MW.setter
-    def pv_capacity_MW(self, pv_capacity_MW):
-        self._pv_capacity_MW = pv_capacity_MW
+    def pv_capacity_MW(self, pv_capacity_MW: float) -> None:
+        """Set the PV capacity in megawatts.
 
+        Args:
+            pv_capacity_MW (float): PV capacity in megawatts (MW).
+        """
+        self._pv_capacity_MW = pv_capacity_MW
+        
     #######################################
     ########### PV Production #############
     #######################################
 
-    def pv_power_MW(self, day='01-01'):
+    def pv_power_MW(self, day: str = '01-01') -> callable:
+        """Return the PV power in megawatts for a given day as a function of time.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate PV power for. Defaults to '01-01'.
+
+        Returns:
+            callable: A lambda function that calculates PV power (MW) at any given time.
+        """
         return lambda x: self.pv_capacity_factor[day](x) * self.pv_capacity_MW
 
-    def pv_production(self, day='01-01'):        
+    def pv_production(self, day: str = '01-01') -> float:
+        """Calculate the total PV production for a given day by integrating over 24 hours.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate PV production for. Defaults to '01-01'.
+
+        Returns:
+            float: Total PV production (MWh) for the specified day.
+        """
         result, error = integrate.quad(self.pv_power_MW(day), 0, 24)
         return result
 
@@ -114,7 +172,12 @@ class EVPVSynergies:
     ########### EV Charging Demand ########
     #######################################
 
-    def ev_demand(self):        
+    def ev_demand(self) -> float:
+        """Calculate the total EV charging demand by integrating over 24 hours.
+
+        Returns:
+            float: Total EV charging demand (MWh) for the day.
+        """
         result, error = integrate.quad(self.ev_charging_demand_MW, 0, 24)
         return result
 
@@ -122,22 +185,61 @@ class EVPVSynergies:
     ############# EV-PV Synergies #########
     #######################################
 
-    def energy_coverage_ratio(self, day='01-01'):       
+    def energy_coverage_ratio(self, day: str = '01-01') -> float:
+        """Calculate the ratio of PV production to EV charging demand for a given day.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate the energy coverage ratio for. Defaults to '01-01'.
+
+        Returns:
+            float: Energy coverage ratio for the specified day.
+        """
         return self.pv_production(day) / self.ev_demand()
 
-    def self_sufficiency_ratio(self, day='01-01'):
+    def self_sufficiency_ratio(self, day: str = '01-01') -> float:
+        """Calculate the self-sufficiency ratio for a given day.
+
+        The self-sufficiency ratio is the ratio of coincident power (minimum of PV and EV demand) 
+        to EV demand.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate the self-sufficiency ratio for. Defaults to '01-01'.
+
+        Returns:
+            float: Self-sufficiency ratio for the specified day.
+        """
         coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
         result, error = integrate.quad(coincident_power, 0, 24)
 
         return result / self.ev_demand()
 
-    def self_consumption_ratio(self, day='01-01'):
+    def self_consumption_ratio(self, day: str = '01-01') -> float:
+        """Calculate the self-consumption ratio for a given day.
+
+        The self-consumption ratio is the ratio of coincident power to total PV production.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate the self-consumption ratio for. Defaults to '01-01'.
+
+        Returns:
+            float: Self-consumption ratio for the specified day.
+        """
         coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
         result, error = integrate.quad(coincident_power, 0, 24)
 
         return result / self.pv_production(day)
 
-    def excess_pv_ratio(self, day='01-01'):
+    def excess_pv_ratio(self, day: str = '01-01') -> float:
+        """Calculate the excess PV ratio for a given day.
+
+        The excess PV ratio is the fraction of PV production that exceeds the EV demand.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate the excess PV ratio for. Defaults to '01-01'.
+
+        Returns:
+            float: Excess PV ratio for the specified day.
+        """
         coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
         result, error = integrate.quad(coincident_power, 0, 24)
 
@@ -145,7 +247,16 @@ class EVPVSynergies:
 
         return (pv_prod - result) / pv_prod
 
-    def spearman_correlation(self, day='01-01', n_points = 100): 
+    def spearman_correlation(self, day: str = '01-01', n_points: int = 100) -> tuple:
+        """Calculate the Spearman correlation between PV production and EV charging demand.
+
+        Args:
+            day (str): The day in 'MM-DD' format to calculate the Spearman correlation for. Defaults to '01-01'.
+            n_points (int): The number of points to sample across the 24-hour period. Defaults to 100.
+
+        Returns:
+            tuple: Spearman correlation coefficient and p-value.
+        """
         # Define the range and resolution
         t_values = np.linspace(0, 24, n_points) 
 
@@ -157,8 +268,17 @@ class EVPVSynergies:
 
         return spearman_coef, p_value
 
+    def daily_metrics(self, start_date: str, end_date: str, n_points: int = 100) -> pd.DataFrame:
+        """Compute all energy and synergy metrics over a given period.
 
-    def daily_metrics(self, start_date, end_date, n_points=100):
+        Args:
+            start_date (str): Start date in 'MM-DD' format.
+            end_date (str): End date in 'MM-DD' format.
+            n_points (int): The number of points to sample for each day. Defaults to 100.
+
+        Returns:
+            pd.DataFrame: DataFrame containing all metrics for each day within the specified range.
+        """
         print(f"INFO \t Computing all metrics over a given period. This might take some time...")
 
         # Convert start and end dates from MM-DD to YYYY-MM-DD format
@@ -198,4 +318,5 @@ class EVPVSynergies:
         df = pd.DataFrame(results)
 
         return df
+
         

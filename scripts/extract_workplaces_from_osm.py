@@ -1,14 +1,31 @@
 # coding: utf-8
 
-""" 
-A script to retrieve POIs from OSM using OSMNx.
-The script splits a big bounding box in smaller bits in order to overcome limitations and then stores 
-a list of coordinates of the 
-
-WARNING: The behvaiour of OSMNx is very strange. If the area is too large, it sometimes returns less POIs
-without any warning ! Hence, it is worse splitting into smaller bits until the total number of POIs does 
-not change anymore.
 """
+This script retrieves Points of Interest (POIs) from OpenStreetMap (OSM) using the OSMNx library.
+It divides a large bounding box into smaller segments to circumvent limitations on data retrieval size.
+The retrieved POIs are stored as both GeoJSON and CSV files.
+
+## Usage
+1. **Set Parameters**: Adjust the bounding box coordinates and the tags for POIs as needed. You can also modify the number of rows and columns for the grid that splits the bounding box.
+2. **Run the Script**: Execute the script to fetch POIs. The script will print progress messages to the console.
+3. **Output**: Upon completion, two files will be generated:
+   - `center_points.geojson`: A GeoJSON file containing the center coordinates of the fetched POIs.
+   - `center_points.csv`: A CSV file listing unique coordinates along with a count of occurrences.
+
+## Important Notes
+- The behavior of OSMNx can be unpredictable. When querying a large area, the library may return fewer POIs than expected without warning. To mitigate this, the script splits the area into smaller bounding boxes and continues to fetch data until the total number of retrieved POIs stabilizes.
+- If you experience inconsistent results, consider further subdividing the bounding box until the POI count remains constant.
+
+Dependencies:
+- geopandas
+- pandas
+- numpy
+- shapely
+- osmnx
+
+Make sure to install these packages using pip or conda before running the script.
+"""
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
@@ -18,7 +35,8 @@ from shapely.geometry import Point
 
 import osmnx as ox
 
-#################### PARAMETERS #################### 
+#################### PARAMETERS ####################
+ 
 # No cache and no log
 ox.config(use_cache=False, log_console=False)
 

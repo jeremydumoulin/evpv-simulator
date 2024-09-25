@@ -1,3 +1,33 @@
+# coding: utf-8
+
+"""
+A script to calculate and compare Euclidean and road distances between randomly generated coordinates 
+within a specified bounding box using OpenRouteService (ORS) API.
+
+## Description:
+This script generates a set number of random geographical coordinates within a defined bounding box. 
+For each pair of generated coordinates, it calculates:
+1. The Euclidean distance using the geodesic method from the geopy library.
+2. The road distance using the OpenRouteService API.
+
+The results are stored in a Pandas DataFrame, which is then exported to a CSV file for further analysis.
+
+## Usage:
+1. Replace `ors_api_key` with your own OpenRouteService API key to enable access to the routing service.
+2. Adjust the bounding box coordinates (`lat_min`, `lon_min`, `lat_max`, `lon_max`) to set the area of interest.
+3. Set the `num_points` variable to determine how many random locations to generate.
+4. Run the script. The results will be saved in a CSV file named `road_vs_euclidian_distances.csv`.
+
+## Dependencies:
+- openrouteservice: To interact with the OpenRouteService API for routing distances.
+- geopy: To calculate Euclidean distances between coordinates.
+- pandas: For data manipulation and CSV file creation.
+
+## Notes:
+- The script includes error handling for rate limits and API errors when fetching road distances.
+- There is a delay of 1.5 seconds between API requests to avoid exceeding the rate limit.
+"""
+
 import openrouteservice
 from geopy.distance import geodesic
 import pandas as pd

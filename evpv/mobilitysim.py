@@ -1,12 +1,5 @@
 # coding: utf-8
 
-""" 
-MobilitySim 
-
-A class to simulate the daily travel demand for different road-based transport modes (car, motorbike) for various
-mobility chains specified by the user (home-work-home, home-school-home, etc)
-"""
-
 import json
 import os
 import rasterio
@@ -27,39 +20,47 @@ import branca.colormap as cm
 from evpv import helpers as hlp
 
 class MobilitySim:
-    #######################################
-    ############ Class Methods ############
-    #######################################
+    """
+    A class to simulate the daily travel demand for various road-based transport modes (e.g., car, motorbike) from home (origin) 
+    to commuting destinations (e.g., workplaces, park-and-ride facilities, ...). 
 
-    @classmethod
-    def from_pickle(cls, pickle_file):
-        with open(pickle_file, 'rb') as f:
-            obj = pickle.load(f)
-            print(f"INFO \t MobilitySim object loaded from pickle file")
-            return obj
+    The model operates as follows:
+    1. Traffic Zone Division: The target area is divided into traffic analysis zones.
+    2. Transport Demand Modelling:
+    - Trip Generation: Based on georeferenced population density and the average number of people commuting.
+    - Trip Distribution: Calculated origin-destination flows from home to user-defined georeferenced destinations using a 
+    spatial interaction model (such as gravity or radiation) populated with road-based distances between traffic zones (using Open Route Service). 
+    An self-calibrated gravity model is also available to avoid the need for model calibration when no data is available.
+        
+    The class also includes some methods for post-processing and visualization.
+    """
 
     #######################################
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, target_area, population_density, destinations):
-        # Input data
+    def __init__(self, target_area: str, population_density: str, destinations: str) -> None:
+        """
+        Initialize a new instance of the MobilitySim class.
 
+        Args:
+            target_area (str): Path to the GeoJSON file representing the target area.
+            population_density (str): Path to the file with population density data.
+            destinations (str): Path to the CSV file with destination points and their weights.
+        """
         self.target_area = target_area
         self.population_density = population_density
         self.destinations = destinations
-            
-        # Transport model setup 
 
+        # Transport model setup 
         self._simulation_bbox = None
-        self._taz_width = .0
+        self._taz_width = 0.0
 
         # Transport model results
-
         self._traffic_zones = pd.DataFrame()
         self._flows = pd.DataFrame()
 
-        # Track the state of the object 
+        # Track the state of the object
         self.state = 'created'  
 
         print(f"INFO \t New MobilitySim object created")
@@ -70,15 +71,29 @@ class MobilitySim:
 
     # Target area
     @property
-    def target_area(self):
+    def target_area(self) -> Polygon:
+        """
+        Get the target area as a shapely Polygon.
+
+        Returns:
+            Polygon: The target area polygon.
+        """
         return self._target_area
 
     @target_area.setter
-    def target_area(self, path):
+    def target_area(self, path: str) -> None:
+        """
+        Set the target area by loading a GeoJSON file.
+
+        Args:
+            path (str): Path to the GeoJSON file.
+
+        Raises:
+            FileNotFoundError: If the GeoJSON file does not exist.
+        """
         if not os.path.isfile(path):
             raise FileNotFoundError(f"ERROR \t The geojson at {path} does not exist.")
 
-        # Load the GeoJSON file
         with open(path, 'r') as f:
             geojson_data = json.load(f)
 
@@ -90,23 +105,53 @@ class MobilitySim:
 
     # Population density
     @property
-    def population_density(self):
+    def population_density(self) -> str:
+        """
+        Get the path to the population density file.
+
+        Returns:
+            str: The file path for population density data.
+        """
         return self._population_density
 
     @population_density.setter
-    def population_density(self, path):
+    def population_density(self, path: str) -> None:
+        """
+        Set the population density file path.
+
+        Args:
+            path (str): Path to the population density file.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+        """
         if not os.path.isfile(path):
             raise FileNotFoundError(f"ERROR \t The population density at {path} does not exist.")
-
+        
         self._population_density = path
 
     # Destinations
     @property
-    def destinations(self):
+    def destinations(self) -> list:
+        """
+        Get the destination points with weights.
+
+        Returns:
+            list: A list of tuples representing destination points (longitude, latitude).
+        """
         return self._destinations
 
     @destinations.setter
-    def destinations(self, path):
+    def destinations(self, path: str) -> None:
+        """
+        Set the destinations by loading a CSV file with destination points and weights.
+
+        Args:
+            path (str): Path to the CSV file with destinations.
+
+        Raises:
+            FileNotFoundError: If the CSV file does not exist.
+        """
         if not os.path.isfile(path):
             raise FileNotFoundError(f"ERROR \t The CSV for destinations at {path} does not exist.")
         
@@ -123,26 +168,38 @@ class MobilitySim:
                 if weight < 1:
                     print(f"ALERT \t Skipping {name} due to non-positive weight: {weight}")
                     continue
-                    
+
                 for _ in range(weight):
                     center_points.append((longitude, latitude))
 
-        self._destinations = center_points             
+        self._destinations = center_points
 
     # Target Area Centroid Coordinates
     @property
-    def centroid_coords(self):    
-        # Get the centroid of the shape
+    def centroid_coords(self) -> tuple:
+        """
+        Get the coordinates of the centroid of the target area.
+
+        Returns:
+            tuple: The (latitude, longitude) coordinates of the centroid.
+        """
         centroid = self.target_area.centroid
-        
-        # Return the coordinates of the centroid
         return centroid.y, centroid.x
 
     #######################################
     ######### Simulation setup ############
     #######################################
 
-    def setup_simulation(self, taz_target_width_km, simulation_area_extension_km, population_to_ignore_share):
+    def setup_simulation(self, taz_target_width_km: float, simulation_area_extension_km: float, population_to_ignore_share: float) -> None:
+        """
+        Set up the simulation by configuring the simulation bounding box (bbox), transportation analysis zone (TAZ) width, 
+        and initializing the TAZ based on population.
+
+        Args:
+            taz_target_width_km (float): Target width of each TAZ in kilometers.
+            simulation_area_extension_km (float): Extension in kilometers to apply to the simulation bounding box.
+            population_to_ignore_share (float): The share of the population to ignore during the setup.
+        """
         print(f"INFO \t SIMULATION SETUP")
 
         self.set_simulation_bbox(simulation_area_extension_km)
@@ -157,17 +214,41 @@ class MobilitySim:
 
     # Simulation bbox
     @property
-    def simulation_bbox(self):
+    def simulation_bbox(self) -> tuple:
+        """
+        Get the current simulation bounding box (bbox).
+
+        Returns:
+            tuple: Coordinates of the bounding box as (minx, miny, maxx, maxy).
+        """
         return self._simulation_bbox
 
-    def set_simulation_bbox(self, simulation_area_extension_km):
+    def set_simulation_bbox(self, simulation_area_extension_km: float) -> None:
+        """
+        Set the simulation bounding box (bbox) by extending the target area boundaries.
+
+        Args:
+            simulation_area_extension_km (float): Distance in kilometers by which to extend the simulation bbox.
+        """
         print(f"INFO \t Extending the simulation bbox by {simulation_area_extension_km} km")
 
-        #Get the bounding box of the shapefile defininf the target area
+        # Get the bounding box of the shapefile defining the target area
         minx, miny, maxx, maxy = self.target_area.bounds
 
-        # Calculate the new boundaries by extending them
-        def extend_bbox(minx, miny, maxx, maxy, km_extension):
+        def extend_bbox(minx: float, miny: float, maxx: float, maxy: float, km_extension: float) -> tuple:
+            """
+            Extend the bounding box (bbox) by a given extension in kilometers.
+
+            Args:
+                minx (float): Minimum x-coordinate (longitude).
+                miny (float): Minimum y-coordinate (latitude).
+                maxx (float): Maximum x-coordinate (longitude).
+                maxy (float): Maximum y-coordinate (latitude).
+                km_extension (float): Extension distance in kilometers.
+
+            Returns:
+                tuple: New extended bbox as (minx, miny, maxx, maxy).
+            """
             # Extend minx and maxx by the km_extension in the longitudinal direction
             left_point = geodesic(kilometers=km_extension).destination((miny, minx), 270)
             right_point = geodesic(kilometers=km_extension).destination((maxy, maxx), 90)
@@ -185,26 +266,49 @@ class MobilitySim:
 
         new_minx, new_miny, new_maxx, new_maxy = extend_bbox(minx, miny, maxx, maxy, simulation_area_extension_km)
 
-        # Return the coordinates of the centroid
         self._simulation_bbox = new_minx, new_miny, new_maxx, new_maxy
 
     # Simulation Area: Width and Height
     @property
-    def simulation_area_width(self):
+    def simulation_area_width(self) -> float:
+        """
+        Get the width of the simulation area based on the bounding box.
+
+        Returns:
+            float: The width of the simulation area in kilometers.
+        """
         minx, miny, maxx, maxy = self.simulation_bbox
         return geodesic((minx, miny), (maxx, miny)).kilometers
 
     @property
-    def simulation_area_height(self):
+    def simulation_area_height(self) -> float:
+        """
+        Get the height of the simulation area based on the bounding box.
+
+        Returns:
+            float: The height of the simulation area in kilometers.
+        """
         minx, miny, maxx, maxy = self.simulation_bbox
         return geodesic((minx, miny), (minx, maxy)).kilometers
 
     # TAZ: Width, Height, Number of zones
     @property
-    def taz_width(self):
+    def taz_width(self) -> float:
+        """
+        Get the current width of each transportation analysis zone (TAZ).
+
+        Returns:
+            float: The width of the TAZ in kilometers.
+        """
         return self._taz_width
 
-    def set_taz_width(self, taz_target_width_km):
+    def set_taz_width(self, taz_target_width_km: float) -> None:
+        """
+        Set the width of the transportation analysis zones (TAZ) based on the target width.
+
+        Args:
+            taz_target_width_km (float): Target width of each TAZ in kilometers.
+        """
         # Compute the number of integer segments close to the target width
         n = round(self.simulation_area_width / taz_target_width_km)
 
@@ -214,35 +318,65 @@ class MobilitySim:
         self._taz_width = l
 
     @property
-    def taz_height(self):
+    def taz_height(self) -> float:
+        """
+        Get the height of each transportation analysis zone (TAZ).
+
+        Returns:
+            float: The height of the TAZ in kilometers.
+        """
         return self.simulation_area_height / self.n_subdivisions
 
     @property
-    def n_subdivisions(self):
+    def n_subdivisions(self) -> int:
+        """
+        Get the number of subdivisions (TAZ zones) along the height of the simulation area.
+
+        Returns:
+            int: Number of subdivisions.
+        """
         return int(self.simulation_area_width / self.taz_width)
 
     # TAZ Initialization
     @property
-    def traffic_zones(self):
+    def traffic_zones(self) -> pd.DataFrame:
+        """
+        Get the DataFrame representing the traffic zones (TAZ).
+
+        Returns:
+            pd.DataFrame: A DataFrame containing traffic zone data.
+        """
         return self._traffic_zones
 
-    def init_taz(self, population_to_ignore_share = .0):
+    def init_taz(self, population_to_ignore_share: float = 0.0) -> None:
+        """
+        Initializes the Traffic Analysis Zones (TAZs) and sets up associated features.
+
+        Args:
+            population_to_ignore_share (float): Fraction of total population to ignore 
+                (between 0 and 1). TAZs with cumulative population below this share will 
+                be removed. Default is 0.0.
+        
+        Returns:
+            None
+
+        Prints:
+            Information logs during the setup process.
+        """
         print(f"INFO \t Setting up traffic analysis zones (TAZs) and associated features")
 
-        # Split the area into n x n zones 
-
+        # Split the area into n x n zones
         minx, miny, maxx, maxy = self.simulation_bbox
-
         width_bbox = self.simulation_area_width
         size_unit_cell = self.taz_width
         num_squares = self.n_subdivisions
-    
+
         # Calculate the width and height of each zone
         width = (maxx - minx) / num_squares
         height = (maxy - miny) / num_squares
-        
+
         grid_data = []
-        
+
         # Loop to create grid and calculate center of each square        
         for i in range(num_squares):     
             for j in range(num_squares):
@@ -254,7 +388,6 @@ class MobilitySim:
                 center_lat = minx + (j + 0.5) * width
 
                 # 2. Bounding box 
-
                 lower_left_x = minx + i * width
                 lower_left_y = miny + j * height
                 upper_right_x = lower_left_x + width
@@ -289,21 +422,26 @@ class MobilitySim:
                 n_destinations = len(points_within_bbox)
 
                 # 5. Check if the TAZ is inside the target area
-                
                 shapefile_geometry = self.target_area
                 center_point = Point((center_lat, center_lon))
 
                 # Check if the point is within the MultiPolygon
                 is_within = shapefile_geometry.contains(center_point)
 
-                # 5. Append everything
-
-                grid_data.append({'id': zone_id, 'geometric_center': (center_lat, center_lon), 'bbox': bbox_geom, 'population': total_population, 'destinations': n_destinations, 'is_within_target_area': is_within})
+                # 6. Append everything
+                grid_data.append({
+                    'id': zone_id, 
+                    'geometric_center': (center_lat, center_lon), 
+                    'bbox': bbox_geom, 
+                    'population': total_population, 
+                    'destinations': n_destinations, 
+                    'is_within_target_area': is_within
+                })
 
         df = pd.DataFrame(grid_data)
 
-        # Delete the sparsely TAZs, such that the sum of the less populated is below a threshold
-        if population_to_ignore_share  > .0 and population_to_ignore_share  < 1.0:
+        # Delete the sparsely populated TAZs, such that the sum of the less populated is below a threshold
+        if population_to_ignore_share > 0.0 and population_to_ignore_share < 1.0:
             print(f"INFO \t Deleting sparsely populated TAZs")
 
             # Calculate the total population
@@ -327,32 +465,54 @@ class MobilitySim:
             # Optionally, remove the cumulative_population column
             df = df.drop(columns=['cumulative_population'])
 
+        # Assign the DataFrame to the traffic zones
         self._traffic_zones = pd.DataFrame(df)
 
     #######################################
     ########## Trip Generation ############
     #######################################
 
-    def trip_generation(self, n_trips_per_inhabitant):
+    def trip_generation(self, n_trips_per_inhabitant: float) -> None:
+        """
+        Generates the number of trips for each traffic zone based on the population and trips per inhabitant.
+
+        Args:
+            n_trips_per_inhabitant (float): Number of trips per inhabitant in each traffic zone.
+                Must be greater than 0.
+
+        Raises:
+            RuntimeError: If the trip generation is not performed after simulation setup.
+            ValueError: If the number of trips per inhabitant is not greater than 0.
+
+        Returns:
+            None
+
+        Prints:
+            Information logs during and after trip generation, including the total number of trips.
+        """
         print(f"INFO \t TRIP GENERATION")
 
+        # Check if the simulation is in the correct state
         if self.state != "initialized":
             raise RuntimeError(f"ERROR \t Trip generation must be performed right after simulation setup")
 
-        if n_trips_per_inhabitant <= .0:
+        # Check for valid trips per inhabitant
+        if n_trips_per_inhabitant <= 0.0:
             raise ValueError(f"ERROR \t Trips per inhabitant must be greater than 0")
 
         # Load the traffic_zones dataframe
-
         df = self.traffic_zones
 
-        # Calculate the number of trips and append them to the df
-        df['n_outflows'] = df['population'].apply( lambda x: int(x * n_trips_per_inhabitant) )
+        # Calculate the number of trips and append them to the dataframe
+        df['n_outflows'] = df['population'].apply(lambda x: int(x * n_trips_per_inhabitant))
 
+        # Update the traffic zones with the new trip data
         self._traffic_zones = df
 
+        # Update the state
         self.state = "generation_done"
 
+        # Print summary information
         print(f"INFO \t Trip generation done. Make sure to rerun trip distribution if needed.")
         print(f"\t Total number of trips: {df['n_outflows'].sum()}")
 
@@ -360,7 +520,42 @@ class MobilitySim:
     ######## Trip Distribution ############
     #######################################
 
-    def trip_distribution(self, model, ors_key = None, attraction_feature = "population", cost_feature = "distance_road", batch_size = 49, km_per_capita_offset = 0, road_to_euclidian_ratio = 1.63):
+    def trip_distribution(self, model: str, ors_key: str = None, attraction_feature: str = "population", cost_feature: str = "distance_road", batch_size: int = 49, km_per_capita_offset: float = 0, road_to_euclidian_ratio: float = 1.63) -> None:
+        """
+        Distributes trips between Traffic Analysis Zones (TAZ) based on a spatial interaction model.
+
+        This function performs road distance calculations using either the OpenRouteService (ORS) or an empirical road-to-Euclidean 
+        ratio, and computes flows between zones. The function supports multiple spatial interaction models (gravity models, radiation 
+        model, and radius-based models), allowing the user to choose an appropriate one based on the desired behavior of the trips.
+
+        Args:
+            model (str): The type of spatial interaction model to apply for trip distribution. Available models are:
+                - 'gravity_power_1'
+                - 'gravity_exp_1'
+                - 'gravity_exp_01'
+                - 'gravity_exp_scaled'
+                - 'radiation'
+
+            ors_key (str): OpenRouteService API key for obtaining road distances. If None, road distance will be estimated using the road-to-Euclidean ratio. Default is None.
+
+            attraction_feature (str): Feature used for the attraction calculation in the spatial interaction model. Options are 'population' or 'destinations'. Default is 'population'.
+
+            cost_feature (str): Feature used for the cost calculation in the spatial interaction model. Default is 'distance_road'. Options are:
+                - 'distance_road': Road distance between TAZ
+                - 'time_road': Travel time by road
+                - 'distance_centroid': Euclidean distance between TAZ centroids
+
+            batch_size (int): The number of origins/destinations processed per ORS request if `ors_key` is provided. Default is 49.
+
+            km_per_capita_offset (float): Offset added to the per capita kilometers in inflows/outflows calculation. Default is 0.
+
+            road_to_euclidean_ratio (float): Empirical ratio to estimate road distance based on Euclidean distance if `ors_key` is not used. Default is 1.63.
+
+        Raises:
+            RuntimeError: If trip generation has not been completed before distribution.
+            ValueError: If an unknown attraction or cost feature is specified, or if an unknown spatial interaction model is specified. 
+        """
+
         print(f"INFO \t TRIP DISTRIBUTION")
 
         if self.state != "generation_done":
@@ -546,18 +741,6 @@ class MobilitySim:
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list, 
                     beta = 0.1)
-            elif model == 'gravity_exp_02':
-                flows = hlp.prod_constrained_gravity_exp(
-                    origin_n_trips = n_outflows,
-                    dest_attractivity_list = dest_att_list,                
-                    cost_list = cost_list, 
-                    beta = 0.2)
-            elif model == 'gravity_exp_016':
-                flows = hlp.prod_constrained_gravity_exp(
-                    origin_n_trips = n_outflows,
-                    dest_attractivity_list = dest_att_list,                
-                    cost_list = cost_list, 
-                    beta = 0.16)
             elif model == 'gravity_exp_scaled':
                 # Gravity model auto-calibrated 
                 # https://doi.org/10.1371/journal.pone.0045985
@@ -577,12 +760,6 @@ class MobilitySim:
                     origin_attractivity = att_origin,
                     dest_attractivity_list = dest_att_list,                
                     cost_list = cost_list)
-            elif model == 'radius_6km':
-                flows = hlp.prod_constrained_radius(
-                    origin_n_trips = n_outflows,
-                    dest_attractivity_list = dest_att_list,                
-                    cost_list = cost_list,
-                    radius = 6)
             else:
                 raise ValueError(f"ERROR \t Spatial interaction model '{model}' is unknown.")
 
@@ -649,40 +826,100 @@ class MobilitySim:
 
     @property
     def flows(self):
+        """
+        Get the flows DataFrame.
+
+        Returns:
+            pd.DataFrame: The flows data containing various metrics.
+        """
         return self._flows
 
     @property
     def pkm(self):
+        """
+        Calculate the total person-kilometers-moved (PKM) from traffic zones.
+
+        Returns:
+            float: The total PKM, which is the sum of outflows from traffic zones.
+        """
         return self.traffic_zones['pkm_outflows'].sum()
 
     @property
     def pkm_centroid(self):
+        """
+        Calculate the weighted centroid distance for PKM.
+
+        Returns:
+            float: The weighted average distance (in kilometers) of flows from the centroid.
+        """
         return self.flows['Centroid Distance (km)'].dot(self.flows['Flow'])  
 
     @property
     def pkm_error(self):
+        """
+        Estimate the error in PKM calculation based on flow and TAZ dimensions.
+
+        Returns:
+            float: The estimated error in PKM, calculated using error propagation based on TAZ width and height.
+        """
         flows = self.flows['Flow']
         flows_squared = flows ** 2
 
-        return 2 * np.sqrt(self.taz_width**2 + self.taz_height**2) * np.sqrt(flows_squared.sum()) # Assuming the error on the distance of each trip is 2 times the diagonal of TAZ (Error propagation)
+        return 2 * np.sqrt(self.taz_width**2 + self.taz_height**2) * np.sqrt(flows_squared.sum()) 
 
     @property
     def km_per_capita_error(self):
+        """
+        Calculate the error in kilometers per capita based on PKM error.
+
+        Returns:
+            float: The estimated error in kilometers per capita.
+        """
         return self.km_per_capita * (self.pkm_error / self.pkm)
 
     @property
     def km_per_capita(self):
+        """
+        Calculate kilometers per capita based on total PKM and outflows.
+
+        Returns:
+            float: The average kilometers per capita, calculated as PKM divided by total outflows.
+        """
         return self.pkm / self.traffic_zones['n_outflows'].sum()
 
     @property
     def km_per_capita_centroid(self):
+        """
+        Calculate the weighted average kilometers per capita based on centroid distances.
+
+        Returns:
+            float: The average kilometers per capita weighted by flow from the centroid distance.
+        """
         return np.average(self.flows['Centroid Distance (km)'], weights=self.flows['Flow'])
 
     #######################################
     ############## Routing ################
     #######################################
 
-    def allocate_routes(self, ors_key):
+    def allocate_routes(self, ors_key: str) -> None:
+        """
+        Allocate ORS routes to origin-destination pairs based on flow data.
+
+        This function computes the routes between specified origins and destinations
+        using the OpenRouteService API. The computed routes are stored in the 'Geometry'
+        column of the flows DataFrame. The function caches previously computed routes to
+        improve efficiency.
+
+        Args:
+            ors_key (str): The API key for accessing OpenRouteService.
+
+        Raises:
+            RuntimeError: If the trip distribution has not been completed before routing.
+
+        Returns:
+            None: This function modifies the flows DataFrame in place by adding a 
+                  'Geometry' column with the route geometries.
+        """
         print(f"INFO \t Allocation of ORS routes to origin-destination pairs (routing)")
 
         if self.state != "distribution_done":
@@ -702,7 +939,7 @@ class MobilitySim:
 
         i = 0
         for index, row in flows.iterrows():
-            i = i+1
+            i += 1
 
             print(f"INFO \t Allocation: {i} out of {len(flows)}", end="\r")
 
@@ -746,20 +983,22 @@ class MobilitySim:
             # Adding a sleep time to avoid hitting the rate limit
             time.sleep(1.5)
 
-    #######################################
-    ############ Save to pickle ###########
-    #######################################
-
-    def to_pickle(self, pickle_filename):
-        print("INFO \t Saving MobilitySim object to pickle file")
-        with open(pickle_filename, 'wb') as file:
-            pickle.dump(self, file)
 
     #######################################
     ### Post-processing & visualisation ###
     #######################################
 
-    def km_per_capita_histogram(self, bin_width_km):
+    def km_per_capita_histogram(self, bin_width_km: float) -> pd.DataFrame:
+        """
+        Generates a histogram of centroid and travel distances per capita.
+
+        Args:
+            bin_width_km (float): The width of the bins in kilometers.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the distance bins, centroid distance counts, 
+                           and travel distance counts.
+        """
         centroid_distance = self.flows['Centroid Distance (km)']
         travel_distance = self.flows['Travel Distance (km)']
         weights = self.flows['Flow']
@@ -782,7 +1021,14 @@ class MobilitySim:
 
         return hist_df
 
-    def setup_to_map(self):
+    def setup_to_map(self) -> folium.Map:
+        """
+        Generates a folium map with simulation setup properties, including administrative boundaries, 
+        simulation bounding box, and feature groups for destinations and population.
+
+        Returns:
+            folium.Map: A folium map object with the specified properties.
+        """
         print(f"INFO \t Generating folium map with simulation setup properties")
 
         df = self.traffic_zones
@@ -843,7 +1089,14 @@ class MobilitySim:
         
         return m1
 
-    def trip_generation_to_map(self):
+    def trip_generation_to_map(self) -> folium.Map:
+        """
+        Generates a folium map from trip generation results, including administrative boundaries 
+        and TAZ boundaries, and visualizing the number of outflows.
+
+        Returns:
+            folium.Map: A folium map object showing trip generation results.
+        """
         print(f"INFO \t Generating folium map from trip generation results")
 
         df = self.traffic_zones
@@ -920,7 +1173,17 @@ class MobilitySim:
 
         return m2
 
-    def trip_distribution_to_map(self, trip_id):
+    def trip_distribution_to_map(self, trip_id: int) -> folium.Map:
+        """
+        Generates a folium map using trip distribution for a specified trip ID, visualizing the number 
+        of trips from the given trip ID.
+
+        Args:
+            trip_id (int): The ID of the trip to visualize.
+
+        Returns:
+            folium.Map: A folium map object showing trip distribution for the specified trip ID.
+        """
         print(f"INFO \t Generating folium map using trip distribution for trip id {trip_id}")        
 
         m3 = folium.Map(location=self.centroid_coords, zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map

@@ -124,7 +124,7 @@ def prod_constrained_gravity_power(origin_n_trips: float,
                                 gamma: float) -> np.ndarray:
     r"""Estimates flows from origin to destinations using a production-constrained gravity model with a power law cost.
 
-    The is a a special case of a spatial interaction model, where the total number of outflows $T_{i,out}$ 
+    This is a special case of a spatial interaction model, where the total number of outflows $T_{i,out}$ 
     from origin $i$ is known (production-constrained), thus imposing the value of the constant $C_i$, and
     the cost function $f(d_{ij})$ follows a power law
 
@@ -134,7 +134,6 @@ def prod_constrained_gravity_power(origin_n_trips: float,
         C_i = 1/\sum_{k \neq i} A_j f(d_{ij})
     .. math::
         f(d_{ij})=d_{ij}^{-\gamma}
-
 
     with $T_{ij}$ the number of trips from origin $i$ to destination $j$, and $A_j$ the attractivity 
     of destination $j$. Note note that $T_{ii}$ can not be calculated with this model as $d_{ii}$ is 
@@ -178,7 +177,15 @@ def prod_constrained_gravity_exp(origin_n_trips: float,
                                   dest_attractivity_list: list[float], 
                                   cost_list: list[float], 
                                   beta: float) -> np.ndarray:
-    """Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.
+    r"""Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.
+
+    This is a special case of a spatial interaction model, where the cost function$f(d_{ij})$ follows an exponential 
+    law.
+
+    .. math::
+        f(d_{ij})=e^{-d_{ij} \beta}
+
+    See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.
 
     Args:
         origin_n_trips (float): The total number of trips originating from the origin.
@@ -214,6 +221,13 @@ def prod_constrained_radius(origin_n_trips: float,
                             cost_list: list[float], 
                             radius: float = 10) -> np.ndarray:
     """Estimates flows from origin to destinations using a production-constrained model based on distance radius.
+
+    This is a simplified example of a spatial interaction model. In this case, the product of attractiveness 
+    and cost is set to 1 if the destination falls within a specified radius, and 0 otherwise. This function 
+    is purely hypothetical and has no practical application justification. It can serve as a test function 
+    since it directs all flows to destinations within the given radius.
+
+    See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.
 
     Args:
         origin_n_trips (float): The total number of trips originating from the origin.
@@ -252,7 +266,24 @@ def prod_constrained_radiation(origin_n_trips: float,
                                origin_attractivity: float, 
                                dest_attractivity_list: list[float], 
                                cost_list: list[float]) -> np.ndarray:
-    """Estimates flows from origin to destinations using a production-constrained radiation model.
+    r"""Estimates flows from origin to destinations using a production-constrained radiation model.
+
+    This is a special case of an intervening opportunity spatial interaction model. In this case, the algorithm is more
+    complex than gravity laws, as the cost function $f(d_{ij})$ includes the intervening opportunities located at a distance 
+    smaller than $d_{ij}$ 
+
+    .. math::
+        f(d_{ij}) = ((A_i+s_{ij}).(A_i+A_j+s_{ij}))^{-1}
+    .. math::
+        s_{ij} = \sum_{k \neq i,j} A_k, ~ if ~ d_{ik}<d_{ij} 
+
+    with $s_{ij}$ being the intervening opportunities. Refer to prod_constrained_gravity_power() for other symbols.
+
+    To our knowledge, this model has been initially described in the following publication:
+    Simini, F., González, M., Maritan, A. et al. A universal model for mobility and migration patterns. Nature 
+    484, 96–100 (2012). https://doi.org/10.1038/nature10856.
+
+    While this model has the advantage of being parameter-free, it seems to not perform well at smaller scales.
 
     Args:
         origin_n_trips (float): The total number of trips originating from the origin.

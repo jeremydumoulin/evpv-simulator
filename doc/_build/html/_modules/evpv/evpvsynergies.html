@@ -56,15 +56,27 @@
 <div class="viewcode-block" id="EVPVSynergies">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies">[docs]</a>
 <span class="k">class</span> <span class="nc">EVPVSynergies</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to assess the main EV-PV synergy metrics (self-sufficiency, ...) for a given day or a given timeframe, based on </span>
+<span class="sd">    a PV hourly capacity factor, EV hourly charging demand, an PV installed capacity.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1">#######################################</span>
     <span class="c1">############# Constructor #############</span>
     <span class="c1">#######################################</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-        <span class="n">pv_capacity_factor</span><span class="p">,</span> 
-        <span class="n">ev_charging_demand_MW</span><span class="p">,</span>
-        <span class="n">pv_capacity_MW</span><span class="p">):</span>
+                 <span class="n">pv_capacity_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
+                 <span class="n">ev_charging_demand_MW</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                 <span class="n">pv_capacity_MW</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the EVPVSynergies object.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            pv_capacity_factor (pd.DataFrame): DataFrame containing PV hourly capacity factors over the year.</span>
+<span class="sd">            ev_charging_demand_MW (pd.DataFrame): DataFrame containing EV hourly charging demand over a day.</span>
+<span class="sd">            pv_capacity_MW (float): PV capacity in megawatts (MW).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creating a new EVPVSynergies object&quot;</span><span class="p">)</span>
 
@@ -77,23 +89,43 @@
     <span class="c1">#######################################</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">interp1d</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the EV charging demand interpolation function.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            interp1d: Interpolation function for EV charging demand.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ev_charging_demand_MW</span>
 
     <span class="nd">@ev_charging_demand_MW</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_charging_demand_MW</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_charging_demand_MW</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the EV charging demand and create an interpolation function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ev_charging_demand_MW (pd.DataFrame): DataFrame containing time and total profile in MW.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Extract the &#39;Time&#39; and &#39;Total profile (MW)&#39; columns</span>
         <span class="n">time</span> <span class="o">=</span> <span class="n">ev_charging_demand_MW</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
         <span class="n">profile</span> <span class="o">=</span> <span class="n">ev_charging_demand_MW</span><span class="p">[</span><span class="s1">&#39;Total (MW)&#39;</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ev_charging_demand_MW</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span> <span class="o">=</span> <span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ev_charging_demand_MW</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span> 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the PV capacity factor interpolation functions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary of interpolation functions for PV capacity factors by day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_factor</span>
 
     <span class="nd">@pv_capacity_factor</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_factor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the PV capacity factor and create interpolation functions for each day.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pv_capacity_factor (pd.DataFrame): DataFrame containing PV capacity factors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pv_capacity_factor</span>
 
         <span class="c1"># Rename the columns for convenience (optional, but helpful)</span>
@@ -118,7 +150,7 @@
             <span class="n">profile</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Total profile (MW)&#39;</span><span class="p">]</span>
 
             <span class="c1"># Create the interpolation function for this day</span>
-            <span class="n">interpolation_function</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span> <span class="o">=</span> <span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
+            <span class="n">interpolation_function</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
             
             <span class="c1"># Store the function in the dictionary with the day as the key</span>
             <span class="n">interpolation_functions</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span>
@@ -126,26 +158,52 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_factor</span> <span class="o">=</span> <span class="n">interpolation_functions</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the PV capacity in megawatts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: PV capacity in megawatts (MW).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_MW</span>
 
     <span class="nd">@pv_capacity_MW</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_MW</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_MW</span> <span class="o">=</span> <span class="n">pv_capacity_MW</span>
+    <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_MW</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the PV capacity in megawatts.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            pv_capacity_MW (float): PV capacity in megawatts (MW).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_MW</span> <span class="o">=</span> <span class="n">pv_capacity_MW</span>
+        
     <span class="c1">#######################################</span>
     <span class="c1">########### PV Production #############</span>
     <span class="c1">#######################################</span>
 
 <div class="viewcode-block" id="EVPVSynergies.pv_power_MW">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.pv_power_MW">[docs]</a>
-    <span class="k">def</span> <span class="nf">pv_power_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">pv_power_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the PV power in megawatts for a given day as a function of time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate PV power for. Defaults to &#39;01-01&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            callable: A lambda function that calculates PV power (MW) at any given time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_capacity_factor</span><span class="p">[</span><span class="n">day</span><span class="p">](</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_capacity_MW</span></div>
 
 
 <div class="viewcode-block" id="EVPVSynergies.pv_production">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.pv_production">[docs]</a>
-    <span class="k">def</span> <span class="nf">pv_production</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">):</span>        
+    <span class="k">def</span> <span class="nf">pv_production</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the total PV production for a given day by integrating over 24 hours.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate PV production for. Defaults to &#39;01-01&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Total PV production (MWh) for the specified day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_power_MW</span><span class="p">(</span><span class="n">day</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -156,7 +214,12 @@
 
 <div class="viewcode-block" id="EVPVSynergies.ev_demand">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.ev_demand">[docs]</a>
-    <span class="k">def</span> <span class="nf">ev_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
+    <span class="k">def</span> <span class="nf">ev_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the total EV charging demand by integrating over 24 hours.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Total EV charging demand (MWh) for the day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -167,13 +230,32 @@
 
 <div class="viewcode-block" id="EVPVSynergies.energy_coverage_ratio">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.energy_coverage_ratio">[docs]</a>
-    <span class="k">def</span> <span class="nf">energy_coverage_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">):</span>       
+    <span class="k">def</span> <span class="nf">energy_coverage_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the ratio of PV production to EV charging demand for a given day.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate the energy coverage ratio for. Defaults to &#39;01-01&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Energy coverage ratio for the specified day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_production</span><span class="p">(</span><span class="n">day</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_demand</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="EVPVSynergies.self_sufficiency_ratio">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.self_sufficiency_ratio">[docs]</a>
-    <span class="k">def</span> <span class="nf">self_sufficiency_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">self_sufficiency_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the self-sufficiency ratio for a given day.</span>
+
+<span class="sd">        The self-sufficiency ratio is the ratio of coincident power (minimum of PV and EV demand) </span>
+<span class="sd">        to EV demand.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate the self-sufficiency ratio for. Defaults to &#39;01-01&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Self-sufficiency ratio for the specified day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coincident_power</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_power_MW</span><span class="p">(</span><span class="n">day</span><span class="p">)(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
         <span class="n">result</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">coincident_power</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
 
@@ -182,7 +264,17 @@
 
 <div class="viewcode-block" id="EVPVSynergies.self_consumption_ratio">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.self_consumption_ratio">[docs]</a>
-    <span class="k">def</span> <span class="nf">self_consumption_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">self_consumption_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the self-consumption ratio for a given day.</span>
+
+<span class="sd">        The self-consumption ratio is the ratio of coincident power to total PV production.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate the self-consumption ratio for. Defaults to &#39;01-01&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Self-consumption ratio for the specified day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coincident_power</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_power_MW</span><span class="p">(</span><span class="n">day</span><span class="p">)(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
         <span class="n">result</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">coincident_power</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
 
@@ -191,7 +283,17 @@
 
 <div class="viewcode-block" id="EVPVSynergies.excess_pv_ratio">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.excess_pv_ratio">[docs]</a>
-    <span class="k">def</span> <span class="nf">excess_pv_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">excess_pv_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the excess PV ratio for a given day.</span>
+
+<span class="sd">        The excess PV ratio is the fraction of PV production that exceeds the EV demand.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate the excess PV ratio for. Defaults to &#39;01-01&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Excess PV ratio for the specified day.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coincident_power</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_power_MW</span><span class="p">(</span><span class="n">day</span><span class="p">)(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
         <span class="n">result</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">coincident_power</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
 
@@ -202,7 +304,16 @@
 
 <div class="viewcode-block" id="EVPVSynergies.spearman_correlation">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.spearman_correlation">[docs]</a>
-    <span class="k">def</span> <span class="nf">spearman_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;01-01&#39;</span><span class="p">,</span> <span class="n">n_points</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">spearman_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;01-01&#39;</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the Spearman correlation between PV production and EV charging demand.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day in &#39;MM-DD&#39; format to calculate the Spearman correlation for. Defaults to &#39;01-01&#39;.</span>
+<span class="sd">            n_points (int): The number of points to sample across the 24-hour period. Defaults to 100.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: Spearman correlation coefficient and p-value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Define the range and resolution</span>
         <span class="n">t_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span> 
 
@@ -215,10 +326,19 @@
         <span class="k">return</span> <span class="n">spearman_coef</span><span class="p">,</span> <span class="n">p_value</span></div>
 
 
-
 <div class="viewcode-block" id="EVPVSynergies.daily_metrics">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.daily_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">daily_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">daily_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute all energy and synergy metrics over a given period.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_date (str): Start date in &#39;MM-DD&#39; format.</span>
+<span class="sd">            end_date (str): End date in &#39;MM-DD&#39; format.</span>
+<span class="sd">            n_points (int): The number of points to sample for each day. Defaults to 100.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: DataFrame containing all metrics for each day within the specified range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Computing all metrics over a given period. This might take some time...&quot;</span><span class="p">)</span>
 
         <span class="c1"># Convert start and end dates from MM-DD to YYYY-MM-DD format</span>
@@ -259,6 +379,7 @@
 
         <span class="k">return</span> <span class="n">df</span></div>
 </div>
+
 
         
 </pre></div>

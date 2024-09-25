@@ -167,7 +167,7 @@
                                 <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained gravity model with a power law cost.</span>
 
-<span class="sd">    The is a a special case of a spatial interaction model, where the total number of outflows $T_{i,out}$ </span>
+<span class="sd">    This is a special case of a spatial interaction model, where the total number of outflows $T_{i,out}$ </span>
 <span class="sd">    from origin $i$ is known (production-constrained), thus imposing the value of the constant $C_i$, and</span>
 <span class="sd">    the cost function $f(d_{ij})$ follows a power law</span>
 
@@ -178,14 +178,13 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        f(d_{ij})=d_{ij}^{-\gamma}</span>
 
-
 <span class="sd">    with $T_{ij}$ the number of trips from origin $i$ to destination $j$, and $A_j$ the attractivity </span>
 <span class="sd">    of destination $j$. Note note that $T_{ii}$ can not be calculated with this model as $d_{ii}$ is </span>
 <span class="sd">    generally not well defined.</span>
 
 <span class="sd">    For an introduction to spatial interaction models, we recommend the following book chapter:  </span>
 <span class="sd">    Griffith, D.A., Fischer, M.M. (2016). Constrained Variants of the Gravity Model and Spatial </span>
-<span class="sd">    Dependence: Model Specification and Estimation Issues.https://doi.org/10.1007/978-3-319-30196-9_3</span>
+<span class="sd">    Dependence: Model Specification and Estimation Issues. https://doi.org/10.1007/978-3-319-30196-9_3</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
@@ -224,7 +223,15 @@
                                   <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
                                   <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
                                   <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.</span>
+
+<span class="sd">    This is a special case of a spatial interaction model, where the cost function$f(d_{ij})$ follows an exponential </span>
+<span class="sd">    law.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f(d_{ij})=e^{-d_{ij} \beta}</span>
+
+<span class="sd">    See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
@@ -263,6 +270,13 @@
                             <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
                             <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained model based on distance radius.</span>
+
+<span class="sd">    This is a simplified example of a spatial interaction model. In this case, the product of attractiveness </span>
+<span class="sd">    and cost is set to 1 if the destination falls within a specified radius, and 0 otherwise. This function </span>
+<span class="sd">    is purely hypothetical and has no practical application justification. It can serve as a test function </span>
+<span class="sd">    since it directs all flows to destinations within the given radius.</span>
+
+<span class="sd">    See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
@@ -304,7 +318,24 @@
                                <span class="n">origin_attractivity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
                                <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
                                <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained radiation model.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained radiation model.</span>
+
+<span class="sd">    This is a special case of an intervening opportunity spatial interaction model. In this case, the algorithm is more</span>
+<span class="sd">    complex than gravity laws, as the cost function $f(d_{ij})$ includes the intervening opportunities located at a distance </span>
+<span class="sd">    smaller than $d_{ij}$ </span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f(d_{ij}) = ((A_i+s_{ij}).(A_i+A_j+s_{ij}))^{-1}</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        s_{ij} = \sum_{k \neq i,j} A_k, ~ if ~ d_{ik}&lt;d_{ij} </span>
+
+<span class="sd">    with $s_{ij}$ being the intervening opportunities. Refer to prod_constrained_gravity_power() for other symbols.</span>
+
+<span class="sd">    To our knowledge, this model has been initially described in the following publication:</span>
+<span class="sd">    Simini, F., González, M., Maritan, A. et al. A universal model for mobility and migration patterns. Nature </span>
+<span class="sd">    484, 96–100 (2012). https://doi.org/10.1038/nature10856.</span>
+
+<span class="sd">    While this model has the advantage of being parameter-free, it seems to not perform well at smaller scales.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>

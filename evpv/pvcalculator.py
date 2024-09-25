@@ -9,33 +9,70 @@ import pytz
 from datetime import datetime
 
 class PVCalculator:
+    """
+    A class to calculate photovoltaic (PV) system performance.
+
+    Attributes:
+        environment (dict): A dictionary with environmental parameters.
+            - latitude (float): Latitude of the location.
+            - longitude (float): Longitude of the location.
+            - year (int): Year for the simulation.
+            - timezone (str): Timezone of the location (optional).
+        installation (dict): A dictionary with installation parameters.
+            - type (str): Type of installation (e.g., 'groundmounted_fixed').
+            - system_losses (float): System losses as a decimal (e.g., 0.14).
+        pv_module (dict): A dictionary with PV module parameters.
+            - efficiency (float): Efficiency of the PV module.
+            - temperature_coefficient (float): Temperature coefficient of the module (default is -0.0035).
+    """
+
     #######################################
     ############# Constructor #############
     #######################################
 
-    def __init__(self, environment, pv_module, installation):
+    def __init__(self, environment: dict, pv_module: dict, installation: dict):
+        """
+        Initializes the PVCalculator with environmental data, PV module parameters, and installation settings.
+
+        Args:
+            environment (dict): A dictionary containing environmental parameters with the following keys:
+                - latitude (float): Latitude of the location.
+                - longitude (float): Longitude of the location.
+                - year (int): Year for the simulation.
+                - timezone (str, optional): Timezone of the location. Defaults to the timezone calculated from latitude and longitude.
+            pv_module (dict): A dictionary containing PV module parameters with the following keys:
+                - efficiency (float): Efficiency of the PV module.
+                - temperature_coefficient (float, optional): Temperature coefficient of the module (default is -0.0035).
+            installation (dict): A dictionary containing installation parameters with the following keys:
+                - type (str, optional): Type of installation (default is 'groundmounted_fixed').
+                - system_losses (float, optional): System losses as a decimal (default is 0.14).
+        """
         print("")
         print(f"INFO \t Creating a new PV Calculator object")
 
         # Initialize the environment attributes
-        self._environment = {
-            # REQUIRED
+        self._environment = {            
             'latitude': environment.get('latitude'),
             'longitude': environment.get('longitude'),
             'year': environment.get('year'),
-            # OPTIONAL
+
+            # Optional parameters
             'timezone': environment.get('timezone', self.get_timezone(environment.get('latitude'), environment.get('longitude')))
         }
 
         # Initialize the installation attributes
         self._installation = {
             'type': installation.get('type', 'groundmounted_fixed'), # groundmounted_fixed, groundmounted_dualaxis, groundmounted_singleaxis_horizontal, groundmounted_singleaxis_vertical
+
+            # Optional parameters
             'system_losses': installation.get('system_losses', 0.14)
         }
 
         # Initialize the PV device attributes
         self._pv_module = {
             'efficiency': pv_module.get('efficiency'),
+
+            # Optional parameters
             'temperature_coefficient': pv_module.get('temperature_coefficient', -0.0035)
         }
 
@@ -49,33 +86,72 @@ class PVCalculator:
     #######################################
 
     @property
-    def environment(self):
+    def environment(self) -> dict:
+        """Gets the environment settings.
+
+        Returns:
+            dict: The environment settings as a dictionary.
+        """
         return self._environment
 
     @environment.setter
-    def environment(self, value):
+    def environment(self, value: dict) -> None:
+        """Sets the environment settings.
+
+        Args:
+            value (dict): A dictionary containing the environment settings.
+
+        Raises:
+            ValueError: If the provided value is not a dictionary.
+        """
         if isinstance(value, dict):
             self._environment.update(value)
         else:
             raise ValueError("Environment must be a dictionary")
 
     @property
-    def installation(self):
+    def installation(self) -> dict:
+        """Gets the installation settings.
+
+        Returns:
+            dict: The installation settings as a dictionary.
+        """
         return self._installation
 
     @installation.setter
-    def installation(self, value):
+    def installation(self, value: dict) -> None:
+        """Sets the installation settings.
+
+        Args:
+            value (dict): A dictionary containing the installation settings.
+
+        Raises:
+            ValueError: If the provided value is not a dictionary.
+        """
         if isinstance(value, dict):
             self._installation.update(value)
         else:
             raise ValueError("Installation must be a dictionary")
 
     @property
-    def pv_module(self):
+    def pv_module(self) -> dict:
+        """Gets the photovoltaic module settings.
+
+        Returns:
+            dict: The PV module settings as a dictionary.
+        """
         return self._pv_module
 
     @pv_module.setter
-    def pv_module(self, value):
+    def pv_module(self, value: dict) -> None:
+        """Sets the photovoltaic module settings.
+
+        Args:
+            value (dict): A dictionary containing the PV module settings.
+
+        Raises:
+            ValueError: If the provided value is not a dictionary.
+        """
         if isinstance(value, dict):
             self._pv_module.update(value)
         else:
@@ -85,7 +161,12 @@ class PVCalculator:
     #### Location, Weather, PV System #####
     #######################################
 
-    def _create_location(self):
+    def _create_location(self) -> location.Location:
+        """Creates a location object based on the environment settings.
+
+        Returns:
+            location.Location: A location object containing latitude, longitude, and timezone information.
+        """
         print(f"INFO \t Creating location object for timezone {self.environment['timezone']}")
 
         return location.Location(
@@ -94,14 +175,17 @@ class PVCalculator:
             tz=self.environment['timezone']
         )
 
-    def _fetch_weather_data(self):
-        """ Get weather data from PVGIS in Africa with POA irradiance """
+    def _fetch_weather_data(self) -> pd.DataFrame:
+        """Fetches hourly weather data with POA irradiance from PVGIS for the specified year.
 
-        print(f"INFO \t Fetching hourly weather data with POA irrdiance from PV GIS for the year {self.environment['year']} - Installation type: {self.installation['type']}")
+        Returns:
+            pd.DataFrame: A DataFrame containing the weather data with POA irradiance.
+        """
+        print(f"INFO \t Fetching hourly weather data with POA irradiance from PV GIS for the year {self.environment['year']} - Installation type: {self.installation['type']}")
 
         # Initialize tilt and azimuth
-        tilt = 0 # Default value
-        azimuth = 180 # Default value 
+        tilt = 0  # Default value
+        azimuth = 180  # Default value 
         optimize_tilt = optimize_azimuth = True
 
         # Set the tracking and tilt/azimuth options
@@ -122,22 +206,38 @@ class PVCalculator:
             raise ValueError(f"PV installation type is unknown")
 
         # Get data from PVGIS
-        weather_data_poa, meta, inputs = pvlib.iotools.get_pvgis_hourly(self.location.latitude, self.location.longitude, 
-            start=self.environment['year'], end=self.environment['year'], 
-            raddatabase='PVGIS-SARAH2', components=True, 
-            surface_tilt=tilt, surface_azimuth=azimuth, 
-            outputformat='json', usehorizon=True, userhorizon=None, 
-            pvcalculation=False, peakpower=None, pvtechchoice='crystSi', mountingplace='free', loss=0, 
-            trackingtype=trackingtype, optimal_surface_tilt=optimize_tilt, optimalangles=optimize_azimuth, 
-            url='https://re.jrc.ec.europa.eu/api/v5_2/', map_variables=True, timeout=30)
+        weather_data_poa, meta, inputs = pvlib.iotools.get_pvgis_hourly(
+            self.location.latitude,
+            self.location.longitude,
+            start=self.environment['year'],
+            end=self.environment['year'],
+            raddatabase='PVGIS-SARAH3',
+            components=True,
+            surface_tilt=tilt,
+            surface_azimuth=azimuth,
+            outputformat='json',
+            usehorizon=True,
+            userhorizon=None,
+            pvcalculation=False,
+            peakpower=None,
+            pvtechchoice='crystSi',
+            mountingplace='free',
+            loss=0,
+            trackingtype=trackingtype,
+            optimal_surface_tilt=optimize_tilt,
+            optimalangles=optimize_azimuth,
+            url='https://re.jrc.ec.europa.eu/api/v5_3/',
+            map_variables=True,
+            timeout=30
+        )
 
         # Get Diffuse and Global Irradiance in POA
         weather_data_poa['poa_diffuse'] = weather_data_poa['poa_sky_diffuse'] + weather_data_poa['poa_ground_diffuse']
         weather_data_poa['poa_global'] = weather_data_poa['poa_direct'] + weather_data_poa['poa_diffuse']
 
         # Convert the index to datetime
-        weather_data_poa.index = pd.to_datetime( weather_data_poa.index)
-        weather_data_poa.index = pd.to_datetime((weather_data_poa.index))
+        weather_data_poa.index = pd.to_datetime(weather_data_poa.index)
+        weather_data_poa.index = pd.to_datetime(weather_data_poa.index)
 
         # Convert the to local timezone
         weather_data_poa = weather_data_poa.tz_convert(self.environment['timezone'])
@@ -145,14 +245,14 @@ class PVCalculator:
         # Because of the converting of the time zone, the last rows could be those of the next year
         # Here, we detect how many rows we have and shift them to the beginning of the data
         tz = pytz.timezone(self.environment['timezone']) 
-        n = int( tz.localize(datetime.utcnow()).utcoffset().total_seconds() / 3600 ) # Get the number of hours from UTC
+        n = int(tz.localize(datetime.utcnow()).utcoffset().total_seconds() / 3600)  # Get the number of hours from UTC
 
         last_n_rows = weather_data_poa.tail(n)
         remaining_rows = weather_data_poa.head(len(weather_data_poa) - n)
         weather_data_poa = pd.concat([last_n_rows, remaining_rows])
 
         # Reattach the year information to the DataFrame
-        weather_data_poa.index = pd.date_range(start=f'{self.environment['year']}-01-01', periods=len(weather_data_poa), freq='h')
+        weather_data_poa.index = pd.date_range(start=f'{self.environment["year"]}-01-01', periods=len(weather_data_poa), freq='h')
 
         # Print some information
         print(f"INFO \t > Elevation used for calculation: {meta['location']['elevation']} m ")
@@ -160,7 +260,7 @@ class PVCalculator:
         print(f"INFO \t > Diffuse POA irradiance: {(weather_data_poa['poa_diffuse'] * 1).sum() / 1000 } kWh/m2/yr ")
         print(f"INFO \t > Metadata: {meta} ")
 
-        # Update the angles (usefull only for fixed mounting to calculate AOI losses)
+        # Update the angles (useful only for fixed mounting to calculate AOI losses)
         if self.installation['type'] == 'groundmounted_fixed':
             self._installation['tilt'] = meta['mounting_system']['fixed']['slope']['value']
             self._installation['azimuth'] = meta['mounting_system']['fixed']['azimuth']['value']
@@ -170,10 +270,14 @@ class PVCalculator:
 
         return weather_data_poa
 
-    def _create_pv_system(self):
-        """Create a PV System with parameters compatible with the PVWatts model"""
 
-        # Set moutning conditions for the thermal model
+    def _create_pv_system(self) -> pvsystem.PVSystem:
+        """Create a PV System with parameters compatible with the PVWatts model.
+
+        Returns:
+            pvsystem.PVSystem: A PVSystem object configured with module and inverter parameters.
+        """
+        # Set mounting conditions for the thermal model
         mounting = 'freestanding'
 
         if self.installation['type'] == 'rooftop':
@@ -184,32 +288,36 @@ class PVCalculator:
                 'pdc0': self.pv_module['efficiency'] * 1000,  # Nominal DC power of 1 m2 of PV panel
                 'gamma_pdc': self.pv_module['temperature_coefficient']  # Temperature coefficient (negative value)
             },
-            inverter_parameters = {
+            inverter_parameters={
                 'pdc0': self.pv_module['efficiency'] * 1000,  # Nominal DC power
                 'eta_inv_nom': 1.0,  # Inverter efficiency of 100% (system losses are computed ex-post)
                 'ac_0': self.pv_module['efficiency'] * 1000  # AC power rating assumed equal to DC power rating
             },
-            temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['pvsyst'][mounting], # PVSyst temperature model    
-            surface_tilt = self.installation['tilt'], # Used for AOI losses
-            surface_azimuth = self.installation['azimuth'] # Used for AOI losses       
+            temperature_model_parameters=pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['pvsyst'][mounting],  # PVSyst temperature model    
+            surface_tilt=self.installation['tilt'],  # Used for AOI losses
+            surface_azimuth=self.installation['azimuth']  # Used for AOI losses       
         )
 
         return system
 
-    #######################################
-    #### Location, Weather, PV System #####
-    #######################################
+    ######################################
+    ####### Compute PV Production ########
+    ######################################
 
-    def compute_pv_production(self):
-        """Compute the PV production and main KPIs using POA weather data"""
+    def compute_pv_production(self) -> pd.DataFrame:
+        """Compute the PV production and main KPIs using POA weather data.
 
+        Returns:
+            pd.DataFrame: A DataFrame containing PV production, performance ratio, capacity factor, 
+                          operating temperature, and POA irradiance.
+        """
         print(f"INFO \t Computing the hourly PV production")
 
         # Include AOI losses if fixed tilt
         if self.installation['type'] == 'groundmounted_fixed':
-            aoi_model='physical'
+            aoi_model = 'physical'
         else:
-            aoi_model='no_loss'
+            aoi_model = 'no_loss'
 
         # Initialize the model chain and run from POA
         mc = modelchain.ModelChain(self.pv_system, self.location, aoi_model=aoi_model, spectral_model="no_loss")
@@ -238,18 +346,25 @@ class PVCalculator:
 
         return results_df
 
-    #######################################
-    ########### Helper methods ############
-    #######################################
+    ######################################
+    #### Get timzeone automatically ######
+    ######################################
 
-    def get_timezone(self, lat, lon):
-        """Get timezone string based on latitude and longitude."""
+    def get_timezone(self, lat: float, lon: float) -> str:
+        """Get timezone string based on latitude and longitude.
 
-        tf = TimezoneFinder() # Initialize TimezoneFinder
+        Args:
+            lat (float): Latitude of the location.
+            lon (float): Longitude of the location.
+
+        Returns:
+            str: The timezone string if found, otherwise None.
+        """
+        tf = TimezoneFinder()  # Initialize TimezoneFinder
 
         if lat is not None and lon is not None:
             tz_string = tf.timezone_at(lat=lat, lng=lon)
             if tz_string:
                 return tz_string
-        else:
-            return None       
+
+        return None   

@@ -1,12 +1,5 @@
 # coding: utf-8
 
-""" 
-ChargingDemand
-
-A class to simulate the daily charging demand using mobility simulation and assumptions 
-regarding the charging scenario and the EV fuel consumption and charging efficiency
-"""
-
 import numpy as np
 import pandas as pd
 import random
@@ -30,32 +23,45 @@ from evpv import helpers as hlp
 from evpv.mobilitysim import MobilitySim
 
 class ChargingScenario:
+    """  
+    A class to simulate the daily charging demand using mobility demand results and assumptions 
+    regarding the charging scenario, the EV fleet and charging powers.
+    """
+
     #######################################
     ############# Constructor #############
     #######################################
 
-    def __init__(self, mobsim, ev_fleet, charging_efficiency, time_step, scenario_definition):
-        self.mobsim = mobsim        
+    def __init__(self, mobsim: list[MobilitySim], ev_fleet: list[dict], charging_efficiency: float, time_step: float, scenario_definition: dict):
+        """
+        Initializes the ChargingScenario class.
 
+        Args:
+            mobsim (list[MobilitySim]): A list of MobilitySim objects.
+            ev_fleet (list[dict]): A list of electric vehicle fleet details.
+            charging_efficiency (float): The efficiency of EV charging (between 0 and 1).
+            time_step (float): The time step for charging simulations.
+            scenario_definition (dict): A dictionary defining the charging scenario.
+
+        Raises:
+            ValueError: If any input parameters are out of expected ranges.
+        """
+        self.mobsim = mobsim        
         self.ev_fleet = ev_fleet
         self.charging_efficiency = charging_efficiency 
-        self.taz_properties = mobsim # Combine TAZ properties of each mobsim into a single effective TAZ properties df       
-
+        self.taz_properties = mobsim  # Combine TAZ properties of each mobsim into a single effective TAZ properties df       
         self.time_step = time_step
         self.scenario_definition = scenario_definition
 
         # Modeling results
-
         self._charging_demand = pd.DataFrame()
         self._charging_profile = pd.DataFrame()    
 
         # Printing results
-
         print(f"INFO \t New ChargingDemand object created")
         print(f" \t Number of vehicles: {self.taz_properties['n_inflows'].sum()} (n_in) // {self.taz_properties['n_outflows'].sum()} (n_out)")
         print(f" \t FKT (origin to destination): {self.taz_properties['fkt_inflows'].sum()} km")
         print(f" \t Average VKT (origin to destination): {self.taz_properties['fkt_inflows'].sum() / self.taz_properties['n_inflows'].sum()} km")  
-        
 
     #######################################
     ###### Main Setters and Getters #######
@@ -63,11 +69,24 @@ class ChargingScenario:
 
     # Mobism
     @property
-    def mobsim(self):
+    def mobsim(self) -> list[MobilitySim]:
+        """Get the mobility simulation object.
+
+        Returns:
+            list[MobilitySim]: The mobility simulation object.
+        """
         return self._mobsim
 
     @mobsim.setter
-    def mobsim(self, mobsims):
+    def mobsim(self, mobsims: list[MobilitySim]):
+        """Set the mobility simulation object.
+
+        Args:
+            mobsims (list[MobilitySim]): A list of MobilitySim objects.
+
+        Raises:
+            ValueError: If the provided objects are not of type MobilitySim or if trip generation/distribution has not been performed.
+        """
         for mobsim_n in mobsims:
             if not isinstance(mobsim_n, MobilitySim):
                 print(f"ERROR \t A MobilitySim object is required as an input.")
@@ -87,11 +106,21 @@ class ChargingScenario:
 
     # TAZ Properties
     @property
-    def taz_properties(self):
+    def taz_properties(self) -> pd.DataFrame:
+        """Get the properties of Traffic Analysis Zones (TAZ).
+
+        Returns:
+            pd.DataFrame: The TAZ properties DataFrame.
+        """
         return self._taz_properties
 
     @taz_properties.setter
-    def taz_properties(self, mobsim):
+    def taz_properties(self, mobsim: list[MobilitySim]):
+        """Set the properties of Traffic Analysis Zones (TAZ) by summing the relevant columns.
+
+        Args:
+            mobsim (list[MobilitySim]): A list of MobilitySim objects to extract TAZ properties.
+        """
         # Create a list of TAZ properties
         df_list = []
         for mobsim_n in mobsim:
@@ -131,21 +160,43 @@ class ChargingScenario:
 
     # EV Fleet dictionnary
     @property
-    def ev_fleet(self):
+    def ev_fleet(self) -> dict:
+        """Get the electric vehicle fleet.
+
+        Returns:
+            dict: The electric vehicle fleet dictionary.
+        """
         return self._ev_fleet
 
     @ev_fleet.setter
-    def ev_fleet(self, ev_fleet_value):
+    def ev_fleet(self, ev_fleet_value: dict):
+        """Set the electric vehicle fleet.
+
+        Args:
+            ev_fleet_value (dict): A dictionary representing the electric vehicle fleet.
+        """
         self._ev_fleet = ev_fleet_value
 
     # Charging Efficiency
     @property
-    def charging_efficiency(self):
+    def charging_efficiency(self) -> float:
+        """Get the charging efficiency.
+
+        Returns:
+            float: The charging efficiency (between 0 and 1).
+        """
         return self._charging_efficiency
 
     @charging_efficiency.setter
-    def charging_efficiency(self, charging_efficiency_value):
+    def charging_efficiency(self, charging_efficiency_value: float):
+        """Set the charging efficiency.
 
+        Args:
+            charging_efficiency_value (float): The charging efficiency value (should be between 0 and 1).
+
+        Raises:
+            ValueError: If the charging efficiency value is not between 0 and 1.
+        """
         if charging_efficiency_value < 0.0 or charging_efficiency_value > 1.0:
             raise ValueError("The EV charging efficiency should be between 0 and 1")
 
@@ -153,39 +204,106 @@ class ChargingScenario:
 
     # Time step
     @property
-    def time_step(self):
+    def time_step(self) -> int:
+        """Get the time step.
+
+        Returns:
+            int: The time step value.
+        """
         return self._time_step
 
     @time_step.setter
-    def time_step(self, time_step_value):
+    def time_step(self, time_step_value: int):
+        """Set the time step.
+
+        Args:
+            time_step_value (int): The time step value.
+        """
         self._time_step = time_step_value
 
     # Scenario definition
     @property
-    def scenario_definition(self):
+    def scenario_definition(self) -> dict:
+        """Get the scenario definition.
+
+        Returns:
+            dict: The scenario definition dictionary.
+        """
         return self._scenario_definition
 
     @scenario_definition.setter
-    def scenario_definition(self, cs):
+    def scenario_definition(self, cs: dict):
+        """Set the scenario definition.
+
+        Args:
+            cs (dict): A dictionary containing scenario definition parameters.
+
+        Raises:
+            ValueError: If the scenario shares or arrival times are not within valid ranges.
+        """
         if cs['Origin']['Share'] > 1.0 or cs['Origin']['Share'] < 0 or cs['Destination']['Share'] > 1.0 or cs['Destination']['Share'] < 0:
             raise ValueError("Share of charging at origin or destination should be between 0 and 1")
 
         if (cs['Origin']['Share'] + cs['Destination']['Share']) != 1.0:
-            raise ValueError("The total of the shares at the origin and destination does sum up to")
+            raise ValueError("The total of the shares at the origin and destination does not sum up to 1")
 
-        if cs['Origin']['Smart charging'] > 1.0 or cs['Origin']['Smart charging'] < 0 or cs['Destination']['Smart charging'] > 1.0 or cs['Destination']['Smart charging'] < 0 :
-            raise ValueError("Share of smart charging should be between 0 and 1")
-
-        if cs['Origin']['Arrival time'][0] > 24.0 or cs['Destination']['Arrival time'][0] > 24.0 or cs['Origin']['Arrival time'][0] < 0 or cs['Destination']['Arrival time'][0] < 0 :
-            raise ValueError("Average arrival time should be between 0 and 24")
+        if cs['Origin']['Smart charging'] > 1.0 or cs['Origin']['Smart charging'] < 0 or cs['Destination']['Smart charging'] > 1.0 or cs['Destination']['Smart charging'] < 0:
+            raise ValueError("Smart charging share at origin or destination should be between 0 and 1")
 
         self._scenario_definition = cs
+
+    # Charging Demand
+    @property
+    def charging_demand(self) -> pd.DataFrame:
+        """Get the charging demand DataFrame.
+
+        Returns:
+            pd.DataFrame: The charging demand DataFrame.
+        """
+        return self._charging_demand
+
+    @charging_demand.setter
+    def charging_demand(self, charging_demand_df: pd.DataFrame):
+        """Set the charging demand DataFrame.
+
+        Args:
+            charging_demand_df (pd.DataFrame): A DataFrame containing charging demand data.
+        """
+        self._charging_demand = charging_demand_df
+
+    # Charging Profile
+    @property
+    def charging_profile(self) -> pd.DataFrame:
+        """Get the charging profile DataFrame.
+
+        Returns:
+            pd.DataFrame: The charging profile DataFrame.
+        """
+        return self._charging_profile
+
+    @charging_profile.setter
+    def charging_profile(self, charging_profile_df: pd.DataFrame):
+        """Set the charging profile DataFrame.
+
+        Args:
+            charging_profile_df (pd.DataFrame): A DataFrame containing charging profile data.
+        """
+        self._charging_profile = charging_profile_df
 
     #######################################
     ####### Spatial Charging Demand #######
     #######################################
 
-    def spatial_charging_demand(self):
+    def spatial_charging_demand(self) -> None:
+        """Compute the spatial charging demand and update the charging_demand DataFrame.
+
+        This method calculates the charging demand at each Traffic Analysis Zone (TAZ)
+        based on the scenario definition and the properties of the TAZs. It updates the
+        charging_demand attribute with the computed results.
+
+        Returns:
+            None: This method does not return a value; it updates the internal charging_demand DataFrame.
+        """
         print(f"INFO \t COMPUTING THE SPATIAL CHARGING DEMAND")
 
         # Inputs
@@ -202,8 +320,8 @@ class ChargingScenario:
             is_within_target_area = row['is_within_target_area']
 
             # Number of vehicles charging at origin and destination
-            vehicles_origin = int( round((row['n_outflows']*share_origin)) )
-            vehicles_destination = int( round((row['n_inflows']*share_destination)) )
+            vehicles_origin = int(round((row['n_outflows'] * share_origin)))
+            vehicles_destination = int(round((row['n_inflows'] * share_destination)))
 
             # Total charging demand
 
@@ -212,67 +330,111 @@ class ChargingScenario:
             for vehicle in self.ev_fleet:
                 average_ev_consumption += vehicle[0]['ev_consumption'] * vehicle[1]
 
-            Etot_origin = 2 * row['fkt_outflows'] * share_origin * average_ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
-            Etot_destination = 2 * row['fkt_inflows'] * share_destination * average_ev_consumption / self.charging_efficiency # Multiply by 2 (origin-destination-origin)
+            Etot_origin = (2 * row['fkt_outflows'] * share_origin * average_ev_consumption /
+                           self.charging_efficiency)  # Multiply by 2 (origin-destination-origin)
+            Etot_destination = (2 * row['fkt_inflows'] * share_destination * average_ev_consumption /
+                                self.charging_efficiency)  # Multiply by 2 (origin-destination-origin)
 
             # Average charging demand per vehicle
-            
+
             E0_origin = (Etot_origin / vehicles_origin) if vehicles_origin > 0 else 0
             E0_destination = (Etot_destination / vehicles_destination) if vehicles_destination > 0 else 0
 
-            data.append({'id': taz_id,                
-                'bbox': bbox, 
-                'is_within_target_area': is_within_target_area, 
-                'n_vehicles_origin': vehicles_origin,
-                'n_vehicles_destination': vehicles_destination,
-                'E0_origin_kWh': E0_origin,
-                'E0_destination_kWh': E0_destination,
-                'Etot_origin_kWh': Etot_origin,
-                'Etot_destination_kWh': Etot_destination})
+            data.append({'id': taz_id,
+                          'bbox': bbox,
+                          'is_within_target_area': is_within_target_area,
+                          'n_vehicles_origin': vehicles_origin,
+                          'n_vehicles_destination': vehicles_destination,
+                          'E0_origin_kWh': E0_origin,
+                          'E0_destination_kWh': E0_destination,
+                          'Etot_origin_kWh': Etot_origin,
+                          'Etot_destination_kWh': Etot_destination})
 
-        df = pd.DataFrame(data)        
-        
+        df = pd.DataFrame(data)
+
         self._charging_demand = df
 
         print(f" \t Charging demand. At origin: {self.charging_demand['Etot_origin_kWh'].sum()} kWh - At destination: {self.charging_demand['Etot_destination_kWh'].sum()} kWh")
         print(f" \t Vehicles charging. At origin: {self.charging_demand['n_vehicles_origin'].sum()} - At destination: {self.charging_demand['n_vehicles_destination'].sum()}")
-
+        
     @property
-    def charging_demand(self):
+    def charging_demand(self) -> pd.DataFrame:
+        """Get the charging demand DataFrame.
+
+        Returns:
+            pd.DataFrame: The charging demand DataFrame.
+        """
         return self._charging_demand
 
     #######################################
     ###### Temporal Charging Demand #######
     #######################################
 
-    def temporal_charging_demand(self):
-        print(f"INFO \t COMPUTING THE TEMPORAL CHARGING DEMAND (CHARGING CURVE)")
+    def temporal_charging_demand(self) -> None:
+        """
+        Computes the temporal charging demand (charging curve) based on vehicle charging profiles 
+        at origin and destination, and stores the results in a DataFrame.
+
+        Returns:
+            None
+        """
+        print("INFO \t COMPUTING THE TEMPORAL CHARGING DEMAND (CHARGING CURVE)")
 
         travel_time_origin_destination_hours = self.scenario_definition['Travel time origin-destination']
 
-        time_origin, power_profile_origin, num_cars_plugged_in_origin = self.eval_charging_profile(origin_or_destination = "Origin", travel_time_origin_destination_hours = travel_time_origin_destination_hours)
-        time_destination, power_profile_destination, num_cars_plugged_in_destination = self.eval_charging_profile(origin_or_destination = "Destination", travel_time_origin_destination_hours = travel_time_origin_destination_hours)
-        
-        print(f" \t Max. number of vehicles charging simultaneously. At origin: {np.max(num_cars_plugged_in_origin)} - At destination: {np.max(num_cars_plugged_in_destination)}")
+        time_origin, power_profile_origin, num_cars_charging_origin = self.eval_charging_profile(
+            origin_or_destination="Origin", 
+            travel_time_origin_destination_hours=travel_time_origin_destination_hours
+        )
+        time_destination, power_profile_destination, num_cars_charging_destination = self.eval_charging_profile(
+            origin_or_destination="Destination", 
+            travel_time_origin_destination_hours=travel_time_origin_destination_hours
+        )
+
+        print(f" \t Max. number of vehicles charging simultaneously. "
+              f"At origin: {np.max(num_cars_charging_origin)} - At destination: {np.max(num_cars_charging_destination)}")
         print(f" \t Peak power. At origin: {np.max(power_profile_origin)} MW - At destination: {np.max(power_profile_destination)} MW")
 
         # Create DataFrames for each time series
         df = pd.DataFrame({
             'Time': time_origin,
             'Charging profile at origin (MW)': power_profile_origin,
-            'Number of cars charging at origin': num_cars_plugged_in_origin,
+            'Number of cars charging at origin': num_cars_charging_origin,
             'Charging profile at destination (MW)': power_profile_destination,
-            'Number of cars charging at destination': num_cars_plugged_in_destination,
+            'Number of cars charging at destination': num_cars_charging_destination,
             'Total (MW)': power_profile_origin + power_profile_destination
         })
 
         self._charging_profile = df
 
     @property
-    def charging_profile(self):
+    def charging_profile(self) -> pd.DataFrame:
+        """
+        Returns the charging profile DataFrame containing the temporal charging demand data.
+
+        Returns:
+            pd.DataFrame: DataFrame with the charging profile data.
+        """
         return self._charging_profile
 
-    def eval_charging_profile(self, origin_or_destination = "Origin", travel_time_origin_destination_hours = 0.5):
+    def eval_charging_profile(self, origin_or_destination: str = "Origin", travel_time_origin_destination_hours: float = 0.5) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Evaluates the charging profile at either the origin or destination based on arrival and 
+        departure times, vehicle counts, and smart charging percentages.
+
+        Args:
+            origin_or_destination (str): Specifies whether the evaluation is for the "Origin" 
+                                          or "Destination".
+            travel_time_origin_destination_hours (float): Travel time in hours from origin to 
+                                                          destination.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray, np.ndarray]: Tuple containing:
+                - time (np.ndarray): Array of time points.
+                - power_demand (np.ndarray): Array of power demands in MW.
+                - num_cars_charging (np.ndarray): Array of numbers of cars charging.
+        """
+
         """
         Inform if charging at origin or destination and get corresponding parameters 
         """
@@ -299,7 +461,7 @@ class ChargingScenario:
         # Final time series
         time = np.arange(0, 24, self.time_step)  # time array with specified intervals
         power_demand = np.zeros_like(time)
-        num_cars_plugged_in = np.zeros_like(time)
+        num_cars_charging = np.zeros_like(time)
 
         # Charging demand and max charging power for all vehicles
         charging_demands = np.zeros(vehicle_counts)
@@ -423,16 +585,16 @@ class ChargingScenario:
             if vehicles_with_smartcharging[i]:
                 continue
             power_demand[start_indices[i]:end_indices[i]] += charging_powers[i]
-            num_cars_plugged_in[start_indices[i]:end_indices[i]] += 1
+            num_cars_charging[start_indices[i]:end_indices[i]] += 1
 
         # Apply power demand for wrap-around cases
         for i in np.where(mask_wrap_around)[0]:
             if vehicles_with_smartcharging[i]:
                 continue
             power_demand[start_indices[i]:] += charging_powers[i]
-            num_cars_plugged_in[start_indices[i]:] += 1
+            num_cars_charging[start_indices[i]:] += 1
             power_demand[:end_indices[i]] += charging_powers[i]
-            num_cars_plugged_in[:end_indices[i]] += 1
+            num_cars_charging[:end_indices[i]] += 1
 
         # Convert power demand to MWh
         power_demand_mw = power_demand / 1000  # converting kW to MW
@@ -442,7 +604,7 @@ class ChargingScenario:
         """
         peak_power = 0  # Initialise le pic total de puissance à zéro
         power_demand = np.zeros(len(time))
-        num_cars_plugged_in_smart = np.zeros(len(time))
+        num_cars_charging_smart = np.zeros(len(time))
         
         for i in range(len(arrival_times)):
             if not vehicles_with_smartcharging[i]:
@@ -458,8 +620,8 @@ class ChargingScenario:
             remaining_demand = charging_demands[i]
             max_power = charging_powers[i]
 
-            # Temporary array to track cars plugged in during uniform distribution
-            temp_num_cars_plugged_in = np.zeros(len(time))
+            # Temporary array to track cars charging during uniform distribution
+            temp_num_cars_charging = np.zeros(len(time))
             
             # Parcourir l'intervalle de temps pour minimiser le pic de puissance
             for t in range(start_idx, end_idx):
@@ -478,7 +640,7 @@ class ChargingScenario:
 
                     power_demand[current_time_idx] += charge_power 
                     remaining_demand -= charge_energy
-                    num_cars_plugged_in_smart[current_time_idx] += 1  # Increment number of cars charging
+                    num_cars_charging_smart[current_time_idx] += 1  # Increment number of cars charging
                     
                     # Si toute l'énergie est chargée, passer au véhicule suivant
                     if remaining_demand <= 0:
@@ -499,24 +661,39 @@ class ChargingScenario:
                 for t in range(start_idx, end_idx):
                     current_time_idx = t % len(time)
                     power_demand[current_time_idx] += charge_power_uniform
-                    temp_num_cars_plugged_in[current_time_idx] += 1  # Increment temp count for cars plugged in
+                    temp_num_cars_charging[current_time_idx] += 1  # Increment temp count for cars charging
         
             # Mettre à jour le pic total de puissance si nécessaire
             peak_power = np.max(power_demand)
 
-            # Combine temp_num_cars_plugged_in with num_cars_plugged_in
-            num_cars_plugged_in_smart = np.maximum(num_cars_plugged_in_smart, temp_num_cars_plugged_in)
+            # Combine temp_num_cars_charging with num_cars_charging
+            num_cars_charging_smart = np.maximum(num_cars_charging_smart, temp_num_cars_charging)
 
         power_demand_mw = power_demand_mw + (power_demand / 1000)  # Convertir de kW en MW
-        num_cars_plugged_in = num_cars_plugged_in + num_cars_plugged_in_smart
+        num_cars_charging = num_cars_charging + num_cars_charging_smart
 
-        return time, power_demand_mw, num_cars_plugged_in
+        return time, power_demand_mw, num_cars_charging
 
     #######################################
     ### Post-processing & visualisation ###
     #######################################
 
-    def chargingdemand_total_to_map(self):
+    def chargingdemand_total_to_map(self) -> folium.Map:
+        """
+        Creates a Folium map visualizing the total charging demand at both origin and destination 
+        points based on the charging demand data.
+
+        The map includes:
+        - Administrative boundaries
+        - TAZ boundaries represented as rectangles
+        - Charging demand at origin displayed with a color scale
+        - Charging demand at destination displayed with a color scale
+        - A legend for the color scale
+        - Layer control for toggling the layers on the map
+
+        Returns:
+            folium.Map: The generated Folium map object.
+        """
         df = self.charging_demand
 
         # 1. Create an empty map
@@ -618,7 +795,22 @@ class ChargingScenario:
 
         return m
 
-    def chargingdemand_pervehicle_to_map(self):
+    def chargingdemand_pervehicle_to_map(self) -> folium.Map:
+        """
+        Creates a Folium map visualizing the charging demand per vehicle at both origin and destination points 
+        based on the charging demand data.
+
+        The map includes:
+        - Administrative boundaries
+        - TAZ boundaries represented as rectangles
+        - Charging needs per vehicle at origin displayed with a color scale
+        - Charging needs per vehicle at destination displayed with a color scale
+        - A legend for the color scale
+        - Layer control for toggling the layers on the map
+
+        Returns:
+            folium.Map: The generated Folium map object.
+        """
         df = self.charging_demand
 
         # 1. Create an empty map
@@ -720,7 +912,22 @@ class ChargingScenario:
 
         return m
 
-    def chargingdemand_nvehicles_to_map(self):
+    def chargingdemand_nvehicles_to_map(self) -> folium.Map:
+        """
+        Creates a Folium map visualizing the number of vehicles charging at both origin and destination points 
+        based on the charging demand data.
+
+        The map includes:
+        - Administrative boundaries
+        - TAZ boundaries represented as rectangles
+        - Number of vehicles charging at origin displayed with a color scale
+        - Number of vehicles charging at destination displayed with a color scale
+        - A legend for the color scale
+        - Layer control for toggling the layers on the map
+
+        Returns:
+            folium.Map: The generated Folium map object.
+        """
         df = self.charging_demand
 
         # 1. Create an empty map
