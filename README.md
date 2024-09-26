@@ -31,7 +31,7 @@ The EV-PV model has three main objectives and corresponding outputs (as shown in
 2. **Analyze potential synergies between EVs and PV energy.** This involves evaluating various indicators by combining the PV capacity factor with the EV charging curve for a given PV capacity.
 
 <center>
-	<img src="doc/model_overview.png" width="100%"> 
+	<img src="docs/model_overview.png" width="100%"> 
 	<p><font size="-1">EV-PV Model overview. Note that many optional input parameters and additionnal outputs (e.g., mobility demand outputs such as daily distance travelled or total passenger-km) are not shown.</font></p>
 </center>
 
