@@ -42,7 +42,7 @@ pv = PVCalculator(
     })
 
 # Run the PV simulation
-pv_prod = pv.compute_pv_production()
+pv.compute_pv_production()
 
 # Save the results
-pv_prod.to_csv(f"output/{sc}_PVproduction.csv")
+pv.results.to_csv(f"output/{sc}_PVproduction.csv")

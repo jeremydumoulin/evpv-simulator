@@ -17,6 +17,9 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 from evpv import helpers as hlp
+from evpv.pvcalculator import PVCalculator 
+from evpv.evcalculator import EVCalculator 
+from evpv.chargingscenario import ChargingScenario
 
 # Suppress repeated IntegrationWarning
 warnings.filterwarnings("once", category=IntegrationWarning)
@@ -32,23 +35,48 @@ class EVPVSynergies:
     ############# Constructor #############
     #######################################
 
-    def __init__(self, 
-                 pv_capacity_factor: pd.DataFrame, 
-                 ev_charging_demand_MW: pd.DataFrame,
-                 pv_capacity_MW: float):
-        """Initialize the EVPVSynergies object.
-
+    def __init__(self, pv_calculator: 'PVCalculator', ev_calculator: 'ChargingScenario or EVCalculator', pv_capacity_MW: float):
+        """
+        Initialize the EVPVSynergies object.
+        
         Args:
-            pv_capacity_factor (pd.DataFrame): DataFrame containing PV hourly capacity factors over the year.
-            ev_charging_demand_MW (pd.DataFrame): DataFrame containing EV hourly charging demand over a day.
-            pv_capacity_MW (float): PV capacity in megawatts (MW).
+            pv_calculator: Object containing PV production calculations.
+            ev_calculator: Object containing EV charging demand calculations.
+            pv_capacity_MW: PV capacity in megawatts (MW).
         """
         print("")
         print(f"INFO \t Creating a new EVPVSynergies object")
+        
+        self.pv_calculator = pv_calculator
+        self.ev_calculator = ev_calculator
+        self.pv_capacity_MW = pv_capacity_MW
+        
+        # Extract required data from the calculator objects
+        self.pv_capacity_factor = self._get_pv_capacity_factor()
+        self.ev_charging_demand_MW = self._get_ev_charging_demand()
 
-        self.ev_charging_demand_MW = ev_charging_demand_MW
-        self.pv_capacity_factor = pv_capacity_factor
-        self.pv_capacity_MW = pv_capacity_MW  
+    ########################################
+    # Get PV capacity factor and EV Demand #
+    ########################################
+
+    def _get_pv_capacity_factor(self) -> pd.DataFrame:
+        """
+        Extract PV capacity factor from PVCalculator object.
+        """
+        
+        return self.pv_calculator.results['Capacity Factor'].reset_index() 
+
+    def _get_ev_charging_demand(self) -> pd.DataFrame:
+        """
+        Extract EV charging demand from ChargingScenario or EVCalculator object.
+        """
+
+        if isinstance(self.ev_calculator, ChargingScenario):
+            return self.ev_calculator.charging_profile[['Time', 'Total (MW)']]
+        elif isinstance(self.ev_calculator, EVCalculator):
+            return self.ev_calculator.charging_demand.charging_profile[['Time', 'Total (MW)']]
+        else:
+            raise ValueError("Invalid ev_calculator object. Must be either ChargingScenario or EVCalculator.")
 
     #######################################
     ### Parameters Setters and Getters ####

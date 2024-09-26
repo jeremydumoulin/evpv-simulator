@@ -81,6 +81,9 @@ class PVCalculator:
         self.weather_data =  self._fetch_weather_data()
         self.pv_system = self._create_pv_system()
 
+        # Modeling results
+        self._results = pd.DataFrame()
+
     #######################################
     ### Parameters Setters and Getters ####
     #######################################
@@ -156,6 +159,25 @@ class PVCalculator:
             self._pv_module.update(value)
         else:
             raise ValueError("PV module must be a dictionary")
+
+    # Results
+    @property
+    def results(self) -> pd.DataFrame:
+        """Get the results DataFrame.
+
+        Returns:
+            pd.DataFrame: The results DataFrame.
+        """
+        return self._results
+
+    @results.setter
+    def results(self, results_df: pd.DataFrame):
+        """Set the results DataFrame.
+
+        Args:
+            results_df (pd.DataFrame): A DataFrame containing results data.
+        """
+        self._results = results_df
 
     #######################################
     #### Location, Weather, PV System #####
@@ -344,7 +366,7 @@ class PVCalculator:
         print(f"INFO \t > Performance ratio: {(pv_production * 1).sum() / (self.pv_module['efficiency'] * self.weather_data['poa_global']).sum() }")
         print(f"INFO \t > Average capacity factor: {capacity_factor.mean()} ")
 
-        return results_df
+        self._results = results_df
 
     ######################################
     #### Get timzeone automatically ######

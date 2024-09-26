@@ -77,24 +77,17 @@ pv = PVCalculator(
     })
 
 # Run the PV simulation
-pv_prod = pv.compute_pv_production()
+pv.compute_pv_production()
 
 # Save the results
-pv_prod.to_csv(f"output/{sc}_PVproduction.csv")
+pv.results.to_csv(f"output/{sc}_PVproduction.csv")
 
 ######################################
 ####### STEP 3: EV-PV Synergies ######
 ######################################
 
-# Inputs from previous results
-capacity_factor = pv_prod['Capacity Factor'].reset_index() 
-charging_curve = ev.charging_demand.charging_profile[['Time', 'Total (MW)']] 
-
 # EVPVSynergies object: computes EV-PV KPIs
-evpv = EVPVSynergies(
-    pv_capacity_factor = capacity_factor, 
-    ev_charging_demand_MW = charging_curve, 
-    pv_capacity_MW = 280)
+evpv = EVPVSynergies(pv_calculator = pv, ev_calculator = ev, pv_capacity_MW = 280)
 
 # One example KPI for a single day
 print(evpv.self_sufficiency_ratio(day='01-01'))
