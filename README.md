@@ -177,7 +177,7 @@ my_vehicle_2 = {
 
 - **POI charging**: Charging at points of interest (e.g., shopping malls) is not considered in the model.
 
-**Charging Curve**: The charging curve is aggregated across all traffic zones and is based on the assumed arrival time (see [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318). However, in reality, drivers might not charge immediately upon arrival. The model assumes a normal distribution for arrival times, which may not fully represent real behavior. Additionally, the model assumes that all vehicles charge every day, which may not be entirely accurate.
+- **Charging Curve**: The charging curve is aggregated across all traffic zones and is based on the assumed arrival time (see [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318). However, in reality, drivers might not charge immediately upon arrival. The model assumes a normal distribution for arrival times, which may not fully represent real behavior. Additionally, the model assumes that all vehicles charge every day, which may not be entirely accurate.
 
 #### Photovoltaic simulation
 
