@@ -18,12 +18,10 @@ Langage = python 3
 3. [Project Structure](#project-structure)
 4. [Usage](#usage)
 5. [Features](#features)
-6. [Limitations & Caveats](#limitations--caveats)
-7. [Contributing](#contributing)
-8. [Scientific Publications](#scientific-publications)
-9. [Acknowledgment](#acknowledgment)
-10. [Good to Know](#good-to-know)
-11. [License](#license)
+6. [Contributing](#contributing)
+7. [Scientific Publications](#scientific-publications)
+8. [Acknowledgment](#acknowledgment)
+9. [License](#license)
 
 ## Overview of the model
 
@@ -218,9 +216,6 @@ my_vehicle_2 = {
 
 ## Acknowledgment 
 This project was supported by the HORIZON [OpenMod4Africa](https://openmod4africa.eu/) project (Grant number 101118123), with funding from the European Union and the State Secretariat for Education, Research and Innovation (SERI) for the Swiss partners. We also gratefully acknowledge the support of OpenMod4Africa partners for their contributions and collaboration.
-
-## Good to know
-[To be completed]
 
 ## License
 
