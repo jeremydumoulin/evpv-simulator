@@ -11,6 +11,20 @@ Langage = python 3
 
 > :bulb: This `README.md` provides a quick start guide for basic usage of the EV-PV model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
 
+## Table of Contents
+
+1. [Overview of the Model](#overview-of-the-model)
+2. [Installation](#installation)
+3. [Project Structure](#project-structure)
+4. [Usage](#usage)
+5. [Features](#features)
+6. [Limitations & Caveats](#limitations--caveats)
+7. [Contributing](#contributing)
+8. [Scientific Publications](#scientific-publications)
+9. [Acknowledgment](#acknowledgment)
+10. [Good to Know](#good-to-know)
+11. [License](#license)
+
 ## Overview of the model
 
 The EV-PV model has three main objectives and corresponding outputs (as shown in the following figure, which illustrates the model’s key inputs, outputs, and processing steps):
@@ -185,7 +199,7 @@ my_vehicle_2 = {
 
 #### EV-PV synergies
 
-- **Charging Curve Assumption**: The model uses a single charging curve, though this may change under a stochastic approach. This could be problematic when dealing with a small number of vehicles.
+- **One charging curve only**: The model uses a single charging curve, though this may change under a stochastic approach. This could be problematic when dealing with a small number of vehicles.
 
 ## Contributing
 [To be completed]
