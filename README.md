@@ -19,7 +19,7 @@ The EV-PV model has three main objectives and corresponding outputs (as shown in
 2. **Analyze potential synergies between EVs and PV energy.** This involves evaluating various indicators by combining the PV capacity factor with the EV charging curve for a given PV capacity.
 
 <center>
-	<img src="doc/model_overview.png" width="95%"> 
+	<img src="doc/model_overview.png" width="100%"> 
 	<p><font size="-1">EV-PV Model overview. Note that many optional input parameters and additionnal outputs (e.g., mobility demand outputs such as daily distance travelled or total passenger-km) are not shown.</font></p>
 </center>
 
@@ -123,11 +123,40 @@ from evpv.chargingscenario import ChargingScenario
 ```
 
 ## Features
-[To be completed]
 
 ### Main features
+- **Endogenous estimation of daily mobility demand for home-to-work commuting.** To estimate charging needs in a specific area, it is essential to assess the commuting transport demand — specifically, the flow of vehicles between potential origin points (e.g., homes) and destination points (e.g., workplaces), as well as the road-based distance between them. The model estimates this demand internally by dividing the region of interest into traffic zones (based on user-defined spatial resolution) and applying a spatial interaction model to distribute the flow of people between their homes and workplaces (or other parking locations, such as park-and-ride facilities). A key feature of this model is its integration of the self-calibrated gravity model developed by [Lenormand et al.](https://doi.org/10.1016/j.jtrangeo.2015.12.008), which removes the need for transport data specific to the region. For accurate road distance calculations, the model utilizes OpenRouteService to perform routing when available in the region of interest.
 
-### Limitations
+- **Spatial and temporal charging needs**. Based on the previously mentioned mobility demand, the model computes the daily spatial and temporal charging needs for electric vehicles. This is done using a scenario-based approach, where the user specifies the characteristics of the vehicle fleet (including the charging power for each vehicle) and the expected charging behaviors. For the spatial demand, the model calculates it for each traffic zone, based on the expected share of people charging either at home or at work. The temporal demand (charging curve) is estimated at an aggregate level, based on the expected arrival times at these locations.
+
+- **Mix of electric vehicles and charger powers**. The user can specify as many electric vehicles he wants for its case study. This list must be given as an input used to the `EVCalculator` class, in the form `[[vehicle1, share1], [vehicle2, share2], ...]`. To each vehicle is also associated a typical mix of charer powers. A set of predefined vehicles are available as class attributes in the `EVCalculator` class (see examples). For more advanced use, it is also possible to manually define vehicles bz defining a dictionna, with the following parameters
+
+```python
+my_vehicle = {
+    'ev_consumption': 0.183, # Electric vehicle consumption (kWh/km)
+    'vehicle_occupancy': 1.4, # Vehicle occupancy (average number of people per vehicle)
+    'charger_power': {
+          'Origin': [[7, 0.68], [11, 0.3], [22, 0.02]], # Mix of charger power at origin (home)
+          'Destination': [[7, 0.68], [11, 0.3], [22, 0.02]] # Mix of charger power at destination (workplaces)
+        }
+    }
+```
+
+
+- **Smart charging** 
+
+- 
+
+- Destinations
+
+- PV
+
+- Synergies EV-PV
+
+### Limitations & Caveats
+
+- Charging curve only one day.
+- Assume people charge direc
 
 ## Contributing
 [To be completed]
