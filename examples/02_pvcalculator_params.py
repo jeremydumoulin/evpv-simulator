@@ -12,10 +12,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 from evpv.pvcalculator import PVCalculator
 
 ######################################
-###### Scenario Name (Optional) ######
+## Prefix for results (for clarity) ##
 ######################################
 
-sc = '02'
+pr = '02'
 
 ######################################
 ########## PV Calculator #############
@@ -45,4 +45,4 @@ pv = PVCalculator(
 pv.compute_pv_production()
 
 # Save the results
-pv.results.to_csv(f"output/{sc}_PVproduction.csv")
+pv.results.to_csv(f"output/{pr}_PVproduction.csv")

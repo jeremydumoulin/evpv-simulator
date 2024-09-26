@@ -12,10 +12,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 from evpv.evcalculator import EVCalculator
 
 ######################################
-###### Scenario Name (Optional) ######
+## Prefix for results (for clarity) ##
 ######################################
 
-sc = '01'
+pr = '01'
 
 ######################################
 ######## EV Charging Demand ##########
@@ -75,4 +75,4 @@ ev = EVCalculator(
 ev.compute_ev_demand()
 
 # Save the results
-ev.save_results(output_folder = "output", prefix = sc)
+ev.save_results(output_folder = "output", prefix = pr)
