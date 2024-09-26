@@ -224,7 +224,7 @@ class EVPVSynergies:
         """
         return self.pv_production(day) / self.ev_demand()
 
-    def self_sufficiency_ratio(self, day: str = '01-01') -> float:
+    def self_sufficiency_ratio(self, day: str = '01-01', coincident_power: float = None) -> float:
         """Calculate the self-sufficiency ratio for a given day.
 
         The self-sufficiency ratio is the ratio of coincident power (minimum of PV and EV demand) 
@@ -232,48 +232,57 @@ class EVPVSynergies:
 
         Args:
             day (str): The day in 'MM-DD' format to calculate the self-sufficiency ratio for. Defaults to '01-01'.
+            coincident_power (float): The coincident power if already calculated. Default is None.
 
         Returns:
             float: Self-sufficiency ratio for the specified day.
         """
-        coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
-        result, error = integrate.quad(coincident_power, 0, 24)
+        if coincident_power is None:
+            coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
+            result, error = integrate.quad(coincident_power, 0, 24)
+            coincident_power = result
 
-        return result / self.ev_demand()
+        return coincident_power / self.ev_demand()
 
-    def self_consumption_ratio(self, day: str = '01-01') -> float:
+    def self_consumption_ratio(self, day: str = '01-01', coincident_power: float = None) -> float:
         """Calculate the self-consumption ratio for a given day.
 
         The self-consumption ratio is the ratio of coincident power to total PV production.
 
         Args:
             day (str): The day in 'MM-DD' format to calculate the self-consumption ratio for. Defaults to '01-01'.
+            coincident_power (float): The coincident power if already calculated. Default is None.
 
         Returns:
             float: Self-consumption ratio for the specified day.
         """
-        coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
-        result, error = integrate.quad(coincident_power, 0, 24)
+        if coincident_power is None:
+            coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
+            result, error = integrate.quad(coincident_power, 0, 24)
+            coincident_power = result
 
-        return result / self.pv_production(day)
+        return coincident_power / self.pv_production(day)
 
-    def excess_pv_ratio(self, day: str = '01-01') -> float:
+    def excess_pv_ratio(self, day: str = '01-01', coincident_power: float = None) -> float:
         """Calculate the excess PV ratio for a given day.
 
         The excess PV ratio is the fraction of PV production that exceeds the EV demand.
 
         Args:
             day (str): The day in 'MM-DD' format to calculate the excess PV ratio for. Defaults to '01-01'.
+            coincident_power (float): The coincident power if already calculated. Default is None.
 
         Returns:
             float: Excess PV ratio for the specified day.
         """
-        coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
-        result, error = integrate.quad(coincident_power, 0, 24)
+        if coincident_power is None:
+            coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
+            result, error = integrate.quad(coincident_power, 0, 24)
+            coincident_power = result
 
         pv_prod = self.pv_production(day)
 
-        return (pv_prod - result) / pv_prod
+        return (pv_prod - coincident_power) / pv_prod
 
     def spearman_correlation(self, day: str = '01-01', n_points: int = 100) -> tuple:
         """Calculate the Spearman correlation between PV production and EV charging demand.
@@ -326,9 +335,14 @@ class EVPVSynergies:
             pv_prod = self.pv_production(day)
             ev_dmd = self.ev_demand()
             energy_cov_ratio = self.energy_coverage_ratio(day)
-            self_suf_ratio = self.self_sufficiency_ratio(day)            
-            self_cons_ratio = self.self_consumption_ratio(day)
-            excess_pv_rat = self.excess_pv_ratio(day)
+
+            # Precomputed coincident power
+            coincident_power = lambda x: min(self.pv_power_MW(day)(x), self.ev_charging_demand_MW(x))
+            result, error = integrate.quad(coincident_power, 0, 24)
+
+            self_suf_ratio = self.self_sufficiency_ratio(day, result)            
+            self_cons_ratio = self.self_consumption_ratio(day, result)
+            excess_pv_rat = self.excess_pv_ratio(day, result)
 
             results.append({
                 'Day': f'1901-{day}',                
