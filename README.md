@@ -206,7 +206,8 @@ my_vehicle_2 = {
 
 - [ ] Finalize the README file
 - [ ] Add more advanced examples
-- [ ] Enhance inline code documentation
+- [x] Enhance inline code documentation
+- [ ] Create a CLI for easy usage
 - [ ] Create a readthedocs
 - [ ] Make a contributing guide
 - [ ] Write some unit tests 
