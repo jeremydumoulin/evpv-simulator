@@ -43,8 +43,6 @@ ev = EVCalculator(
         'destinations_csv': 'input/workplaces.csv',  # Key destinations for mobility patterns (e.g., workplaces)
         'trips_per_inhabitant': 0.1,  # Number of trips per person per day
         'zone_width_km': 5,  # Resolution of geographic zones for mobility demand calculations
-
-        # Optional parameters
         'ORS_key': None,  # OpenRouteService API key (optional for more accurate routing)
     },
     ev_fleet = [

@@ -16,7 +16,7 @@ class EVCalculator:
             - 'destinations_csv' (str): Path to potential destinations CSV.
             - 'trips_per_inhabitant' (float): Average number of trips per inhabitant.
             - 'zone_width_km' (float): Spatial resolution of the zones (in km).
-            - 'ORS_key' (str, optional): Open Route Service (ORS) API key. Defaults to None.
+            - 'ORS_key' (str): Open Route Service (ORS) API key if needed. Defaults to None.
             - 'road_to_euclidian_ratio' (float, optional): Road to euclidian distance ratio. Defaults to 1.63.
             - 'target_area_extension_km' (float, optional): Extension of the target area (km). Defaults to 0.0.
             - 'population_to_ignore_share' (float, optional): Share of population to ignore. Defaults to 0.0.
@@ -78,9 +78,9 @@ class EVCalculator:
             'destinations_csv': mobility_demand.get('destinations_csv'), # Path to potential destinations csv
             'trips_per_inhabitant': mobility_demand.get('trips_per_inhabitant'), # Average number of trips per inhabitant
             'zone_width_km': mobility_demand.get('zone_width_km'), # Spatial resolution of the zones (in km)
+            'ORS_key': mobility_demand.get('ORS_key'), # Open Route Service (ORS) API key. Set to None if you do not want to use ORS.
 
-            # Optional parameters
-            'ORS_key': mobility_demand.get('ORS_key', None), # Open Route Service (ORS) API key
+            # Optional parameters            
             'road_to_euclidian_ratio': mobility_demand.get('road_to_euclidian_ratio', 1.63), # Road to euclidian distance ratio
             'target_area_extension_km': mobility_demand.get('target_area_extension_km', 0.0), # Extension of the target area (km)
             'population_to_ignore_share': mobility_demand.get('population_to_ignore_share', 0.0), # Share of population to ignore
