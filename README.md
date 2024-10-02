@@ -91,6 +91,8 @@ To run the EV-PV model in command-line mode, follow these steps:
    ```
 6. **Check Outputs**: When to code is running, various output values will appear in the terminal. Once the simulation is complete, you will find all output files in the output directory you specified in your configuration file.
 
+![](docs/usage.gif)
+
 ### Advanced Usage
 
 For advanced users, you can also create a new Python script and manually import and interact with the classes in the `evpv/` folder (see the *Project Structure*):
