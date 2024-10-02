@@ -2,19 +2,48 @@
 
 import sys
 import os
-import argparse
-import ast  # Import the ast module for safer evaluation
+import importlib.util
+import time
 
 from evpv.evcalculator import EVCalculator
 from evpv.pvcalculator import PVCalculator
 from evpv.evpvsynergies import EVPVSynergies
 
+def main():
+    # Welcome message
+    print("------------------------------------------------")
+    print("         Welcome to the EV-PV Model!")
+    print("------------------------------------------------")
+    
+    print("------------------------------------------------")
+    print("Make sure to configure your case study in the config file.")
+    print("Let's analyse EV charging and PV production!")
+    print("------------------------------------------------")
+
+    print("")
+
+    config_path = input("Enter the path to the python configuration file: ")  # e.g., '/path/to/config.py'
+    
+    # Dynamically load the config
+    config = load_config(config_path)    
+
+    # Run the simulation using the loaded config module
+    run_simulation(config)
+
 def run_simulation(config):
-    ######################################
-    ##### STEP 0: Allocate ev fleet ######
-    ######################################
-    for ev in config['ev_fleet']:
-        print("hello")
+    ######################
+    ####### Message ######
+    ######################
+
+    print("")
+    print("------------------------------------------------")
+    print(f"Starting the run of the {config.scenario_name} case study")
+    print(f"Results are stored in the following folder: {config.output_folder}")
+    print("------------------------------------------------")
+    print("")
+
+    # Start time
+    start_time = time.time()
 
     ######################################
     ##### STEP 1: EV Charging Demand #####
@@ -23,134 +52,94 @@ def run_simulation(config):
     ev = EVCalculator(
         mobility_demand = {
             # Required parameters
-            'target_area_geojson': config['target_area_geojson'],  # Geographic area of interest (Addis Ababa)
-            'population_raster': config['population_raster'],  # Population data for the area
-            'destinations_csv': config['destinations_csv'],  # Key destinations for mobility patterns (e.g., workplaces)
-            'trips_per_inhabitant': config['trips_per_inhabitant'],  # Number of trips per person per day
-            'zone_width_km': config['zone_width_km'],  # Resolution of geographic zones for mobility demand calculations
-            'ORS_key': config['ORS_key'],  # OpenRouteService API key (optional for more accurate routing)
+            'target_area_geojson': config.target_area_geojson, 
+            'population_raster': config.population_raster,  
+            'destinations_csv': config.destinations_csv,  
+            'trips_per_inhabitant': config.trips_per_inhabitant,  
+            'zone_width_km': config.zone_width_km,  
+            'ORS_key': config.ORS_key,  
         },
-        ev_fleet = [
-            [EVCalculator.preset['car'], 1.0],  # 100% cars in the EV fleet 
-            [EVCalculator.preset['motorbike'], 0.0]  # 0% motorbikes in the fleet
-        ],
-        charging_efficiency = 0.9,  # Efficiency of EV charging
-        charging_scenario = {
-            "Home": {
-                "Share": 0.0,  # No charging at home
-                "Arrival time": [18, 2],  # Arrival times at home (mean time and std dev)
-                "Smart charging": 0.0  # No smart charging at home
-            },
-            "Destination": {
-                "Share": 1.0,  # 100% charging at destinations (e.g., workplaces)
-                "Arrival time": [9, 2],  # Arrival times at destinations (mean time and std dev)
-                "Smart charging": 0.0  # No smart charging at destination
-            }}
+        ev_fleet = config.ev_fleet(), # Warning, this is a function !
+        charging_efficiency = config.charging_efficiency,  
+        charging_scenario = config.charging_scenario
         )
 
     # Run the EV demand simulation based on the provided parameters
     ev.compute_ev_demand()
 
     # Save the EV charging demand results to the output folder
-    ev.save_results(output_folder = "output", prefix = pr)
+    ev.save_results(output_folder = config.output_folder, prefix = config.scenario_name)
 
     ######################################
     ######## STEP 2: PV Production #######
     ######################################
 
-    # This step simulates PV power generation based on geographic location, system specifications, and module efficiency.
-
-    # Create the PVCalculator object to simulate PV production.
-    # The 'environment' dictionary specifies the location and year of interest (Addis Ababa in 2020),
-    # while the 'pv_module' dictionary defines the efficiency of the solar panels, and 'installation' specifies the type of setup.
     pv = PVCalculator(
         environment = {
-            'latitude': 9.005401,  # Latitude of the location (Addis Ababa)
-            'longitude': 38.763611,  # Longitude of the location
-            'year': '2020'  # Year of PV production simulation
+            'latitude': config.latitude, 
+            'longitude': config.longitude,  
+            'year': config.year
             }, 
         pv_module = {
-            'efficiency': 0.22  # PV panel efficiency
+            'efficiency': config.efficiency
             }, 
         installation = {
-            'type': 'groundmounted_fixed'  # Type of PV installation (fixed, ground-mounted)
+            'type': config.installation
         })
 
     # Run the PV simulation for the specified parameters
     pv.compute_pv_production()
 
     # Save the PV production results to a CSV file in the output folder
-    pv.results.to_csv(f"output/{pr}_PVproduction.csv")
+    pv.results.to_csv(f"{config.output_folder}/{config.scenario_name}_PVproduction.csv")
 
     ######################################
     ####### STEP 3: EV-PV Synergies ######
     ######################################
 
-    # This step evaluates the synergy between the previously computed EV charging demand and PV power generation,
-    # calculating various metrics such as self-sufficiency ratio, energy coverage, and excess PV generation.
-
-    # Create the EVPVSynergies object to compute synergy metrics between EV and PV systems.
-    # It takes the PV and EV calculators as input along with the installed PV capacity (in MW).
-    evpv = EVPVSynergies(pv_calculator = pv, ev_calculator = ev, pv_capacity_MW = 280)
+    evpv = EVPVSynergies(pv_calculator = pv, ev_calculator = ev, pv_capacity_MW = config.pv_capacity_MW)
 
     # Compute all synergy metrics over a given time period (January 1st to January 30th).
     # This will include metrics such as energy coverage ratio, self-consumption ratio, and others.
-    daily_kpis = evpv.daily_metrics(start_date = '01-01', end_date = '01-30')
+    daily_kpis = evpv.daily_metrics(start_date = config.start_date, end_date = config.end_date)
 
     # Save the calculated daily synergy metrics (KPI values) to a CSV file in the output folder
-    daily_kpis.to_csv(f"output/{pr}_EVPV_KPIs.csv")
+    daily_kpis.to_csv(f"{config.output_folder}/{config.scenario_name}_EVPV_KPIs.csv")
 
-def load_config_from_file(config_path):
-    config = {}
+    ######################
+    ####### Message ######
+    ######################
 
-    # Reading the config file line by line
-    with open(config_path, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue  # Skip empty lines and comments
-            key, value = line.split('=', 1)
-            key = key.strip()
-            value = value.strip()
-            try:
-                # Use ast.literal_eval for safe evaluation of Python literals
-                config[key] = ast.literal_eval(value)
-            except (ValueError, SyntaxError):
-                # If there's an error in evaluating, just keep the raw string value
-                config[key] = value
+    # End time
+    end_time = time.time()
 
-    return config
+    # Calculate the duration
+    duration = end_time - start_time
+    minutes = int(duration // 60)  # Get the whole minutes
+    seconds = duration % 60         # Get the remaining seconds
 
-def main():
-    print("Welcome to the EV-PV Configuration Loader!")
+    print("")
+    print("")
+    print("------------------------------------------------")
+    print(f"Simulation completed")
+    print(f"Elapsed time: : {minutes} minutes and {seconds:.2f} seconds")
+    print("------------------------------------------------")
 
-    # Command-line argument parser
-    parser = argparse.ArgumentParser(description="EV-PV Simulation Tool")
-    parser.add_argument(
-        "-c", "--config", 
-        type=str, 
-        help="Path to the configuration file"
-    )
+def load_config(config_path):
+    # Ensure the provided config file exists
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
 
-    # Parse command-line arguments
-    args = parser.parse_args()
+    # Get the module name (e.g., 'config') from the file name (e.g., 'config.py')
+    config_name = os.path.splitext(os.path.basename(config_path))[0]
 
-    # If config file is not provided, ask the user for input
-    if not args.config:
-        config_path = input("Please provide the path to the configuration file (e.g., config.txt): ")
-    else:
-        config_path = args.config
+    # Dynamically load the config module
+    spec = importlib.util.spec_from_file_location(config_name, config_path)
+    config_module = importlib.util.module_from_spec(spec)
+    sys.modules[config_name] = config_module
+    spec.loader.exec_module(config_module)
 
-    # Validate the provided config path
-    if not os.path.isfile(config_path):
-        print(f"Error: The file '{config_path}' does not exist.")
-        sys.exit(1)
-
-    # Load the configuration file
-    config = load_config_from_file(config_path)
-
-    # Run the simulation using the loaded config
-    run_simulation(config)
+    return config_module
 
 if __name__ == "__main__":
     main()

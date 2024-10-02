@@ -62,7 +62,7 @@ class PVCalculator:
 
         # Initialize the installation attributes
         self._installation = {
-            'type': installation.get('type', 'groundmounted_fixed'), # groundmounted_fixed, groundmounted_dualaxis, groundmounted_singleaxis_horizontal, groundmounted_singleaxis_vertical
+            'type': installation.get('type', 'groundmounted_fixed'), # rooftop, groundmounted_fixed, groundmounted_dualaxis, groundmounted_singleaxis_horizontal, groundmounted_singleaxis_vertical
 
             # Optional parameters
             'system_losses': installation.get('system_losses', 0.14)
