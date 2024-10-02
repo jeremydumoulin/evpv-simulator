@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evpv.helpers &#8212; EV-PV  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=61cd365c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evpv.helpers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Helper functions for the other classes of the evpv model</span>
+
+<span class="sd">This module notably includes functions to facilitate operations on georeferenced objects and</span>
+<span class="sd">folium maps. It also holds the formulation of the various spatial interaction models (gravity, </span>
+<span class="sd">raditation, ...) involved in mobility demand modelling.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="kn">from</span> <span class="nn">rasterio.mask</span> <span class="kn">import</span> <span class="n">mask</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">box</span>
+<span class="kn">import</span> <span class="nn">folium</span>
+<span class="kn">import</span> <span class="nn">branca.colormap</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<div class="viewcode-block" id="crop_raster">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.crop_raster">[docs]</a>
+<span class="k">def</span> <span class="nf">crop_raster</span><span class="p">(</span><span class="n">raster_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbox</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">output_raster_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a new raster cropped to the specified bounding box.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        raster_path (str): The path to the input raster file.</span>
+<span class="sd">        bbox (tuple): A tuple of four floats representing the bounding box (minx, miny, maxx, maxy).</span>
+<span class="sd">        output_raster_path (str): The path where the output cropped raster will be saved.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">raster_path</span>
+
+    <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="n">bbox</span>
+    <span class="n">boundary_box</span> <span class="o">=</span> <span class="n">box</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">out_image</span><span class="p">,</span> <span class="n">out_transform</span> <span class="o">=</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="p">[</span><span class="n">boundary_box</span><span class="p">],</span> <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">out_meta</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">meta</span>
+
+    <span class="n">out_meta</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">&quot;driver&quot;</span><span class="p">:</span> <span class="s2">&quot;GTiff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">out_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">out_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="s2">&quot;transform&quot;</span><span class="p">:</span> <span class="n">out_transform</span>
+    <span class="p">})</span>
+
+    <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">output_raster_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">out_meta</span><span class="p">)</span> <span class="k">as</span> <span class="n">dest</span><span class="p">:</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_image</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="add_raster_to_folium">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.add_raster_to_folium">[docs]</a>
+<span class="k">def</span> <span class="nf">add_raster_to_folium</span><span class="p">(</span><span class="n">raster_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">folium_map</span><span class="p">:</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a raster overlay to a Folium map.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        raster_path (str): The path to the raster file to be added.</span>
+<span class="sd">        folium_map (folium.Map): The Folium map instance to which the raster will be added.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        folium.Map: The updated Folium map with the raster overlay.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Open the raster file</span>
+    <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">raster_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="c1"># Read the data</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="c1"># Get the bounds of the raster</span>
+        <span class="n">boundary</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">bounds</span>
+
+    <span class="n">img</span><span class="p">[</span><span class="n">img</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">clat</span> <span class="o">=</span> <span class="p">(</span><span class="n">boundary</span><span class="o">.</span><span class="n">bottom</span> <span class="o">+</span> <span class="n">boundary</span><span class="o">.</span><span class="n">top</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">clon</span> <span class="o">=</span> <span class="p">(</span><span class="n">boundary</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">boundary</span><span class="o">.</span><span class="n">right</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
+
+    <span class="n">colormap</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">RdBu_11</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">mapvalue2color</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cmap</span><span class="p">:</span> <span class="n">cm</span><span class="o">.</span><span class="n">LinearColormap</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Maps a pixel value of the image to a color in RGBA format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Transparent for NaN or zero values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">cmap</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="mf">0.7</span><span class="p">)</span>  
+
+    <span class="n">folium</span><span class="o">.</span><span class="n">raster_layers</span><span class="o">.</span><span class="n">ImageOverlay</span><span class="p">(</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Population map&#39;</span><span class="p">,</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="n">boundary</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="n">boundary</span><span class="o">.</span><span class="n">left</span><span class="p">],</span> <span class="p">[</span><span class="n">boundary</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="n">boundary</span><span class="o">.</span><span class="n">right</span><span class="p">]],</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="p">:</span> <span class="n">mapvalue2color</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">colormap</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">folium_map</span><span class="p">)</span>
+
+    <span class="c1"># Set colormap caption</span>
+    <span class="n">colormap</span><span class="o">.</span><span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;Population (number/ha)&#39;</span>
+    <span class="n">folium_map</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">folium_map</span></div>
+
+
+
+<div class="viewcode-block" id="get_graph_bbox">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.get_graph_bbox">[docs]</a>
+<span class="k">def</span> <span class="nf">get_graph_bbox</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the bounding box of a graph.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        G: The graph from which to calculate the bounding box.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple of four floats representing (north, south, east, west) boundaries of the graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="n">y_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+    <span class="n">x_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+
+    <span class="n">north</span><span class="p">,</span> <span class="n">south</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_values</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">y_values</span><span class="p">)</span>
+    <span class="n">east</span><span class="p">,</span> <span class="n">west</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_values</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">west</span></div>
+
+
+
+<div class="viewcode-block" id="prod_constrained_gravity_power">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.prod_constrained_gravity_power">[docs]</a>
+<span class="k">def</span> <span class="nf">prod_constrained_gravity_power</span><span class="p">(</span><span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                                <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained gravity model with a power law cost.</span>
+
+<span class="sd">    This is a special case of a spatial interaction model, where the total number of outflows $T_{i,out}$ </span>
+<span class="sd">    from origin $i$ is known (production-constrained), thus imposing the value of the constant $C_i$, and</span>
+<span class="sd">    the cost function $f(d_{ij})$ follows a power law</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T_{ij} = T_{i,out} C_i A_j f(d_{ij})</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        C_i = 1/\sum_{k \neq i} A_j f(d_{ij})</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        f(d_{ij})=d_{ij}^{-\gamma}</span>
+
+<span class="sd">    with $T_{ij}$ the number of trips from origin $i$ to destination $j$, and $A_j$ the attractivity </span>
+<span class="sd">    of destination $j$. Note note that $T_{ii}$ can not be calculated with this model as $d_{ii}$ is </span>
+<span class="sd">    generally not well defined.</span>
+
+<span class="sd">    For an introduction to spatial interaction models, we recommend the following book chapter:  </span>
+<span class="sd">    Griffith, D.A., Fischer, M.M. (2016). Constrained Variants of the Gravity Model and Spatial </span>
+<span class="sd">    Dependence: Model Specification and Estimation Issues. https://doi.org/10.1007/978-3-319-30196-9_3</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">        dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">        cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+<span class="sd">        gamma (float, optional): The exponent applied to the cost in the calculation. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+    <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+
+    <span class="c1"># Calculating raw flows and normalization constant</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flows</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Cost function is NULL for some fluxes, setting the corresponding flux to zero&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">**</span> <span class="n">gamma</span><span class="p">)</span>
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+    <span class="c1"># Normalization</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+    <span class="k">return</span> <span class="n">flows</span></div>
+
+
+
+<div class="viewcode-block" id="prod_constrained_gravity_exp">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.prod_constrained_gravity_exp">[docs]</a>
+<span class="k">def</span> <span class="nf">prod_constrained_gravity_exp</span><span class="p">(</span><span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                                  <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                  <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                  <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.</span>
+
+<span class="sd">    This is a special case of a spatial interaction model, where the cost function$f(d_{ij})$ follows an exponential </span>
+<span class="sd">    law.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f(d_{ij})=e^{-d_{ij} \beta}</span>
+
+<span class="sd">    See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">        dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">        cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+<span class="sd">        beta (float, optional): The exponent applied to the cost in the calculation. </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+    <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+
+    <span class="c1"># Calculating raw flows and normalization constant</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flows</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Cost function is NULL for some fluxes, setting the corresponding flux to zero&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+    <span class="c1"># Normalization</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+    <span class="k">return</span> <span class="n">flows</span></div>
+
+
+<div class="viewcode-block" id="prod_constrained_radius">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.prod_constrained_radius">[docs]</a>
+<span class="k">def</span> <span class="nf">prod_constrained_radius</span><span class="p">(</span><span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                            <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                            <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                            <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained model based on distance radius.</span>
+
+<span class="sd">    This is a simplified example of a spatial interaction model. In this case, the product of attractiveness </span>
+<span class="sd">    and cost is set to 1 if the destination falls within a specified radius, and 0 otherwise. This function </span>
+<span class="sd">    is purely hypothetical and has no practical application justification. It can serve as a test function </span>
+<span class="sd">    since it directs all flows to destinations within the given radius.</span>
+
+<span class="sd">    See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">        dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">        cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+<span class="sd">        radius (float, optional): The maximum distance for attractivity. </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+    <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+
+    <span class="c1"># Calculating raw flows and normalization constant</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flows</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Cost function is NULL for some fluxes, setting the corresponding flux to zero&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">radius</span><span class="p">:</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+    <span class="c1"># Normalization</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+    <span class="k">return</span> <span class="n">flows</span></div>
+
+
+
+<div class="viewcode-block" id="prod_constrained_radiation">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.prod_constrained_radiation">[docs]</a>
+<span class="k">def</span> <span class="nf">prod_constrained_radiation</span><span class="p">(</span><span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                               <span class="n">origin_attractivity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                               <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                               <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained radiation model.</span>
+
+<span class="sd">    This is a special case of an intervening opportunity spatial interaction model. In this case, the algorithm is more</span>
+<span class="sd">    complex than gravity laws, as the cost function $f(d_{ij})$ includes the intervening opportunities located at a distance </span>
+<span class="sd">    smaller than $d_{ij}$ </span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f(d_{ij}) = ((A_i+s_{ij}).(A_i+A_j+s_{ij}))^{-1}</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        s_{ij} = \sum_{k \neq i,j} A_k, ~ if ~ d_{ik}&lt;d_{ij} </span>
+
+<span class="sd">    with $s_{ij}$ being the intervening opportunities. Refer to prod_constrained_gravity_power() for other symbols.</span>
+
+<span class="sd">    To our knowledge, this model has been initially described in the following publication:</span>
+<span class="sd">    Simini, F., González, M., Maritan, A. et al. A universal model for mobility and migration patterns. Nature </span>
+<span class="sd">    484, 96–100 (2012). https://doi.org/10.1038/nature10856.</span>
+
+<span class="sd">    While this model has the advantage of being parameter-free, it seems to not perform well at smaller scales.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">        origin_attractivity (float): The attractivity of the origin.</span>
+<span class="sd">        dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">        cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Step 1: Initialize variables</span>
+    <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+    <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+    <span class="n">intervening_opportunity</span> <span class="o">=</span> <span class="mf">.0</span>
+
+    <span class="c1"># Step 2: Create list of tuples to store initial order of cost_list and order them by distance</span>
+    <span class="n">indexed_cost_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">cost_list</span><span class="p">))</span>
+
+    <span class="c1"># Sort the list of tuples based on the values</span>
+    <span class="n">sorted_indexed_cost_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">indexed_cost_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Prepare a list to store flows with their original indices</span>
+    <span class="n">calculated_indexed_flows</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Step 3: Calculate raw flows and normalization constant</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">original_index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sorted_indexed_cost_list</span><span class="p">:</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">original_index</span>  <span class="c1"># Use the original index from the sorted list</span>
+
+        <span class="n">num</span> <span class="o">=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>  <span class="c1"># Origin attractivity cancels out when normalizing.</span>
+        <span class="n">den</span> <span class="o">=</span> <span class="p">(</span><span class="n">origin_attractivity</span> <span class="o">+</span> <span class="n">intervening_opportunity</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">origin_attractivity</span> <span class="o">+</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">intervening_opportunity</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">den</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Denominator of radiation model is NULL. Flow is set to zero.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">calculated_flow</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
+            <span class="n">calculated_flow</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculated_flow</span>
+
+        <span class="c1"># Add intervening opportunity only if the next destination is farther away than the current one</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sorted_indexed_cost_list</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">sorted_indexed_cost_list</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+            <span class="n">intervening_opportunity</span> <span class="o">+=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+        <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="c1"># Append the calculated flow with its original index to the list</span>
+        <span class="n">calculated_indexed_flows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">original_index</span><span class="p">,</span> <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Step 4: Sort back to the original order using the original indices</span>
+    <span class="n">original_order_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">calculated_indexed_flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Extract the values from the tuples to get the final list</span>
+    <span class="n">final_flows</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">original_order_flows</span><span class="p">]</span>
+
+    <span class="c1"># Step 5: Normalize the flows</span>
+    <span class="n">final_flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">final_flows</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+    <span class="k">return</span> <span class="n">final_flows</span></div>
+
+
+
+<div class="viewcode-block" id="create_unique_id">
+<a class="viewcode-back" href="../../evpv.html#evpv.helpers.create_unique_id">[docs]</a>
+<span class="k">def</span> <span class="nf">create_unique_id</span><span class="p">(</span><span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a unique identifier based on the input variables.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        variables (list): A list of variables to generate a unique ID from.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A unique hash string representing the combined input variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert the list of variables into a single string</span>
+    <span class="n">combined_string</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">variables</span><span class="p">))</span>
+
+    <span class="c1"># Generate a unique hash of the combined string</span>
+    <span class="n">unique_id</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">combined_string</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">unique_id</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EV-PV</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../evpv.html">evpv package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Jeremy Dumoulin.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
