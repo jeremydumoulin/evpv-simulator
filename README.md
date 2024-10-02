@@ -62,6 +62,8 @@ $ conda env create -f environment.yml -n your_environment_name
 $ conda activate your_environment_name
 ```
 
+![](docs/installation.gif)
+
 ## Usage
 
 The EV-PV model can be run in two ways:
@@ -103,7 +105,8 @@ For advanced users, you can also create a new Python script and manually import 
 - **ChargingScenario**: Allows for simulations of different charging scenarios.
 - **helpers.py**: Contains various utility functions used internally by other classes.
 
-> :information_source: While comprehensive documentation is still in progress, you can find a description of the input and output parameters for each class in the generated Sphinx documentation (located in the `docs/_build/html/index.html` folder). For a quick start, explore the example scripts in the `examples/` folder. We recommend starting with `01_advanced_typical-use.py`, which demonstrates how to utilize the three core classes with a minimal set of input parameters. The files `02_advanced_evcalculator-all-params.py` and `03_advanced_pvcalculator-all-params.py` provide more detailed usage of the `EVCalculator` and `PVCalculator` classes, including all available parameters (both required and optional). 
+> :information_source: While comprehensive documentation is still in progress, you can find a description of the input and output parameters for each class in the generated Sphinx documentation (located in the `docs/_build/html/index.html` folder). 
+For a quick start, explore the example scripts in the `examples/` folder. We recommend starting with `01_advanced_typical-use.py`, which demonstrates how to utilize the three core classes with a minimal set of input parameters. The files `02_advanced_evcalculator-all-params.py` and `03_advanced_pvcalculator-all-params.py` provide more detailed usage of the `EVCalculator` and `PVCalculator` classes, including all available parameters (both required and optional). 
 
 For a typical use, you will generally only need to import the three core classes:
 ```python
