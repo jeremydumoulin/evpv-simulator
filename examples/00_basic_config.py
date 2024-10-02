@@ -21,8 +21,8 @@
 # 1.0 General Parameters
 # General settings for the output location and scenario name.
 # ------------------------------------------------------------
-output_folder = "examples/output"     # Folder to store the output results
-scenario_name = "AddisAbaba"          # Name of the scenario (e.g., city or region)
+output_folder = "examples/output"     # Path to the folder where you want to store the output results (absolute or relative to the location of the evpv/ installation folder)
+scenario_name = "AddisAbaba"          # Name of the scenario (e.g., city or region of your case study) - This is only used as a prefix for the simulation result files
 
 
 # ------------------------------------------------------------
@@ -37,10 +37,10 @@ scenario_name = "AddisAbaba"          # Name of the scenario (e.g., city or regi
 # Georeferenced data (paths to required input files)
 target_area_geojson = "examples/input/gadm41_ETH_1_AddisAbeba.json"   # GeoJSON for the target area
 population_raster = "examples/input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif"  # Raster file for population distribution
-destinations_csv = "examples/input/workplaces.csv"  # CSV file with home to work destinations locations (e.g., workplaces)
+destinations_csv = "examples/input/workplaces.csv"  # CSV file with the location of all possible home to work destinations (e.g., workplaces from open street map)
 
 # Other mobility parameters
-trips_per_inhabitant = 0.1   # Number of commuters per inhabitant per day
+trips_per_inhabitant = 0.1   # Number of commuters per inhabitant 
 zone_width_km = 5            # Width of each traffic zone (in kilometers) for mobility demand
 ORS_key = None               # OpenRouteService API key (set to None if not used)
 
