@@ -91,7 +91,7 @@ To run the EV-PV model in command-line mode, follow these steps:
 
 ### Advanced Usage
 
-For advanced users, you can also create a new Python script and manually import and interact with the classes in the `evpv/` folder (see the *Project Structure* ).
+For advanced users, you can also create a new Python script and manually import and interact with the classes in the `evpv/` folder (see the *Project Structure*):
 
 **Core Modules**. These modules are essential for basic usage:
 - **EVCalculator**: Simulates electric vehicle (EV) charging demand.
@@ -103,16 +103,14 @@ For advanced users, you can also create a new Python script and manually import 
 - **ChargingScenario**: Allows for simulations of different charging scenarios.
 - **helpers.py**: Contains various utility functions used internally by other classes.
 
-For typical use, you only need to import the three core classes:
+> :information_source: While comprehensive documentation is still in progress, you can find a description of the input and output parameters for each class in the generated Sphinx documentation (located in the `docs/_build/html/index.html` folder). For a quick start, explore the example scripts in the `examples/` folder. We recommend starting with `01_advanced_typical-use.py`, which demonstrates how to utilize the three core classes with a minimal set of input parameters. The files `02_advanced_evcalculator-all-params.py` and `03_advanced_pvcalculator-all-params.py` provide more detailed usage of the `EVCalculator` and `PVCalculator` classes, including all available parameters (both required and optional). 
+
+For a typical use, you will generally only need to import the three core classes:
 ```python
 from evpv.evcalculator import EVCalculator
 from evpv.pvcalculator import PVCalculator
 from evpv.evpvsynergies import EVPVSynergies
 ```
-
-> **Tip:** For a quick start, explore the example scripts in the `examples/` folder. We recommend starting with `01_advanced_typical-use.py`, which demonstrates how to utilize the three core classes with a minimal set of input parameters. The files `02_advanced_evcalculator-all-params.py` and `03_advanced_pvcalculator-all-params.py` provide more detailed usage of the `EVCalculator` and `PVCalculator` classes, including all available parameters (both required and optional). 
-
-> **Note:** While comprehensive documentation is still in progress, you can find a description of the input and output parameters for each class in the generated Sphinx documentation (located in the `docs/_build/html/index.html` folder).
 
 For specific needs, you may also want to import the `MobilitySim` and `ChargingScenario` classes. These classes give you more control over EV charging demand estimation by separating mobility demand simulation from charging scenario simulation. In contrast, the `EVCalculator` class combines both tasks into a single step. This feature is especially useful for running independent mobility demand simulations for various trip types (e.g., home-to-work and home-to-study) and aggregating the results for use in a `ChargingScenario`. Note that the `EVCalculator` class essentially wraps the `EVCalculator` and `ChargingScenario` to compute the EV charging demand using only one class. 
 
