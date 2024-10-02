@@ -57,11 +57,28 @@ def run_simulation(config):
             'destinations_csv': config.destinations_csv,  
             'trips_per_inhabitant': config.trips_per_inhabitant,  
             'zone_width_km': config.zone_width_km,  
-            'ORS_key': config.ORS_key,  
+            'ORS_key': config.ORS_key,
+
+            # Optional parameters            
+            'road_to_euclidian_ratio': config.road_to_euclidian_ratio, 
+            'target_area_extension_km': config.target_area_extension_km, 
+            'population_to_ignore_share': config.population_to_ignore_share, 
+            'spatial_interaction_model': config.spatial_interaction_model, 
+            'attraction_feature': config.attraction_feature, 
+            'cost_feature': config.cost_feature, 
+            'km_per_capita_offset': config.km_per_capita_offset       
         },
         ev_fleet = config.ev_fleet(), # Warning, this is a function !
-        charging_efficiency = config.charging_efficiency,  
-        charging_scenario = config.charging_scenario
+        charging_efficiency = config.charging_efficiency,
+        charging_scenario = {
+            # Required
+            'Home': config.charging_scenario['Home'],
+            'Destination': config.charging_scenario['Destination'],
+
+            # Optional
+            'travel_time_origin_destination_h': config.travel_time_origin_destination_h, 
+            'time_step_h': config.time_step_h, 
+            }  
         )
 
     # Run the EV demand simulation based on the provided parameters
@@ -81,10 +98,15 @@ def run_simulation(config):
             'year': config.year
             }, 
         pv_module = {
-            'efficiency': config.efficiency
+            'efficiency': config.efficiency,
+
+            # Optional
+            'temperature_coefficient': config.temperature_coefficient 
             }, 
         installation = {
-            'type': config.installation
+            'type': config.installation,
+            # Optional
+            'system_losses': config.system_losses
         })
 
     # Run the PV simulation for the specified parameters

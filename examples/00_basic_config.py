@@ -1,8 +1,7 @@
 # ------------------------------------------------------------------------------------------------------------------------
 # CONFIGURATION FILE FOR THE EV-PV MODEL
 # ------------------------------------------------------------------------------------------------------------------------
-# This configuration file is used to set up the parameters 
-# required for computing the electric vehicle (EV) charging 
+# This configuration file is used to set up the parameters required for computing the electric vehicle (EV) charging 
 # demand, photovoltaic (PV) potential, and EV-PV synergies
 # 
 # The file is organized into two main sections:
@@ -128,8 +127,27 @@ end_date = '01-30'              # End date of the analysis (MM-DD)
 
 # ------------------------------------------------------------------------------------------------------------------------
 # 2. OPTIONAL PARAMETERS
-# These parameters are optional and can be adjusted for more advanced customization.
-# If not specified, default values will be used.
+# These parameters are optional and can be adjusted for more advanced customization. If not specified, default values will
+# be used.
 # ------------------------------------------------------------------------------------------------------------------------
+  
+# ------------------------------------------------------------
+# Electric Vehicle Charging Demand
+# ------------------------------------------------------------ 
 
+road_to_euclidian_ratio = 1.63 # Road to euclidian distance ratio (can be calculated for the target area using the script provided in the /scripts directory)
+target_area_extension_km = 0.0 # Extension of the target area (km)
+population_to_ignore_share = 0.0 # Share of population to ignore in the target area (delete less populated zones)
+spatial_interaction_model = 'gravity_exp_scaled' # Spatial interaction model to use (by default, self-calibrated gravity model is used)
+attraction_feature = 'destinations' # Attraction feature for spatial interaction model ('destinations' or 'population')
+cost_feature = 'distance_road' # Cost feature for spatial interaction model ('distance_road', 'distance_centroid', etc.)
+km_per_capita_offset =  0.0 # Additional daily distance travelled other than home to work commuting (km)
+travel_time_origin_destination_h = 0.5 # Average travel time between origin and destination (h)
+time_step_h = 0.1 # Time step for the charging curve (h)
 
+# ------------------------------------------------------------
+# PV Potential
+# ------------------------------------------------------------
+
+temperature_coefficient = -0.0035 # Relative efficiency loss per K
+system_losses = 0.14 # System losses 
