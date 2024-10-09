@@ -463,75 +463,99 @@ class ChargingScenario:
         power_demand = np.zeros_like(time)
         num_cars_charging = np.zeros_like(time)
 
-        # Charging demand and max charging power for all vehicles
+        # Daily charging demand, max charging power, battery capacity and average days between charges for all vehicles
         charging_demands = np.zeros(vehicle_counts)
         charging_powers = np.zeros(vehicle_counts)
+        battery_capacities = np.zeros(vehicle_counts)
+        days_between_charges = np.zeros(len(charging_demands))
 
         """
-        Assign charging demand and charging power to each vehicle  
+        Aggregate mobility flows from all sources
         """
-        # Aggregate mobility flows 
+        # Start by copying flows from the first mobility simulation
         df_sum = self.mobsim[0].flows.copy()
+
+        # Sum the flows from all remaining mobility simulations
         for mobsim in self.mobsim[1:]:
             df_sum = df_sum.add(mobsim.flows, fill_value=0)
 
-        # Group by "Travel Distance (km)" and sum the "Flow" for each distance
+        # Group by "Travel Distance (km)" and aggregate the total "Flow" for each distance
         grouped_df = df_sum.groupby('Travel Distance (km)').agg({'Flow': 'sum'}).reset_index()
 
-        # Calculate the total flow
+        # Calculate the total flow across all distances and the associated probabilities
         total_flow = grouped_df['Flow'].sum()
-
-        # Calculate the probability for each travel distance
         grouped_df['Probability'] = grouped_df['Flow'] / total_flow
 
-        # Extract distances and probabilities
+        # Extract distances and their associated probabilities for random sampling
         distances = grouped_df['Travel Distance (km)'].values
         distance_probabilities = grouped_df['Probability'].values
 
-        # Calculate a charging demand and power for each type of vehicle
+        """
+        Assign vehicle type and randomly assign the charging demand and maximum charging power
+        In addition, we also use the battery capacity to calculate the average days between two charges (see Pareschi et al., Applied Energy, 2020)
+        Form this we determine is today is a charging day and keep only the vehicles that are charging
+        """
+        # Assign probabilities for selecting each vehicle type in the fleet
+        fleet_probabilities = np.array([item[1] for item in self.ev_fleet])
 
-        tmp_charging_demands = [np.zeros(vehicle_counts)] * len(self.ev_fleet)
-        tmp_charging_powers = [np.zeros(vehicle_counts)] * len(self.ev_fleet)
+        # Randomly select a vehicle type for each vehicle (based on fleet composition)
+        # 'vehicle_indices' contains the index of the selected vehicle type for each charging event
+        vehicle_indices = np.random.choice(len(self.ev_fleet), size=len(charging_demands), p=fleet_probabilities)
 
-        # Loop over all vehicles a pick a random distribution of demand and charging power
+        # Loop over each vehicle and assign charging demand, power, and battery capacity based on its type
+        for idx, vehicle_index in enumerate(vehicle_indices):
+            vehicle = self.ev_fleet[vehicle_index]
 
-        i = 0
-        for vehicle in self.ev_fleet:
-            tmp_charging_demands[i] = 2 * np.random.choice(distances, size=len(charging_demands), p=distance_probabilities) * vehicle[0]['ev_consumption'] / self.charging_efficiency
+            # Randomly assign the charging demand for the selected vehicle
+            charging_demands[idx] = 2 * np.random.choice(distances, p=distance_probabilities) * vehicle[0]['ev_consumption'] / self.charging_efficiency
 
-            # Randomly pick a charging power (depends on charging at origin or destination)
-            if origin_or_destination == "Origin": 
+            # Randomly assign the charging power based on whether the charging is done at Origin or Destination
+            if origin_or_destination == "Origin":
                 available_charging_power = [item[0] for item in vehicle[0]['charger_power']['Origin']]
                 probabilities = [item[1] for item in vehicle[0]['charger_power']['Origin']]
-            elif origin_or_destination == "Destination": 
+            elif origin_or_destination == "Destination":
                 available_charging_power = [item[0] for item in vehicle[0]['charger_power']['Destination']]
-                probabilities = [item[1] for item in vehicle[0]['charger_power']['Destination']]    
+                probabilities = [item[1] for item in vehicle[0]['charger_power']['Destination']]
 
-            tmp_charging_powers[i] = np.random.choice(available_charging_power, size=len(charging_demands), p=probabilities)
+            # Randomly select a charging power
+            charging_powers[idx] = np.random.choice(available_charging_power, p=probabilities)
 
-            i = i+1
+            # Assign the reduced battery capacity for the selected vehicle
+            battery_capacities[idx] = vehicle[0]['battery_capacity'] 
 
-        # Create a single list of charging demand and power based on the share of each vehicle
+            # Calculate the average number of days between charges for the current vehicle
+            # Apply the function calculate_days_between_charges_single_vehicle to each vehicle
+            # Based on Pareschi et al., Applied Energy, 2020
+            days_between_charges[idx] = hlp.calculate_days_between_charges_single_vehicle(
+                daily_charging_demand=charging_demands[idx], 
+                battery_capacity=battery_capacities[idx]
+            )
 
-        # Probability of choosing a vechile
-        probabilities = np.array([item[1] for item in self.ev_fleet])
+            # Determine if today is a charging day for the current vehicle
+            charging_probability = 1 / days_between_charges[idx]
 
-        # Generate random choices based on probabilities
-        # Create an array of shape (n, 3) to hold the lists
-        choices = np.zeros((len(charging_demands), len(self.ev_fleet)), dtype=int)
-        
-        # Randomly choose one list per position to set as 1
-        random_indices = np.random.choice(len(self.ev_fleet), size=len(charging_demands), p=probabilities)
-        
-        # Set the chosen list index to 1 for each position
-        choices[np.arange((len(charging_demands))), random_indices] = 1
+            # Generate a random number to determine if the vehicle charges today
+            if np.random.rand() <= charging_probability:
+                # Vehicle is charging today, modify the charging demand and power
+                charging_demands[idx] *= days_between_charges[idx]  # Adjust demand for charging day
+            else:
+                # Vehicle is NOT charging today, set its demand and power to zero
+                charging_demands[idx] = 0
+                charging_powers[idx] = 0
 
-        num_lists = choices.shape[1]
-        list_of_choices = [choices[:, i] for i in range(num_lists)]
-        
-        for i in range(len(tmp_charging_demands)):
-            charging_demands += list_of_choices[i] * tmp_charging_demands[i]
-            charging_powers += list_of_choices[i] * tmp_charging_powers[i]
+        # Now filter out the non-charging vehicles (where demand is zero) but keep the same variable names
+        charging_mask = charging_demands > 0
+
+        # Create new arrays (overwriting the original ones) for only the charging vehicles
+        charging_demands = charging_demands[charging_mask]
+        charging_powers = charging_powers[charging_mask]
+        battery_capacities = battery_capacities[charging_mask]
+        days_between_charges = days_between_charges[charging_mask]
+
+        print(f"INFO \t {len(charging_demands)} vehicles selected for charging out of {vehicle_counts }")
+
+        # Update the number of vehicles to simulate
+        vehicle_counts = len(charging_demands)
 
         """
         Assign arrival time to each vehicle using lognormal distribution

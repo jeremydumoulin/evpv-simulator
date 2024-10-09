@@ -131,6 +131,7 @@ class EVCalculator:
     preset = {
         'car': {
             'ev_consumption': 0.183,
+            'battery_capacity': 50,
             'vehicle_occupancy': 1.4,  
             'charger_power': {
                 'Origin': [[7, 0.68], [11, 0.3], [22, 0.02]],
@@ -139,10 +140,11 @@ class EVCalculator:
         },
         'motorbike': {
             'ev_consumption': 0.058,
+            'battery_capacity': 10,
             'vehicle_occupancy': 1.0,  
             'charger_power': {
-                'Origin': [[7, 1.0]],
-                'Destination': [[7, 1.0]]
+                'Origin': [[3, 1.0]],
+                'Destination': [[3, 1.0]]
             }
         }  
     }  

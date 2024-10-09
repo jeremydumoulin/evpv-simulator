@@ -365,3 +365,45 @@ def create_unique_id(variables: list) -> str:
     unique_id = hashlib.md5(combined_string.encode()).hexdigest()
 
     return unique_id
+
+def calculate_days_between_charges_single_vehicle(
+    daily_charging_demand: float, 
+    battery_capacity: float, 
+    soc_threshold_mean: float = 0.6, 
+    soc_threshold_std_dev: float = 0.2
+) -> float:
+    """ 
+    Calculates the average number of days between charges for a vehicle based on its daily energy demand and battery capacity.
+    
+    The number of days is calculated using a random state of charge (SoC) threshold sampled from a normal distribution (as described in Pareschi et al., Applied Energy, 2020).
+    The average days between charges is determined by the SoC threshold and the daily rate of SoC decrease.
+    
+    Args:
+        daily_charging_demand (float): The daily energy demand of the vehicle in kWh.
+        battery_capacity (float): The total battery capacity of the vehicle in kWh.
+        soc_threshold_mean (float, optional): The mean value of the SoC threshold. Defaults to 0.6 (as described in Pareschi et al., Applied Energy, 2020).
+        soc_threshold_std_dev (float, optional): The standard deviation of the SoC threshold. Defaults to 0.2 (as described in Pareschi et al., Applied Energy, 2020).
+    
+    Returns:
+        float: The average number of days between full charges. The value is capped at a minimum of 1 day between two charges.
+    """
+    # 0. Useful battery capacity (Pareschi et al., Applied Energy, 2020)
+    battery_capacity = battery_capacity * 0.8
+    
+    # 1. Randomly assign a state of charge (SoC) threshold from a normal distribution
+    soc_threshold = np.random.normal(loc=soc_threshold_mean, scale=soc_threshold_std_dev)
+    
+    # Ensure SoC threshold is between 0 and 1
+    soc_threshold = np.clip(soc_threshold, 0, 1)
+
+    # 2. Calculate the daily decrease in SoC based on the daily energy demand and battery capacity
+    daily_soc_decrease = daily_charging_demand / battery_capacity
+
+    # 3. Calculate the average number of days between two charges
+    if daily_soc_decrease > 0:  # Prevent division by zero
+        days = (1 - soc_threshold) / daily_soc_decrease
+    else:
+        days = 1  # If daily demand is zero, set the number of days to 1
+
+    # Ensure that the days between charges is at least 1
+    return max(days, 1)

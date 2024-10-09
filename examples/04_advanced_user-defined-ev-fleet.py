@@ -28,6 +28,7 @@ pr = '03'
 # Nissan Leaf 
 nissan_leaf = {
     'ev_consumption': 0.166,  # Electric vehicle consumption (kWh/km)
+    'battery_capacity': 40, # Battery capacity (kWh) - Importan - Note that the capacity will be reduced in the calculation (useful capacity, typically 80% of the nominal capacity, see Pareschi et al., Applied Energy, 2020))
     'vehicle_occupancy': 1.4,  # Vehicle occupancy (average number of people per vehicle)
     'charger_power': {
         'Origin': [[3.6, 0.4], [7, 0.4], [11, 0.2]],  # Mix of charger power at origin (home)
@@ -38,6 +39,7 @@ nissan_leaf = {
 # Tesla Model 3 
 tesla_model_3 = {
     'ev_consumption': 0.144,  # Electric vehicle consumption (kWh/km)
+    'battery_capacity': 75, # Battery capacity (kWh)
     'vehicle_occupancy': 1.4,  # Vehicle occupancy (average number of people per vehicle)
     'charger_power': {
         'Origin': [[7, 0.6], [11, 0.3], [22, 0.1]],  # Mix of charger power at origin (home)
@@ -48,6 +50,7 @@ tesla_model_3 = {
 # Renault Zoe 
 renault_zoe = {
     'ev_consumption': 0.132,  # Electric vehicle consumption (kWh/km)
+    'battery_capacity': 52, # Battery capacity (kWh)
     'vehicle_occupancy': 1.4,  # Vehicle occupancy (average number of people per vehicle)
     'charger_power': {
         'Origin': [[3.6, 0.5], [7, 0.3], [22, 0.2]],  # Mix of charger power at origin (home)

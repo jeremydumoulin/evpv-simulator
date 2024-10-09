@@ -62,6 +62,7 @@ ev_fleet = lambda: [
 vehicle_1 = {
     'ev_consumption': 0.183,     # EV consumption in kWh/km
     'vehicle_occupancy': 1.4,    # Average number of occupants per vehicle
+    'battery_capacity': 50,      # Nominal battery capacity in kWh
     'charger_power': {
         'Origin': [[7, 1.0]],     # Mix of charger power at origin (=home) in kW and probability to use that power (100%)
         'Destination': [[7, 1.0]] # Mix of charger power at destination in kW and probability (100%)
@@ -72,9 +73,10 @@ vehicle_1 = {
 vehicle_2 = {
     'ev_consumption': 0.13,      # EV consumption in kWh/km
     'vehicle_occupancy': 1.4,    # Average number of occupants per vehicle
+    'battery_capacity': 40,      # Nominal battery capacity in kWh
     'charger_power': {
-        'Origin': [[11, 0.5], [11, 0.5]],     # Mix of charger power at origin (=home) in kW and probability to use that power 
-        'Destination': [[11, 0.5], [11, 0.5]] # Mix of charger power at charger power at destination in kW and probability 
+        'Origin': [[11, 0.5], [22, 0.5]],     # Mix of charger power at origin (=home) in kW and probability to use that power 
+        'Destination': [[11, 0.5], [22, 0.5]] # Mix of charger power at charger power at destination in kW and probability 
     }
 }
 

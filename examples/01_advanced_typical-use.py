@@ -41,13 +41,13 @@ ev = EVCalculator(
         'target_area_geojson': 'input/gadm41_ETH_1_AddisAbeba.json',  # Geographic area of interest (Addis Ababa)
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif',  # Population data for the area
         'destinations_csv': 'input/workplaces.csv',  # Key destinations for mobility patterns (e.g., workplaces)
-        'trips_per_inhabitant': 0.1,  # Number of trips per person per day
+        'trips_per_inhabitant': 0.01,  # Number of trips per person per day
         'zone_width_km': 5,  # Resolution of geographic zones for mobility demand calculations
         'ORS_key': None,  # OpenRouteService API key (optional for more accurate routing)
     },
     ev_fleet = [
-        [EVCalculator.preset['car'], 1.0],  # 100% cars in the EV fleet 
-        [EVCalculator.preset['motorbike'], 0.0]  # 0% motorbikes in the fleet
+        [EVCalculator.preset['car'], 1.0],  # Share of default cars in the EV fleet 
+        [EVCalculator.preset['motorbike'], 0.0]  # Share of defauly motorbikes in the fleet
     ],
     charging_efficiency = 0.9,  # Efficiency of EV charging
     charging_scenario = {
