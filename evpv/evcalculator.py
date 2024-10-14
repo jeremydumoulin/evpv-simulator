@@ -104,7 +104,6 @@ class EVCalculator:
             # Optional parameters
             'travel_time_origin_destination_h': charging_scenario.get('travel_time_origin_destination_h', 0.5), # Travel time between origin and destination
             'time_step_h': charging_scenario.get('time_step_h', 0.1), # Time step for charging curve
-            ['State of charge threshold average']
         }
         
 
