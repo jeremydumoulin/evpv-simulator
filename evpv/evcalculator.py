@@ -14,12 +14,13 @@ class EVCalculator:
             - 'target_area_geojson' (str): Path to the geojson containing the target area.
             - 'population_raster' (str): Path to population density raster (.tif).
             - 'destinations_csv' (str): Path to potential destinations CSV.
+            - 'intermediate_stops_csv' (str): Path to potential intermediate stops CSV.
             - 'trips_per_inhabitant' (float): Average number of trips per inhabitant.
             - 'zone_width_km' (float): Spatial resolution of the zones (in km).
             - 'ORS_key' (str): Open Route Service (ORS) API key if needed. Defaults to None.
             - 'road_to_euclidian_ratio' (float, optional): Road to euclidian distance ratio. Defaults to 1.63.
             - 'target_area_extension_km' (float, optional): Extension of the target area (km). Defaults to 0.0.
-            - 'population_to_ignore_share' (float, optional): Share of population to ignore. Defaults to 0.0.
+            - 'crop_zones_to_shapefile' (bool, optional): If True, delete traffic zones outside the boundaries of the target area. Defaults to True.
             - 'spatial_interaction_model' (str, optional): Spatial interaction model. Defaults to 'gravity_exp_scaled'.
             - 'attraction_feature' (str, optional): Attraction feature ('destinations' or 'population'). Defaults to 'destinations'.
             - 'cost_feature' (str, optional): Cost feature ('distance_road', 'distance_centroid', etc.). Defaults to 'distance_road'.
@@ -49,12 +50,13 @@ class EVCalculator:
             - 'target_area_geojson' (str): Path to the geojson containing the target area.
             - 'population_raster' (str): Path to population density raster (.tif).
             - 'destinations_csv' (str): Path to potential destinations CSV.
+            - 'intermediate_stops_csv' (str): Path to potential intermediate stops CSV.
             - 'trips_per_inhabitant' (float): Average number of trips per inhabitant.
             - 'zone_width_km' (float): Spatial resolution of the zones (in km).
             - 'ORS_key' (str, optional): Open Route Service (ORS) API key. Defaults to None.
             - 'road_to_euclidian_ratio' (float, optional): Road to euclidian distance ratio. Defaults to 1.63.
             - 'target_area_extension_km' (float, optional): Extension of the target area (km). Defaults to 0.0.
-            - 'population_to_ignore_share' (float, optional): Share of population to ignore. Defaults to 0.0.
+            - 'crop_zones_to_shapefile' (bool, optional): If True, delete traffic zones outside the boundaries of the target area. Defaults to True.
             - 'spatial_interaction_model' (str, optional): Spatial interaction model. Defaults to 'gravity_exp_scaled'.
             - 'attraction_feature' (str, optional): Attraction feature ('destinations' or 'population'). Defaults to 'destinations'.
             - 'cost_feature' (str, optional): Cost feature ('distance_road', 'distance_centroid', etc.). Defaults to 'distance_road'.
@@ -76,6 +78,7 @@ class EVCalculator:
             'target_area_geojson': mobility_demand.get('target_area_geojson'), # Path to the geojson containing the target area
             'population_raster': mobility_demand.get('population_raster'), # Path to population density raster (.tif)
             'destinations_csv': mobility_demand.get('destinations_csv'), # Path to potential destinations csv
+            'intermediate_stops_csv': mobility_demand.get('intermediate_stops_csv'), # Path to potential intermediate_stops csv            
             'trips_per_inhabitant': mobility_demand.get('trips_per_inhabitant'), # Average number of trips per inhabitant
             'zone_width_km': mobility_demand.get('zone_width_km'), # Spatial resolution of the zones (in km)
             'ORS_key': mobility_demand.get('ORS_key'), # Open Route Service (ORS) API key. Set to None if you do not want to use ORS.
@@ -83,10 +86,10 @@ class EVCalculator:
             # Optional parameters            
             'road_to_euclidian_ratio': mobility_demand.get('road_to_euclidian_ratio', 1.63), # Road to euclidian distance ratio
             'target_area_extension_km': mobility_demand.get('target_area_extension_km', 0.0), # Extension of the target area (km)
-            'population_to_ignore_share': mobility_demand.get('population_to_ignore_share', 0.0), # Share of population to ignore
+            'crop_zones_to_shapefile': mobility_demand.get('crop_zones_to_shapefile', True), # Crop zones to zones inside the target area
             'spatial_interaction_model': mobility_demand.get('spatial_interaction_model', 'gravity_exp_scaled'), # Spatial interaction model
             'attraction_feature': mobility_demand.get('attraction_feature', 'destinations'), # Attraction feature ('destinations' or 'population')
-            'cost_feature': mobility_demand.get('cost_feature', 'distance_road'), # Cost feature ('distance_road', 'distance_centroid', etc.)
+            'cost_feature': mobility_demand.get('cost_feature', 'distance_centroid'), # Cost feature ('distance_road', 'distance_centroid', etc.)
             'km_per_capita_offset': mobility_demand.get('km_per_capita_offset', 0.0), # Additional daily distance travelled (km)
         }
 
@@ -100,6 +103,7 @@ class EVCalculator:
         self._charging_scenario = {
             'Home': charging_scenario.get('Home'), # Dictionary for home charging
             'Destination': charging_scenario.get('Destination'), # Dictionary for destination charging
+            "Intermediate": charging_scenario.get('Intermediate'),
 
             # Optional parameters
             'travel_time_origin_destination_h': charging_scenario.get('travel_time_origin_destination_h', 0.5), # Travel time between origin and destination
@@ -276,7 +280,8 @@ class EVCalculator:
         return MobilitySim(
             target_area=self.mobility_demand['target_area_geojson'],
             population_density=self.mobility_demand['population_raster'], 
-            destinations=self.mobility_demand['destinations_csv']
+            destinations=self.mobility_demand['destinations_csv'],
+            intermediate_stops=self.mobility_demand['intermediate_stops_csv']
         )
 
     def _compute_mobility_demand(self):
@@ -286,7 +291,7 @@ class EVCalculator:
         self.mobsim.setup_simulation(
             taz_target_width_km=self.mobility_demand['zone_width_km'], 
             simulation_area_extension_km=self.mobility_demand['target_area_extension_km'], 
-            population_to_ignore_share=self.mobility_demand['population_to_ignore_share']
+            crop_zones_to_shapefile=self.mobility_demand['crop_zones_to_shapefile']
         )
 
         self.mobsim.trip_generation(n_trips_per_inhabitant=self.mobility_demand['trips_per_inhabitant'])
@@ -318,7 +323,8 @@ class EVCalculator:
             scenario_definition={
                 "Travel time origin-destination": self.charging_scenario['travel_time_origin_destination_h'],
                 "Origin": self.charging_scenario['Home'],
-                "Destination": self.charging_scenario['Destination']                
+                "Destination": self.charging_scenario['Destination'] ,
+                "Intermediate": self.charging_scenario['Intermediate']               
             }
         )
 

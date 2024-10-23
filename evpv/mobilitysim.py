@@ -39,7 +39,7 @@ class MobilitySim:
     ############# Constructor #############
     ####################################### 
 
-    def __init__(self, target_area: str, population_density: str, destinations: str) -> None:
+    def __init__(self, target_area: str, population_density: str, destinations: str, intermediate_stops: str) -> None:
         """
         Initialize a new instance of the MobilitySim class.
 
@@ -47,10 +47,12 @@ class MobilitySim:
             target_area (str): Path to the GeoJSON file representing the target area.
             population_density (str): Path to the file with population density data.
             destinations (str): Path to the CSV file with destination points and their weights.
+            intermediate_stops (str): Path to the CSV file with potential intermediate stops between origin and destination and their weights.
         """
         self.target_area = target_area
         self.population_density = population_density
         self.destinations = destinations
+        self.intermediate_stops = intermediate_stops
 
         # Transport model setup 
         self._simulation_bbox = None
@@ -174,6 +176,50 @@ class MobilitySim:
 
         self._destinations = center_points
 
+    # Intermediate stops
+    @property
+    def intermediate_stops(self) -> list:
+        """
+        Get the intermediate stops points with weights.
+
+        Returns:
+            list: A list of tuples representing intermediate stop points (longitude, latitude).
+        """
+        return self._intermediate_stops
+
+    @intermediate_stops.setter
+    def intermediate_stops(self, path: str) -> None:
+        """
+        Set the intermediate stops by loading a CSV file with intermediate stops points and weights.
+
+        Args:
+            path (str): Path to the CSV file with intermediate stops.
+
+        Raises:
+            FileNotFoundError: If the CSV file does not exist.
+        """
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"ERROR \t The CSV for intermediate stops at {path} does not exist.")
+        
+        center_points = []
+        
+        with open(path, mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                name = row['name']
+                latitude = float(row['latitude'])
+                longitude = float(row['longitude'])
+                weight = int(row['weight'])
+
+                if weight < 1:
+                    print(f"ALERT \t Skipping {name} due to non-positive weight: {weight}")
+                    continue
+
+                for _ in range(weight):
+                    center_points.append((longitude, latitude))
+
+        self._intermediate_stops = center_points
+
     # Target Area Centroid Coordinates
     @property
     def centroid_coords(self) -> tuple:
@@ -190,7 +236,7 @@ class MobilitySim:
     ######### Simulation setup ############
     #######################################
 
-    def setup_simulation(self, taz_target_width_km: float, simulation_area_extension_km: float, population_to_ignore_share: float) -> None:
+    def setup_simulation(self, taz_target_width_km: float, simulation_area_extension_km: float, crop_zones_to_shapefile: bool) -> None:
         """
         Set up the simulation by configuring the simulation bounding box (bbox), transportation analysis zone (TAZ) width, 
         and initializing the TAZ based on population.
@@ -198,19 +244,21 @@ class MobilitySim:
         Args:
             taz_target_width_km (float): Target width of each TAZ in kilometers.
             simulation_area_extension_km (float): Extension in kilometers to apply to the simulation bounding box.
-            population_to_ignore_share (float): The share of the population to ignore during the setup.
+            crop_zones_to_shapefile (bool): Crop the simulation area to the shapefile boundaries (if True, extending the simulation area will have no effect)
         """
         print(f"INFO \t SIMULATION SETUP")
 
         self.set_simulation_bbox(simulation_area_extension_km)
         self.set_taz_width(taz_target_width_km)
-        self.init_taz(population_to_ignore_share)
+        self.init_taz(crop_zones_to_shapefile)
 
         self.state = "initialized"
 
         print(f"INFO \t Simulation setup done. Make sure to rerun trip generation and distribution if needed.")        
-        print(f" \t Simulation area - Width: {self.simulation_area_width} km | Height: {self.simulation_area_height} km | Pop: {self.traffic_zones['population'].sum()} | Destinations: {self.traffic_zones['destinations'].sum()}")
-        print(f" \t TAZ - Number: {len(self.traffic_zones)} | Width: {self.taz_width} km | Height: {self.taz_height} km ")
+        print(f" \t \t Width: {self.simulation_area_width} km | Height: {self.simulation_area_height} km")
+        print(f" \t \t Population: {self.traffic_zones['population'].sum()}")
+        print(f" \t \t Destinations: {self.traffic_zones['destinations'].sum()} | Intermediate stop: {self.traffic_zones['intermediate_stops'].sum()}")
+        print(f" \t \t TAZ: {len(self.traffic_zones)} (Width: {self.taz_width} km | Height: {self.taz_height} km) ")
 
     # Simulation bbox
     @property
@@ -348,15 +396,13 @@ class MobilitySim:
         """
         return self._traffic_zones
 
-    def init_taz(self, population_to_ignore_share: float = 0.0) -> None:
+    def init_taz(self, crop_zones_to_shapefile: bool = False) -> None:
         """
         Initializes the Traffic Analysis Zones (TAZs) and sets up associated features.
 
         Args:
-            population_to_ignore_share (float): Fraction of total population to ignore 
-                (between 0 and 1). TAZs with cumulative population below this share will 
-                be removed. Default is 0.0.
-        
+            crop_zones_to_shapefile (bool): if True, keeps only the traffic zones if their
+            center is within the boundaries of the shapefile
         Returns:
             None
 
@@ -383,17 +429,21 @@ class MobilitySim:
                 # 0. ID 
                 zone_id = f"{i}_{j}"
 
-                # 1. Latitude and longitude of the geometric center 
-                center_lon = miny + (i + 0.5) * height
-                center_lat = minx + (j + 0.5) * width
-
-                # 2. Bounding box 
+                # 1. Bounding box 
                 lower_left_x = minx + i * width
                 lower_left_y = miny + j * height
                 upper_right_x = lower_left_x + width
                 upper_right_y = lower_left_y + height
 
-                bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)
+                bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)                
+
+                # 2. Extract latitude and longitude from the centroid
+
+                # Get the geometric center (centroid) of the bounding box
+                center_point = bbox_geom.centroid  # returns a shapely Point
+
+                center_lat = center_point.x  # Longitude
+                center_lon = center_point.y  # Latitude
 
                 # 3. Population within the bounding box
 
@@ -421,49 +471,44 @@ class MobilitySim:
                 points_within_bbox = [point for point in points if point.within(bbox_geom)]
                 n_destinations = len(points_within_bbox)
 
-                # 5. Check if the TAZ is inside the target area
+                # 5. Intermediate stops
+
+                # Convert the list of center points to shapely Point objects
+                points = [Point(lon, lat) for lon, lat in self.intermediate_stops]
+
+                # Count how many points are within the bounding box
+                points_within_bbox = [point for point in points if point.within(bbox_geom)]
+                n_intermediate_stops = len(points_within_bbox)
+
+                # 6. Check if the TAZ is inside the target area
                 shapefile_geometry = self.target_area
                 center_point = Point((center_lat, center_lon))
 
                 # Check if the point is within the MultiPolygon
                 is_within = shapefile_geometry.contains(center_point)
 
-                # 6. Append everything
+                # 7. Append everything
                 grid_data.append({
                     'id': zone_id, 
                     'geometric_center': (center_lat, center_lon), 
                     'bbox': bbox_geom, 
                     'population': total_population, 
                     'destinations': n_destinations, 
+                    'intermediate_stops': n_intermediate_stops,
                     'is_within_target_area': is_within
                 })
 
         df = pd.DataFrame(grid_data)
 
-        # Delete the sparsely populated TAZs, such that the sum of the less populated is below a threshold
-        if population_to_ignore_share > 0.0 and population_to_ignore_share < 1.0:
-            print(f"INFO \t Deleting sparsely populated TAZs")
-
-            # Calculate the total population
-            total_population = df['population'].sum()
-
-            # Calculate the population limit based on the percentage
-            population_limit = population_to_ignore_share * total_population
-
-            # Sort by population in ascending order
-            df = df.sort_values(by='population')
-
-            # Calculate the cumulative sum of populations
-            df['cumulative_population'] = df['population'].cumsum()
+        # Delete the TAZs outside the boundaries of the shapefile
+        if crop_zones_to_shapefile:
+            print(f"INFO \t Deleting traffic zones outside the target area shapefile")            
 
             # Identify the rows to remove
-            rows_to_remove = df[df['cumulative_population'] <= population_limit]
+            rows_to_remove = df[df['is_within_target_area'] == False]
 
             # Drop these rows from the original DataFrame
             df = df.drop(rows_to_remove.index)
-
-            # Optionally, remove the cumulative_population column
-            df = df.drop(columns=['cumulative_population'])
 
         # Assign the DataFrame to the traffic zones
         self._traffic_zones = pd.DataFrame(df)
@@ -1062,10 +1107,12 @@ class MobilitySim:
         # Normalize data for destinations and population
         linear1 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['destinations'].min(), vmax=df['destinations'].max())
         linear2 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['population'].min(), vmax=df['population'].max())
+        linear3 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['intermediate_stops'].min(), vmax=df['intermediate_stops'].max())
 
         # Create FeatureGroups for destinations and population
         destinations_group = folium.FeatureGroup(name='Number of Destinations', show=False)
-        population_group = folium.FeatureGroup(name='Number of People', show=False)
+        population_group = folium.FeatureGroup(name='Number of People', show=True)
+        intermediate_stops_group = folium.FeatureGroup(name='Intermediate Stops', show=False)
 
         # Add destinations rectangles to the group
         df.apply(lambda row: add_rectangle(row, linear1, 'destinations', destinations_group), axis=1)
@@ -1073,9 +1120,13 @@ class MobilitySim:
         # Add population rectangles to the group
         df.apply(lambda row: add_rectangle(row, linear2, 'population', population_group), axis=1)
 
+        # Add intermediate trips rectangles to the group
+        df.apply(lambda row: add_rectangle(row, linear3, 'intermediate_stops', intermediate_stops_group), axis=1)
+
         # Add the FeatureGroups to the map
         destinations_group.add_to(m1)
         population_group.add_to(m1)
+        intermediate_stops_group.add_to(m1)
 
         # Add color scales
         linear1.caption = 'Number of destinations'
@@ -1083,6 +1134,9 @@ class MobilitySim:
         
         linear2.caption = 'Number of people'
         linear2.add_to(m1)
+
+        linear3.caption = 'Number of intermediate stops'
+        linear3.add_to(m1)
 
         # 6. Add Layer Control
         folium.LayerControl().add_to(m1)

@@ -28,6 +28,7 @@ ev = EVCalculator(
         'target_area_geojson': 'input/gadm41_ETH_1_AddisAbeba.json', # Path to the geojson file containing the shape of the target area (or region of interest)
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif', # Path to raster file (.tif) with the population density
         'destinations_csv': 'input/workplaces.csv', # Path to the csv file with the list of potential destinations
+        'intermediate_stops_csv': 'input/intermediate_stops.csv',  # Key intermediate stops for mobility patterns (e.g., POIs)
         'trips_per_inhabitant': 0.1, # Average number of trips per inhabitant (from origin to destination, e.g., home to Destination)
         'zone_width_km': 5, # Target width (in km) of the zones (i.e., spatial resolution) - will be slighlty adapted by the algorithm
 
@@ -35,7 +36,7 @@ ev = EVCalculator(
         'ORS_key': None, #Open Route Service (ORS) API key. If no key is provided, the distance by road is estimated using an empirical ratio set by the user
         'road_to_euclidian_ratio': 1.63, # Empirical ratio between the distance by road and the euclidian distance (distance as the crow flies) 
         'target_area_extension_km': 0.0, # Extension of the the target area to include also in- and out- flows from outside
-        'population_to_ignore_share': 0.0, # Share of the population to ignore (will speed up calculation by ignoring sparsely populated zones)
+        'crop_zones_to_shapefile': True, # Crop zones to zones inside the target area
         'spatial_interaction_model': 'gravity_exp_scaled', # Type of spatial interaction model to use ('gravity_exp_scaled' = autocalibrated gravity model)
         'attraction_feature': 'destinations', # Attraction feature used in the spatial interaction model ('destinations', 'population')
         'cost_feature': 'distance_road', # Cost feature used in the spatial interaction model ('distance_road', 'distance_centroid', 'time_road')
@@ -63,6 +64,10 @@ ev = EVCalculator(
             "Share": 1.0, # Share of vehicles charging at destination
             "Arrival time": [9, 2], # Arrival time at destination in hours [average, standard_deviation]
             "Smart charging": 0.0  # Share of vehicles with smart charging at destination
+        },
+        "Intermediate": {
+            "Share": 0.0,              # 0% of charging at intermediate stops (e.g., POIs)
+            "Smart charging": 0.0      # No smart charging at intermediate stops
         },
 
         # OPTIONAL

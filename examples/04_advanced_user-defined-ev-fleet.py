@@ -73,6 +73,7 @@ ev = EVCalculator(
         'target_area_geojson': 'input/gadm41_ETH_1_AddisAbeba.json',  # Geographic area of interest (Addis Ababa)
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif',  # Population data for the area
         'destinations_csv': 'input/workplaces.csv',  # Key destinations for mobility patterns (e.g., workplaces)
+        'intermediate_stops_csv': 'input/intermediate_stops.csv',  # Key intermediate stops for mobility patterns (e.g., POIs)
         'trips_per_inhabitant': 0.1,  # Number of trips per person per day
         'zone_width_km': 5,  # Resolution of geographic zones for mobility demand calculations
 
@@ -95,6 +96,10 @@ ev = EVCalculator(
             "Share": 1.0,  # 100% charging at destinations (e.g., workplaces)
             "Arrival time": [9, 2],  # Arrival times at destinations (mean time and std dev)
             "Smart charging": 0.0  # No smart charging at destination
+        },
+        "Intermediate": {
+            "Share": 0.0, 
+            "Smart charging": 0.0 
         }}
     )
 

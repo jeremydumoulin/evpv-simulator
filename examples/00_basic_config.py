@@ -37,6 +37,7 @@ scenario_name = "AddisAbaba"          # Name of the scenario (e.g., city or regi
 target_area_geojson = "examples/input/gadm41_ETH_1_AddisAbeba.json"   # GeoJSON for the target area
 population_raster = "examples/input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif"  # Raster file for population distribution
 destinations_csv = "examples/input/workplaces.csv"  # CSV file with the location of all possible home to work destinations (e.g., workplaces from open street map)
+intermediate_stops_csv = 'examples/input/intermediate_stops.csv'  # CSV file with the location of all possible stops between origin and destisations (e.g., POIs)
 
 # Other mobility parameters
 trips_per_inhabitant = 0.1   # Number of commuters per inhabitant 
@@ -98,6 +99,10 @@ charging_scenario = {
         "Share": 1.0,              # 100% of charging at destination (e.g., workplaces)
         "Arrival time": [9, 2],    # Mean and std deviation for arrival times at destination
         "Smart charging": 0.0      # No smart charging at destination
+    },
+    "Intermediate": {
+        "Share": 0.0,              # 0% of charging at intermediate stops (e.g., POIs)
+        "Smart charging": 0.0      # No smart charging at intermediate stops
     }
 }
 
@@ -139,7 +144,7 @@ end_date = '01-30'              # End date of the analysis (MM-DD)
 
 road_to_euclidian_ratio = 1.63 # Road to euclidian distance ratio (can be calculated for the target area using the script provided in the /scripts directory)
 target_area_extension_km = 0.0 # Extension of the target area (km)
-population_to_ignore_share = 0.0 # Share of population to ignore in the target area (delete less populated zones)
+crop_zones_to_shapefile = True # Keep only Ttraffic zones inside the boundaries of the shapefile
 spatial_interaction_model = 'gravity_exp_scaled' # Spatial interaction model to use (by default, self-calibrated gravity model is used)
 attraction_feature = 'destinations' # Attraction feature for spatial interaction model ('destinations' or 'population')
 cost_feature = 'distance_road' # Cost feature for spatial interaction model ('distance_road', 'distance_centroid', etc.)

@@ -54,7 +54,8 @@ def run_simulation(config):
             # Required parameters
             'target_area_geojson': config.target_area_geojson, 
             'population_raster': config.population_raster,  
-            'destinations_csv': config.destinations_csv,  
+            'destinations_csv': config.destinations_csv,
+            'intermediate_stops_csv': config.intermediate_stops_csv,    
             'trips_per_inhabitant': config.trips_per_inhabitant,  
             'zone_width_km': config.zone_width_km,  
             'ORS_key': config.ORS_key,
@@ -62,7 +63,7 @@ def run_simulation(config):
             # Optional parameters            
             'road_to_euclidian_ratio': config.road_to_euclidian_ratio, 
             'target_area_extension_km': config.target_area_extension_km, 
-            'population_to_ignore_share': config.population_to_ignore_share, 
+            'crop_zones_to_shapefile': config.crop_zones_to_shapefile, 
             'spatial_interaction_model': config.spatial_interaction_model, 
             'attraction_feature': config.attraction_feature, 
             'cost_feature': config.cost_feature, 
@@ -74,6 +75,7 @@ def run_simulation(config):
             # Required
             'Home': config.charging_scenario['Home'],
             'Destination': config.charging_scenario['Destination'],
+            'Intermediate': config.charging_scenario['Intermediate'],
 
             # Optional
             'travel_time_origin_destination_h': config.travel_time_origin_destination_h, 

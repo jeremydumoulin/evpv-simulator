@@ -133,7 +133,7 @@ class ChargingScenario:
         summed_df = pd.concat([df[columns_to_sum] for df in df_list]).groupby(level=0).sum()
 
         # Add back the non-summed columns from the first DataFrame (e.g., 'id')
-        result_df = df_list[0][['id', 'geometric_center', 'bbox', 'is_within_target_area']].copy()
+        result_df = df_list[0][['id', 'geometric_center', 'bbox', 'is_within_target_area', 'intermediate_stops']].copy()
         result_df[columns_to_sum] = summed_df
 
         # Correct the values based on the different vehicle share and occupancy 
@@ -241,14 +241,11 @@ class ChargingScenario:
         Raises:
             ValueError: If the scenario shares or arrival times are not within valid ranges.
         """
-        if cs['Origin']['Share'] > 1.0 or cs['Origin']['Share'] < 0 or cs['Destination']['Share'] > 1.0 or cs['Destination']['Share'] < 0:
-            raise ValueError("Share of charging at origin or destination should be between 0 and 1")
+        if cs['Origin']['Share'] > 1.0 or cs['Origin']['Share'] < 0 or cs['Destination']['Share'] > 1.0 or cs['Destination']['Share'] < 0 or cs['Intermediate']['Share'] > 1.0 or cs['Intermediate']['Share'] < 0:
+            raise ValueError("Share of charging at origin, destination, or intermediate stops should be between 0 and 1")
 
-        if (cs['Origin']['Share'] + cs['Destination']['Share']) != 1.0:
-            raise ValueError("The total of the shares at the origin and destination does not sum up to 1")
-
-        if cs['Origin']['Smart charging'] > 1.0 or cs['Origin']['Smart charging'] < 0 or cs['Destination']['Smart charging'] > 1.0 or cs['Destination']['Smart charging'] < 0:
-            raise ValueError("Smart charging share at origin or destination should be between 0 and 1")
+        if (cs['Origin']['Share'] + cs['Destination']['Share'] + cs['Intermediate']['Share']) != 1.0:
+            raise ValueError("The total of the shares at the origin, destination and intermediate stops does not sum up to 1")
 
         self._scenario_definition = cs
 
@@ -309,10 +306,22 @@ class ChargingScenario:
         # Inputs
         share_origin = self.scenario_definition['Origin']['Share']
         share_destination = self.scenario_definition['Destination']['Share']
+        share_intermediate = self.scenario_definition['Intermediate']['Share']
+
+         # Compute the vehicle share - weighted ev consumption 
+        average_ev_consumption = 0
+        for vehicle in self.ev_fleet:
+            average_ev_consumption += vehicle[0]['ev_consumption'] * vehicle[1]
+
+        # Dispatch the remaining charging needs on intermediate stops assuming the same average energy needs per car
+        demand_intermediate = 2 * self.taz_properties['fkt_inflows'].sum() * average_ev_consumption / self.charging_efficiency * share_intermediate
+        vehicles_intermediate = self.taz_properties['n_inflows'].sum() * share_intermediate
+        demand_per_vehicle = (demand_intermediate / vehicles_intermediate) if demand_intermediate > 0 else 0
+        total_intermediate_stops = self.taz_properties['intermediate_stops'].sum()
 
         data = []
 
-        # Iterate over TAZs
+        # Iterate over TAZs to get the charging for vehicles charging at origin and at destination
         for index, row in self.taz_properties.iterrows():
             # Get TAZ id and bbox
             taz_id = row['id']
@@ -323,39 +332,42 @@ class ChargingScenario:
             vehicles_origin = int(round((row['n_outflows'] * share_origin)))
             vehicles_destination = int(round((row['n_inflows'] * share_destination)))
 
-            # Total charging demand
-
-            # Compute the vehicle share - weighted ev consumption 
-            average_ev_consumption = 0
-            for vehicle in self.ev_fleet:
-                average_ev_consumption += vehicle[0]['ev_consumption'] * vehicle[1]
+            # Total charging demand           
 
             Etot_origin = (2 * row['fkt_outflows'] * share_origin * average_ev_consumption /
                            self.charging_efficiency)  # Multiply by 2 (origin-destination-origin)
             Etot_destination = (2 * row['fkt_inflows'] * share_destination * average_ev_consumption /
                                 self.charging_efficiency)  # Multiply by 2 (origin-destination-origin)
 
+            # For the intermediate stops (simplified approach)
+            Etot_intermediate = demand_intermediate * (row['intermediate_stops'] / total_intermediate_stops)
+            vehicles_intermediate = round(Etot_intermediate / demand_per_vehicle) if Etot_intermediate > 0 else 0
+
             # Average charging demand per vehicle
 
             E0_origin = (Etot_origin / vehicles_origin) if vehicles_origin > 0 else 0
             E0_destination = (Etot_destination / vehicles_destination) if vehicles_destination > 0 else 0
+            E0_intermediate = demand_per_vehicle if vehicles_intermediate > 0 else 0
 
             data.append({'id': taz_id,
                           'bbox': bbox,
                           'is_within_target_area': is_within_target_area,
                           'n_vehicles_origin': vehicles_origin,
                           'n_vehicles_destination': vehicles_destination,
+                          'n_vehicles_intermediate': vehicles_intermediate,
                           'E0_origin_kWh': E0_origin,
                           'E0_destination_kWh': E0_destination,
+                          'E0_intermediate_kWh': E0_intermediate,                          
                           'Etot_origin_kWh': Etot_origin,
-                          'Etot_destination_kWh': Etot_destination})
+                          'Etot_destination_kWh': Etot_destination,
+                          'Etot_intermediate_kWh': Etot_intermediate})
 
         df = pd.DataFrame(data)
 
         self._charging_demand = df
 
-        print(f" \t Charging demand. At origin: {self.charging_demand['Etot_origin_kWh'].sum()} kWh - At destination: {self.charging_demand['Etot_destination_kWh'].sum()} kWh")
-        print(f" \t Vehicles charging. At origin: {self.charging_demand['n_vehicles_origin'].sum()} - At destination: {self.charging_demand['n_vehicles_destination'].sum()}")
+        print(f" \t Charging demand. At origin: {self.charging_demand['Etot_origin_kWh'].sum()} kWh - At destination: {self.charging_demand['Etot_destination_kWh'].sum()} kWh - At intermediate stops: {self.charging_demand['Etot_intermediate_kWh'].sum()} kWh")
+        print(f" \t Vehicles charging. At origin: {self.charging_demand['n_vehicles_origin'].sum()} - At destination: {self.charging_demand['n_vehicles_destination'].sum()} - At intermediate stops: {self.charging_demand['n_vehicles_intermediate'].sum()}")
         
     @property
     def charging_demand(self) -> pd.DataFrame:
@@ -813,6 +825,36 @@ class ChargingScenario:
         linear.caption = 'Charging demand (kWh)'
         linear.add_to(m)
 
+        # 5. Charging AT INTERMEDIATE STOPS
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Charging demand at Intermediate stops')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['Etot_intermediate_kWh']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # Add the color scale legend to the map
+        linear.caption = 'Charging demand (kWh)'
+        linear.add_to(m)
+
         # Add Layer Control and Save 
 
         folium.LayerControl().add_to(m)
@@ -916,6 +958,32 @@ class ChargingScenario:
                 color=None,
                 fill=True,
                 fill_color=linear(row['E0_destination_kWh']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # 5. Charging AT INTERMEDIATE STOPS
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Charging need per vehicle at Intermediate stops')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['E0_intermediate_kWh']),
                 fill_opacity=0.7
                 #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
             )
@@ -1033,6 +1101,32 @@ class ChargingScenario:
                 color=None,
                 fill=True,
                 fill_color=linear(row['n_vehicles_destination']),
+                fill_opacity=0.7
+                #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
+            )
+
+            # Add the rectangle to the feature group
+            rectangle.add_to(feature_group)
+
+        # Add the feature group to the map
+        feature_group.add_to(m)
+
+        # 4. Charging AT INTERMEDIATE STOPS
+
+        # Create a feature group for all polygons
+        feature_group = folium.FeatureGroup(name='Number of vehicles charging at Intermediate stops')
+
+        # Add polygons to the feature group
+        for idx, row in df.iterrows():
+            bbox_polygon = row['bbox']
+            bbox_coords = bbox_polygon.bounds
+
+            # Create a rectangle for each row
+            rectangle = folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row['n_vehicles_intermediate']),
                 fill_opacity=0.7
                 #popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
             )
