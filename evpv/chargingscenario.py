@@ -18,6 +18,7 @@ import math
 import matplotlib.pyplot as plt
 import folium
 import branca.colormap as cm
+from scipy.stats import beta
 
 from evpv import helpers as hlp
 from evpv.mobilitysim import MobilitySim
@@ -402,10 +403,14 @@ class ChargingScenario:
             origin_or_destination="Destination", 
             travel_time_origin_destination_hours=travel_time_origin_destination_hours
         )
+        time_intermediate, power_profile_intermediate, num_cars_charging_intermediate = self.eval_charging_profile(
+            origin_or_destination="Intermediate", 
+            travel_time_origin_destination_hours=travel_time_origin_destination_hours
+        )
 
         print(f" \t Max. number of vehicles charging simultaneously. "
-              f"At origin: {np.max(num_cars_charging_origin)} - At destination: {np.max(num_cars_charging_destination)}")
-        print(f" \t Peak power. At origin: {np.max(power_profile_origin)} MW - At destination: {np.max(power_profile_destination)} MW")
+              f"At origin: {np.max(num_cars_charging_origin)} - At destination: {np.max(num_cars_charging_destination)} - At intermediate stops: {np.max(num_cars_charging_intermediate)}")
+        print(f" \t Peak power. At origin: {np.max(power_profile_origin)} MW - At destination: {np.max(power_profile_destination)} MW - At intermediate: {np.max(power_profile_intermediate)} MW")
 
         # Create DataFrames for each time series
         df = pd.DataFrame({
@@ -414,7 +419,9 @@ class ChargingScenario:
             'Number of cars charging at origin': num_cars_charging_origin,
             'Charging profile at destination (MW)': power_profile_destination,
             'Number of cars charging at destination': num_cars_charging_destination,
-            'Total (MW)': power_profile_origin + power_profile_destination
+            'Charging profile at intermediate stops (MW)': power_profile_intermediate,
+            'Number of cars charging at intermediate stops': num_cars_charging_intermediate,
+            'Total (MW)': power_profile_origin + power_profile_destination + power_profile_intermediate
         })
 
         self._charging_profile = df
@@ -464,8 +471,15 @@ class ChargingScenario:
             share_smart_charging = self.scenario_definition['Destination']['Smart charging']
 
             print(f"INFO \t ... Charging at destination with {share_smart_charging*100}% of smart charging...")
+        elif origin_or_destination == "Intermediate":            
+            arrival_time  = self.scenario_definition['Destination']['Arrival time']
+            departure_time = self.scenario_definition['Origin']['Arrival time']
+            vehicle_counts = self.charging_demand['n_vehicles_intermediate'].sum()
+            share_smart_charging = self.scenario_definition['Intermediate']['Smart charging']
+
+            print(f"INFO \t ... Charging at intermediate stops with {share_smart_charging*100}% of smart charging...")
         else:
-            raise ValueError("Charging should be at origin or destination")
+            raise ValueError("Charging should be at origin or destination or intermediate stops")
 
         """
         Initialize output variables
@@ -505,7 +519,7 @@ class ChargingScenario:
         """
         Assign vehicle type and randomly assign the charging demand and maximum charging power
         In addition, we also use the battery capacity to calculate the average days between two charges (see Pareschi et al., Applied Energy, 2020)
-        Form this we determine is today is a charging day and keep only the vehicles that are charging
+        From this we determine if today is a charging day and keep only the vehicles that are charging
         """
         # Assign probabilities for selecting each vehicle type in the fleet
         fleet_probabilities = np.array([item[1] for item in self.ev_fleet])
@@ -528,6 +542,9 @@ class ChargingScenario:
             elif origin_or_destination == "Destination":
                 available_charging_power = [item[0] for item in vehicle[0]['charger_power']['Destination']]
                 probabilities = [item[1] for item in vehicle[0]['charger_power']['Destination']]
+            elif origin_or_destination == "Intermediate":
+                available_charging_power = [item[0] for item in vehicle[0]['charger_power']['Intermediate']]
+                probabilities = [item[1] for item in vehicle[0]['charger_power']['Intermediate']]
 
             # Randomly select a charging power
             charging_powers[idx] = np.random.choice(available_charging_power, p=probabilities)
@@ -580,8 +597,22 @@ class ChargingScenario:
         mean_departure = departure_time[0]
         stddev_departure = departure_time[1]
 
-        arrival_times = np.random.normal(mean_arrival, stddev_arrival, vehicle_counts) % 24
-        departure_times = np.random.normal(mean_departure, stddev_departure - travel_time_origin_destination_hours, vehicle_counts) % 24
+        if origin_or_destination == "Intermediate":        
+            # For the end time, we use the charging duration + arrival time (see below), as we expect the user to stop only if he can charge without smart charging
+            
+            # Adding randomness to mean arrival and mean departure times
+            random_mean_arrival = np.random.normal(mean_arrival, stddev_arrival/2, vehicle_counts)
+            random_mean_departure = np.random.normal(mean_departure, stddev_departure/2, vehicle_counts)
+
+            # Generate random uniform arrival times between randomized mean_arrival and mean_departure
+            arrival_times = np.random.uniform(random_mean_arrival, random_mean_departure)
+
+            # Ensure arrival times stay within 24-hour bounds (optional)
+            arrival_times = arrival_times % 24
+
+        else:
+            arrival_times = np.random.normal(mean_arrival, stddev_arrival, vehicle_counts) % 24
+            departure_times = np.random.normal(mean_departure, stddev_departure - travel_time_origin_destination_hours, vehicle_counts) % 24
 
         """
         Assign vehicles with smart charging
@@ -603,6 +634,10 @@ class ChargingScenario:
         start_indices = np.searchsorted(time, arrival_times)
         charging_durations = charging_demands / charging_powers
         end_times = (arrival_times + charging_durations) % 24
+
+        if origin_or_destination == "Intermediate":  
+            departure_times = end_times
+
         end_indices = np.searchsorted(time, end_times)
 
         # Some preleminary checks

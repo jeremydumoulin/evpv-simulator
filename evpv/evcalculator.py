@@ -138,8 +138,9 @@ class EVCalculator:
             'battery_capacity': 50,
             'vehicle_occupancy': 1.4,  
             'charger_power': {
-                'Origin': [[7, 0.68], [11, 0.3], [22, 0.02]],
-                'Destination': [[7, 0.68], [11, 0.3], [22, 0.02]]
+                'Origin': [[3.3, 1.0]],
+                'Destination': [[6.6, 1.0]],
+                'Intermediate': [[6.6, 0.5], [44, 0.5]]                
             }
         },
         'motorbike': {
@@ -148,7 +149,8 @@ class EVCalculator:
             'vehicle_occupancy': 1.0,  
             'charger_power': {
                 'Origin': [[3, 1.0]],
-                'Destination': [[3, 1.0]]
+                'Destination': [[3, 1.0]],
+                'Intermediate': [[3, 1.0]]                
             }
         }  
     }  
@@ -170,6 +172,7 @@ class EVCalculator:
                 - 'charger_power' (dict): Charging power characteristics:
                     - 'Origin': A list of lists containing charging power available at origin: [[7, 1.0]].
                     - 'Destination': A list of lists containing charging power available at destination: [[7, 1.0]].
+                    - 'Intermediate': A list of lists containing charging power available at intermediate stops: [[7, 1.0]].
     """
 
 

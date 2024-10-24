@@ -66,7 +66,8 @@ vehicle_1 = {
     'battery_capacity': 50,      # Nominal battery capacity in kWh
     'charger_power': {
         'Origin': [[7, 1.0]],     # Mix of charger power at origin (=home) in kW and probability to use that power (100%)
-        'Destination': [[7, 1.0]] # Mix of charger power at destination in kW and probability (100%)
+        'Destination': [[7, 1.0]], # Mix of charger power at destination in kW and probability (100%)
+        'Intermediate': [[7, 1.0]] # Mix of charger power at intermediate stops in kW and probability (100%)        
     }
 }
 
@@ -77,7 +78,8 @@ vehicle_2 = {
     'battery_capacity': 40,      # Nominal battery capacity in kWh
     'charger_power': {
         'Origin': [[11, 0.5], [22, 0.5]],     # Mix of charger power at origin (=home) in kW and probability to use that power 
-        'Destination': [[11, 0.5], [22, 0.5]] # Mix of charger power at charger power at destination in kW and probability 
+        'Destination': [[11, 0.5], [22, 0.5]], # Mix of charger power at charger power at destination in kW and probability
+        'Intermediate': [[11, 0.5], [22, 0.5]] # Mix of charger power at intermediate stops in kW and probability         
     }
 }
 

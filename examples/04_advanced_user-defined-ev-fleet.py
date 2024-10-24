@@ -32,7 +32,8 @@ nissan_leaf = {
     'vehicle_occupancy': 1.4,  # Vehicle occupancy (average number of people per vehicle)
     'charger_power': {
         'Origin': [[3.6, 0.4], [7, 0.4], [11, 0.2]],  # Mix of charger power at origin (home)
-        'Destination': [[3.6, 0.4], [7, 0.4], [11, 0.2]]  # Mix of charger power at destination (workplaces)
+        'Destination': [[3.6, 0.4], [7, 0.4], [11, 0.2]],  # Mix of charger power at destination (workplaces)
+        'Intermediate': [[3.6, 0.4], [7, 0.4], [11, 0.2]]  # Mix of charger power at intermediate stops (POIs)        
     }
 }
 
@@ -43,7 +44,8 @@ tesla_model_3 = {
     'vehicle_occupancy': 1.4,  # Vehicle occupancy (average number of people per vehicle)
     'charger_power': {
         'Origin': [[7, 0.6], [11, 0.3], [22, 0.1]],  # Mix of charger power at origin (home)
-        'Destination': [[7, 0.6], [11, 0.3], [22, 0.1]]  # Mix of charger power at destination (workplaces)
+        'Destination': [[7, 0.6], [11, 0.3], [22, 0.1]],  # Mix of charger power at destination (workplaces)
+        'Intermediate': [[7, 0.6], [11, 0.3], [22, 0.1]]  # Mix of charger power at intermediate stops (POIs)           
     }
 }
 
@@ -54,7 +56,8 @@ renault_zoe = {
     'vehicle_occupancy': 1.4,  # Vehicle occupancy (average number of people per vehicle)
     'charger_power': {
         'Origin': [[3.6, 0.5], [7, 0.3], [22, 0.2]],  # Mix of charger power at origin (home)
-        'Destination': [[3.6, 0.5], [7, 0.3], [22, 0.2]]  # Mix of charger power at destination (workplaces)
+        'Destination': [[3.6, 0.5], [7, 0.3], [22, 0.2]],  # Mix of charger power at destination (workplaces)
+        'Intermediate': [[3.6, 0.5], [7, 0.3], [22, 0.2]]  # Mix of charger power at intermediate stops (POIs)
     }
 }
 
