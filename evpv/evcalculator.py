@@ -15,7 +15,7 @@ class EVCalculator:
             - 'population_raster' (str): Path to population density raster (.tif).
             - 'destinations_csv' (str): Path to potential destinations CSV.
             - 'intermediate_stops_csv' (str): Path to potential intermediate stops CSV.
-            - 'trips_per_inhabitant' (float): Average number of trips per inhabitant.
+            - 'n_vehicles' (int): Total number of EVs.
             - 'zone_width_km' (float): Spatial resolution of the zones (in km).
             - 'ORS_key' (str): Open Route Service (ORS) API key if needed. Defaults to None.
             - 'road_to_euclidian_ratio' (float, optional): Road to euclidian distance ratio. Defaults to 1.63.
@@ -51,7 +51,7 @@ class EVCalculator:
             - 'population_raster' (str): Path to population density raster (.tif).
             - 'destinations_csv' (str): Path to potential destinations CSV.
             - 'intermediate_stops_csv' (str): Path to potential intermediate stops CSV.
-            - 'trips_per_inhabitant' (float): Average number of trips per inhabitant.
+            - 'n_vehicles' (int): Total number of EVs.
             - 'zone_width_km' (float): Spatial resolution of the zones (in km).
             - 'ORS_key' (str, optional): Open Route Service (ORS) API key. Defaults to None.
             - 'road_to_euclidian_ratio' (float, optional): Road to euclidian distance ratio. Defaults to 1.63.
@@ -79,7 +79,7 @@ class EVCalculator:
             'population_raster': mobility_demand.get('population_raster'), # Path to population density raster (.tif)
             'destinations_csv': mobility_demand.get('destinations_csv'), # Path to potential destinations csv
             'intermediate_stops_csv': mobility_demand.get('intermediate_stops_csv'), # Path to potential intermediate_stops csv            
-            'trips_per_inhabitant': mobility_demand.get('trips_per_inhabitant'), # Average number of trips per inhabitant
+            'n_vehicles': mobility_demand.get('n_vehicles'), # Total number of EVs 
             'zone_width_km': mobility_demand.get('zone_width_km'), # Spatial resolution of the zones (in km)
             'ORS_key': mobility_demand.get('ORS_key'), # Open Route Service (ORS) API key. Set to None if you do not want to use ORS.
 
@@ -90,7 +90,7 @@ class EVCalculator:
             'spatial_interaction_model': mobility_demand.get('spatial_interaction_model', 'gravity_exp_scaled'), # Spatial interaction model
             'attraction_feature': mobility_demand.get('attraction_feature', 'destinations'), # Attraction feature ('destinations' or 'population')
             'cost_feature': mobility_demand.get('cost_feature', 'distance_centroid'), # Cost feature ('distance_road', 'distance_centroid', etc.)
-            'km_per_capita_offset': mobility_demand.get('km_per_capita_offset', 0.0), # Additional daily distance travelled (km)
+            'vkt_offset': mobility_demand.get('vkt_offset', 0.0), # Additional daily distance travelled (km)
         }
 
         # Initialize the EV fleet attributes
@@ -136,7 +136,6 @@ class EVCalculator:
         'car': {
             'ev_consumption': 0.183,
             'battery_capacity': 50,
-            'vehicle_occupancy': 1.4,  
             'charger_power': {
                 'Origin': [[3.3, 1.0]],
                 'Destination': [[6.6, 1.0]],
@@ -145,8 +144,7 @@ class EVCalculator:
         },
         'motorbike': {
             'ev_consumption': 0.058,
-            'battery_capacity': 10,
-            'vehicle_occupancy': 1.0,  
+            'battery_capacity': 10, 
             'charger_power': {
                 'Origin': [[3, 1.0]],
                 'Destination': [[3, 1.0]],
@@ -162,7 +160,6 @@ class EVCalculator:
         preset (dict): A dictionary containing presets for various types of EVs:
             - 'car': A dictionary with the following keys:
                 - 'ev_consumption' (float): Average energy consumption (https://doi.org/10.1016/j.trd.2017.04.013) of the vehicle (kWh/km), value: 0.183.
-                - 'vehicle_occupancy' (float): Average number of occupants per vehicle (ref. https://www.energy.gov/eere/vehicles/articles/fotw-1333-march-11-2024-2022-average-number-occupants-trip-household), value: 1.4.
                 - 'charger_power' (dict): Charging power characteristics (ref.: https://doi.org/10.1016/j.rser.2023.114214):
                     - 'Origin': A list of lists containing charging power available at origin: [[7, 0.68], [11, 0.3], [22, 0.02]].
                     - 'Destination': A list of lists containing charging power available at destination: [[7, 0.68], [11, 0.3], [22, 0.02]].
@@ -297,14 +294,14 @@ class EVCalculator:
             crop_zones_to_shapefile=self.mobility_demand['crop_zones_to_shapefile']
         )
 
-        self.mobsim.trip_generation(n_trips_per_inhabitant=self.mobility_demand['trips_per_inhabitant'])
+        self.mobsim.trip_generation(n_vehicles=self.mobility_demand['n_vehicles'])
 
         self.mobsim.trip_distribution(
             model=self.mobility_demand['spatial_interaction_model'], 
             ors_key=self.mobility_demand['ORS_key'], 
             attraction_feature=self.mobility_demand['attraction_feature'], 
             cost_feature=self.mobility_demand['cost_feature'], 
-            km_per_capita_offset=self.mobility_demand['km_per_capita_offset']
+            vkt_offset=self.mobility_demand['vkt_offset']
         )
 
     #######################################
@@ -357,7 +354,7 @@ class EVCalculator:
         self.mobsim.traffic_zones.to_csv(output_folder / f"{prefix}_MobilityDemand_TrafficAnalysisZones.csv", index=False)
 
         # Store vehicle-kilometers traveled (VKT) distribution
-        vkt_distribution = self.mobsim.km_per_capita_histogram(bin_width_km=1)
+        vkt_distribution = self.mobsim.vkt_histogram(bin_width_km=1)
         vkt_distribution.to_csv(output_folder / f"{prefix}_MobilityDemand_VKTdistribution.csv", index=False)
 
         if maps:

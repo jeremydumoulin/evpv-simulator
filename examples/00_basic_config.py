@@ -40,7 +40,7 @@ destinations_csv = "examples/input/workplaces.csv"  # CSV file with the location
 intermediate_stops_csv = 'examples/input/intermediate_stops.csv'  # CSV file with the location of all possible stops between origin and destisations (e.g., POIs)
 
 # Other mobility parameters
-trips_per_inhabitant = 0.1   # Number of commuters per inhabitant 
+n_vehicles = 1000   # Number of vehicles
 zone_width_km = 5            # Width of each traffic zone (in kilometers) for mobility demand
 ORS_key = None               # OpenRouteService API key (set to None if not used)
 
@@ -62,7 +62,6 @@ ev_fleet = lambda: [
 # Vehicle 1: specifications (EV consumption, occupancy, charger power)
 vehicle_1 = {
     'ev_consumption': 0.183,     # EV consumption in kWh/km
-    'vehicle_occupancy': 1.4,    # Average number of occupants per vehicle
     'battery_capacity': 50,      # Nominal battery capacity in kWh
     'charger_power': {
         'Origin': [[7, 1.0]],     # Mix of charger power at origin (=home) in kW and probability to use that power (100%)
@@ -74,7 +73,6 @@ vehicle_1 = {
 # Vehicle 2: specifications (EV consumption, occupancy, charger power)
 vehicle_2 = {
     'ev_consumption': 0.13,      # EV consumption in kWh/km
-    'vehicle_occupancy': 1.4,    # Average number of occupants per vehicle
     'battery_capacity': 40,      # Nominal battery capacity in kWh
     'charger_power': {
         'Origin': [[11, 0.5], [22, 0.5]],     # Mix of charger power at origin (=home) in kW and probability to use that power 
@@ -150,7 +148,7 @@ crop_zones_to_shapefile = True # Keep only Ttraffic zones inside the boundaries 
 spatial_interaction_model = 'gravity_exp_scaled' # Spatial interaction model to use (by default, self-calibrated gravity model is used)
 attraction_feature = 'destinations' # Attraction feature for spatial interaction model ('destinations' or 'population')
 cost_feature = 'distance_road' # Cost feature for spatial interaction model ('distance_road', 'distance_centroid', etc.)
-km_per_capita_offset =  0.0 # Additional daily distance travelled other than home to work commuting (km)
+vkt_offset =  0.0 # Additional daily distance travelled other than home to work commuting (km)
 travel_time_origin_destination_h = 0.5 # Average travel time between origin and destination (h)
 time_step_h = 0.1 # Time step for the charging curve (h)
 

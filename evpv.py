@@ -56,7 +56,7 @@ def run_simulation(config):
             'population_raster': config.population_raster,  
             'destinations_csv': config.destinations_csv,
             'intermediate_stops_csv': config.intermediate_stops_csv,    
-            'trips_per_inhabitant': config.trips_per_inhabitant,  
+            'n_vehicles': config.n_vehicles,  
             'zone_width_km': config.zone_width_km,  
             'ORS_key': config.ORS_key,
 
@@ -67,7 +67,7 @@ def run_simulation(config):
             'spatial_interaction_model': config.spatial_interaction_model, 
             'attraction_feature': config.attraction_feature, 
             'cost_feature': config.cost_feature, 
-            'km_per_capita_offset': config.km_per_capita_offset       
+            'vkt_offset': config.vkt_offset       
         },
         ev_fleet = config.ev_fleet(), # Warning, this is a function !
         charging_efficiency = config.charging_efficiency,

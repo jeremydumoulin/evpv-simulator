@@ -40,7 +40,7 @@ ev = EVCalculator(
         'spatial_interaction_model': 'gravity_exp_scaled', # Type of spatial interaction model to use ('gravity_exp_scaled' = autocalibrated gravity model)
         'attraction_feature': 'destinations', # Attraction feature used in the spatial interaction model ('destinations', 'population')
         'cost_feature': 'distance_road', # Cost feature used in the spatial interaction model ('distance_road', 'distance_centroid', 'time_road')
-        'km_per_capita_offset': 0.0, # Additionnal daily distance travelled (in km) from the origin to destination (one way)  
+        'vkt_offset': 0.0, # Additionnal daily distance travelled (in km) from the origin to destination (one way)  
     },
 
     # EV Fleet in the form [[vehicle1, share1], [vehicle2, share2], ...]

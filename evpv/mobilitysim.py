@@ -517,17 +517,18 @@ class MobilitySim:
     ########## Trip Generation ############
     #######################################
 
-    def trip_generation(self, n_trips_per_inhabitant: float) -> None:
+    def trip_generation(self, n_vehicles: int) -> None:
         """
-        Generates the number of trips for each traffic zone based on the population and trips per inhabitant.
+        Generates the number of trips for each traffic zone based on the total number of vehicles
+        and allocates trips based on the population of each zone.
 
         Args:
-            n_trips_per_inhabitant (float): Number of trips per inhabitant in each traffic zone.
+            n_vehicles (int): Total number of vehicles available for trip generation.
                 Must be greater than 0.
 
         Raises:
             RuntimeError: If the trip generation is not performed after simulation setup.
-            ValueError: If the number of trips per inhabitant is not greater than 0.
+            ValueError: If the number of vehicles is not greater than 0.
 
         Returns:
             None
@@ -541,15 +542,59 @@ class MobilitySim:
         if self.state != "initialized":
             raise RuntimeError(f"ERROR \t Trip generation must be performed right after simulation setup")
 
-        # Check for valid trips per inhabitant
-        if n_trips_per_inhabitant <= 0.0:
-            raise ValueError(f"ERROR \t Trips per inhabitant must be greater than 0")
+        # Check for valid number of vehicles
+        if n_vehicles <= 0:
+            raise ValueError(f"ERROR \t Number of vehicles must be greater than 0")
 
         # Load the traffic_zones dataframe
         df = self.traffic_zones
 
-        # Calculate the number of trips and append them to the dataframe
-        df['n_outflows'] = df['population'].apply(lambda x: int(x * n_trips_per_inhabitant))
+        # Calculate the total population
+        total_population = df['population'].sum()
+
+        # Allocate trips based on population
+        df['n_outflows'] = df['population'].apply(lambda x: round(n_vehicles * (x / total_population)) if total_population > 0 else 0)
+
+        # Calculate the total allocated trips
+        total_allocated_trips = df['n_outflows'].sum()
+
+        # Adjust the allocations to ensure total matches n_vehicles
+        difference = n_vehicles - total_allocated_trips
+     
+         # Handle positive difference
+        if difference > 0:
+            print(f"ALERT \t There are {difference} remaining trips to allocate because of rounding.")
+            print(f"\t These trips will be distributed based on the current trip distribution among zones.")
+
+            # Distribute remaining trips based on current distribution
+            for i in range(difference):
+                # Calculate probabilities based on current allocations
+                total_current_trips = df['n_outflows'].sum()
+                probabilities = df['n_outflows'] / total_current_trips
+
+                # Choose a zone based on the probabilities
+                selected_zone = df.sample(weights=probabilities).index[0]
+                df.at[selected_zone, 'n_outflows'] += 1
+
+        # Handle negative difference
+        elif difference < 0:
+            print(f"ALERT \t There are {-difference} excess trips because of rounding.")
+            print(f"\t These trips will be removed based on the current trip distribution among zones.")
+
+            # Distribute reduction of trips based on current distribution
+            for i in range(-difference):
+                total_current_trips = df['n_outflows'].sum()
+                probabilities = df['n_outflows'] / total_current_trips
+
+                # Choose a zone based on the probabilities
+                selected_zone = df.sample(weights=probabilities).index[0]
+
+                # The number of trips in the zone could be 0, keep selecting zones until a valid one is found
+                while True:
+                    selected_zone = df.sample(weights=probabilities).index[0]
+                    if df.at[selected_zone, 'n_outflows'] > 0:  # Ensure we don't go negative
+                        df.at[selected_zone, 'n_outflows'] -= 1
+                        break  # Exit the loop once a trip has been successfully reduced
 
         # Update the traffic zones with the new trip data
         self._traffic_zones = df
@@ -565,7 +610,7 @@ class MobilitySim:
     ######## Trip Distribution ############
     #######################################
 
-    def trip_distribution(self, model: str, ors_key: str = None, attraction_feature: str = "population", cost_feature: str = "distance_road", batch_size: int = 49, km_per_capita_offset: float = 0, road_to_euclidian_ratio: float = 1.63) -> None:
+    def trip_distribution(self, model: str, ors_key: str = None, attraction_feature: str = "population", cost_feature: str = "distance_road", batch_size: int = 49, vkt_offset: float = 0, road_to_euclidian_ratio: float = 1.63) -> None:
         """
         Distributes trips between Traffic Analysis Zones (TAZ) based on a spatial interaction model.
 
@@ -592,7 +637,7 @@ class MobilitySim:
 
             batch_size (int): The number of origins/destinations processed per ORS request if `ors_key` is provided. Default is 49.
 
-            km_per_capita_offset (float): Offset added to the per capita kilometers in inflows/outflows calculation. Default is 0.
+            vkt_offset (float): Offset added to the per capita kilometers in inflows/outflows calculation. Default is 0.
 
             road_to_euclidean_ratio (float): Empirical ratio to estimate road distance based on Euclidean distance if `ors_key` is not used. Default is 1.63.
 
@@ -819,55 +864,55 @@ class MobilitySim:
 
         n_outflows = []
         n_inflows = [] 
-        pkm_outflows = []
-        pkm_inflows = []
-        km_per_capita_outflows = []
-        km_per_capita_inflows = []
+        fkt_outflows = []
+        fkt_inflows = []
+        vkt_outflows = []
+        vkt_inflows = []
 
         # Iterate over the TAZ and append data
         for index, row in df.iterrows():
 
             # Append values related to the origin (outflows)            
             out_df = flows_df[flows_df['Origin'] == row['id']].copy()
-            out_df['Distance_Flow_Product'] = (out_df['Travel Distance (km)'] + km_per_capita_offset) * out_df['Flow']
+            out_df['Distance_Flow_Product'] = (out_df['Travel Distance (km)'] + vkt_offset) * out_df['Flow']
 
             outflow_sum = out_df['Flow'].sum()
             distance_flow_product_sum_out = out_df['Distance_Flow_Product'].sum()
 
             n_outflows.append(outflow_sum)
-            pkm_outflows.append(distance_flow_product_sum_out)
+            fkt_outflows.append(distance_flow_product_sum_out)
             if outflow_sum != 0:
-                km_per_capita_outflows.append(distance_flow_product_sum_out / outflow_sum)
+                vkt_outflows.append(distance_flow_product_sum_out / outflow_sum)
             else:
-                km_per_capita_outflows.append(0)
+                vkt_outflows.append(0)
 
             # Append values related to the destination (inflows)            
             in_df = flows_df[flows_df['Destination'] == row['id']].copy()
-            in_df['Distance_Flow_Product'] = (in_df['Travel Distance (km)'] + km_per_capita_offset) * in_df['Flow']
+            in_df['Distance_Flow_Product'] = (in_df['Travel Distance (km)'] + vkt_offset) * in_df['Flow']
 
             inflow_sum = in_df['Flow'].sum()
             distance_flow_product_sum_in = in_df['Distance_Flow_Product'].sum()
 
             n_inflows.append(inflow_sum)
-            pkm_inflows.append(distance_flow_product_sum_in)
+            fkt_inflows.append(distance_flow_product_sum_in)
             if inflow_sum != 0:
-                km_per_capita_inflows.append(distance_flow_product_sum_in / inflow_sum)
+                vkt_inflows.append(distance_flow_product_sum_in / inflow_sum)
             else:
-                km_per_capita_inflows.append(0)
+                vkt_inflows.append(0)
 
         # Add a new column with values from the list
         self._traffic_zones['n_outflows'] = n_outflows
         self._traffic_zones['n_inflows'] = n_inflows
-        self._traffic_zones['pkm_outflows'] = pkm_outflows
-        self._traffic_zones['pkm_inflows'] = pkm_inflows
-        self._traffic_zones['km_per_capita_outflows'] = km_per_capita_outflows
-        self._traffic_zones['km_per_capita_inflows'] = km_per_capita_inflows
+        self._traffic_zones['fkt_outflows'] = fkt_outflows
+        self._traffic_zones['fkt_inflows'] = fkt_inflows
+        self._traffic_zones['vkt_outflows'] = vkt_outflows
+        self._traffic_zones['vkt_inflows'] = vkt_inflows
 
         self.state = "distribution_done"
 
         print(f"INFO \t Trip distribution done.")
-        print(f"\t Passenger-km (road-based): {self.pkm} km | Av. distance travelled (road-based ): {self.km_per_capita} km")
-        print(f"\t Passenger-km (centroid-based): {self.pkm_centroid} km | Av. distance travelled (centroid-based): {self.km_per_capita_centroid} km")
+        print(f"\t Passenger-km (road-based): {self.fkt} km | Av. distance travelled (road-based ): {self.vkt} km")
+        print(f"\t Passenger-km (centroid-based): {self.fkt_centroid} km | Av. distance travelled (centroid-based): {self.vkt_centroid} km")
 
     @property
     def flows(self):
@@ -880,19 +925,19 @@ class MobilitySim:
         return self._flows
 
     @property
-    def pkm(self):
+    def fkt(self):
         """
-        Calculate the total person-kilometers-moved (PKM) from traffic zones.
+        Calculate the total person-kilometers-moved (fkt) from traffic zones.
 
         Returns:
-            float: The total PKM, which is the sum of outflows from traffic zones.
+            float: The total fkt, which is the sum of outflows from traffic zones.
         """
-        return self.traffic_zones['pkm_outflows'].sum()
+        return self.traffic_zones['fkt_outflows'].sum()
 
     @property
-    def pkm_centroid(self):
+    def fkt_centroid(self):
         """
-        Calculate the weighted centroid distance for PKM.
+        Calculate the weighted centroid distance for fkt.
 
         Returns:
             float: The weighted average distance (in kilometers) of flows from the centroid.
@@ -900,12 +945,12 @@ class MobilitySim:
         return self.flows['Centroid Distance (km)'].dot(self.flows['Flow'])  
 
     @property
-    def pkm_error(self):
+    def fkt_error(self):
         """
-        Estimate the error in PKM calculation based on flow and TAZ dimensions.
+        Estimate the error in fkt calculation based on flow and TAZ dimensions.
 
         Returns:
-            float: The estimated error in PKM, calculated using error propagation based on TAZ width and height.
+            float: The estimated error in fkt, calculated using error propagation based on TAZ width and height.
         """
         flows = self.flows['Flow']
         flows_squared = flows ** 2
@@ -913,27 +958,27 @@ class MobilitySim:
         return 2 * np.sqrt(self.taz_width**2 + self.taz_height**2) * np.sqrt(flows_squared.sum()) 
 
     @property
-    def km_per_capita_error(self):
+    def vkt_error(self):
         """
-        Calculate the error in kilometers per capita based on PKM error.
+        Calculate the error in kilometers per capita based on fkt error.
 
         Returns:
             float: The estimated error in kilometers per capita.
         """
-        return self.km_per_capita * (self.pkm_error / self.pkm)
+        return self.vkt * (self.fkt_error / self.fkt)
 
     @property
-    def km_per_capita(self):
+    def vkt(self):
         """
-        Calculate kilometers per capita based on total PKM and outflows.
+        Calculate kilometers per capita based on total fkt and outflows.
 
         Returns:
-            float: The average kilometers per capita, calculated as PKM divided by total outflows.
+            float: The average kilometers per capita, calculated as fkt divided by total outflows.
         """
-        return self.pkm / self.traffic_zones['n_outflows'].sum()
+        return self.fkt / self.traffic_zones['n_outflows'].sum()
 
     @property
-    def km_per_capita_centroid(self):
+    def vkt_centroid(self):
         """
         Calculate the weighted average kilometers per capita based on centroid distances.
 
@@ -1033,7 +1078,7 @@ class MobilitySim:
     ### Post-processing & visualisation ###
     #######################################
 
-    def km_per_capita_histogram(self, bin_width_km: float) -> pd.DataFrame:
+    def vkt_histogram(self, bin_width_km: float) -> pd.DataFrame:
         """
         Generates a histogram of centroid and travel distances per capita.
 

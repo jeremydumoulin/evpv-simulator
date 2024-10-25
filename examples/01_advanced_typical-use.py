@@ -42,7 +42,7 @@ ev = EVCalculator(
         'population_raster': 'input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif',  # Population data for the area
         'destinations_csv': 'input/workplaces.csv',  # Key destinations for mobility patterns (e.g., workplaces)
         'intermediate_stops_csv': 'input/intermediate_stops.csv',  # Key intermediate stops for mobility patterns (e.g., POIs)
-        'trips_per_inhabitant': 0.0182466*1.4,  # Number of trips per person per day
+        'n_vehicles': 1000,  # Number of EVs
         'zone_width_km': 3,  # Resolution of geographic zones for mobility demand calculations
         'ORS_key': None,  # OpenRouteService API key (optional for more accurate routing)
     },
