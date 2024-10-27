@@ -11,6 +11,10 @@ class VehicleFleet:
             total_vehicles (int): The total number of vehicles in the fleet.
             vehicle_types (list): A list of pairs [Vehicle, share], where each share is a value between 0 and 1.            
         """
+        print("=========================================")
+        print(f"INFO \t Creation of a new VehicleFleet object.")
+        print("=========================================")
+
         self.vehicle_types = vehicle_types
         self.total_vehicles = total_vehicles
 
@@ -56,16 +60,3 @@ class VehicleFleet:
             float: The average consumption in kWh/km.
         """
         return sum(vehicle.consumption_kwh_per_km * share for vehicle, share in self.vehicle_types)
-
-    # Magic methods
-    def __str__(self):
-        """
-        Returns a string representation of the VehicleFleet.
-
-        Returns:
-            str: A summary of the fleet composition and its class type.
-        """
-        vehicle_types_summary = ', '.join([f"{vehicle.name}: {share * 100:.1f}%" for vehicle, share in self.vehicle_types])
-        return (f"VehicleFleet Object\n"
-                f"  Total Vehicles: {self.total_vehicles}\n"
-                f"  Vehicle Types: [{vehicle_types_summary}]")

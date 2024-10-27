@@ -62,12 +62,3 @@ class Vehicle:
         if value <= 0:
             raise ValueError("Consumption per km must be a positive value.")
         self._consumption_kwh_per_km = value
-
-    # Magic methods
-    def __str__(self):
-        """Returns a string representation of the Vehicle."""
-        return (f"Vehicle Object \n"
-                f"  Name: {self.name} \n"
-                f"  Battery Capacity: {self.battery_capacity_kwh} kWh \n"
-                f"  Consumption: {self.consumption_kwh_per_km} kWh/km \n"
-                f"  Max Charging Power: {self.max_charging_power_kw} kW")
