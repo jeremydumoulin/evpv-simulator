@@ -14,6 +14,7 @@ class VehicleFleet:
         self.vehicle_types = vehicle_types
         self.total_vehicles = total_vehicles
 
+    # Properties and Setters
     @property
     def vehicle_types(self) -> list:
         """list: The list of vehicle types and their shares in the fleet."""
@@ -39,6 +40,7 @@ class VehicleFleet:
             raise ValueError("Total number of vehicles must be a positive integer.")
         self._total_vehicles = value
 
+    # Fleet metrics
     def average_battery_capacity(self) -> float:
         """Calculates the average battery capacity based on vehicle shares.
 
@@ -55,7 +57,7 @@ class VehicleFleet:
         """
         return sum(vehicle.consumption_kwh_per_km * share for vehicle, share in self.vehicle_types)
 
-
+    # Magic methods
     def __str__(self):
         """
         Returns a string representation of the VehicleFleet.

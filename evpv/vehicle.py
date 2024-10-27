@@ -18,6 +18,7 @@ class Vehicle:
         self.max_charging_power_kw = max_charging_power_kw
         self.consumption_kwh_per_km = consumption_kwh_per_km
 
+    # Properties and Setters
     @property
     def name(self) -> str:
         """str: The name of the vehicle."""
@@ -62,6 +63,7 @@ class Vehicle:
             raise ValueError("Consumption per km must be a positive value.")
         self._consumption_kwh_per_km = value
 
+    # Magic methods
     def __str__(self):
         """Returns a string representation of the Vehicle."""
         return (f"Vehicle Object \n"
