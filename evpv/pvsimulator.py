@@ -8,67 +8,30 @@ import pytz
 from datetime import datetime
 
 class PVSimulator:
-    """
-    A class to calculate photovoltaic (PV) power production performance based on location, module properties, and installation parameters.
-
-    This class calculates the energy production of a 1 m² PV system (hourly power output, performance ratio, and capacity factor), taking 
-    into account the environmental conditions and PV system specifications provided by the user.
-
-    Key Features:
-    - Weqther datq fetching: Fetches accurate weather data, including POA irradiance and temperature, based on geographic location and year, utilizing the PVGIS database.
-    - PV system setup: Configures a PV system model based on module efficiency, temperature coefficient, and system losses, providing flexibility to match real-world installations.
-    - Installation configuration: Supports multiple installation types, such as ground-mounted and rooftop setups, along with single-axis and dual-axis tracking, to adapt the PV model to different structural designs.
-    - Performance metrics calculation: Calculates key performance indicators such as PV production (W/m²), performance ratio, and capacity factor over the specified period, yielding detailed energy insights.
-
-    Note: This class assumes PV production is uniform accross the region
-    """
-
     def __init__(self, environment: dict, pv_module: dict, installation: dict):
         """
-        Initializes the PVSimulator with environmental data, PV module parameters, and installation settings.
+        Initializes the PVSimulator with validated environmental data, PV module parameters, and installation settings.
 
         Args:
             environment (dict): A dictionary containing environmental parameters with the following keys:
-                - latitude (float): Latitude of the location.
-                - longitude (float): Longitude of the location.
+                - latitude (float): Latitude of the location (must be between -90 and 90).
+                - longitude (float): Longitude of the location (must be between -180 and 180).
                 - year (int): Year for the simulation.
-                - timezone (str, optional): Timezone of the location. Defaults to the timezone calculated from latitude and longitude.
             pv_module (dict): A dictionary containing PV module parameters with the following keys:
-                - efficiency (float): Efficiency of the PV module.
-                - temperature_coefficient (float, optional): Temperature coefficient of the module (default is -0.0035).
+                - efficiency (float): Efficiency of the PV module (must be a positive decimal less than or equal to 1).
+                - temperature_coefficient (float): Temperature coefficient of the module.
             installation (dict): A dictionary containing installation parameters with the following keys:
-                - type (str, optional): Type of installation (default is 'groundmounted_fixed').
-                - system_losses (float, optional): System losses as a decimal (default is 0.14).
+                - type (str): Type of installation (e.g., 'groundmounted_fixed').
+                - system_losses (float): System losses as a decimal (must be between 0 and 1).
         """
         print("=========================================")
         print(f"INFO \t Creation of a PVSimulator object.")
         print("=========================================")
 
-        # Initialize the environment attributes
-        self._environment = {            
-            'latitude': environment.get('latitude'),
-            'longitude': environment.get('longitude'),
-            'year': environment.get('year'),
-
-            # Optional parameters
-            'timezone': environment.get('timezone', self.get_timezone(environment.get('latitude'), environment.get('longitude')))
-        }
-
-        # Initialize the installation attributes
-        self._installation = {
-            'type': installation.get('type', 'groundmounted_fixed'), # rooftop, groundmounted_fixed, groundmounted_dualaxis, groundmounted_singleaxis_horizontal, groundmounted_singleaxis_vertical
-
-            # Optional parameters
-            'system_losses': installation.get('system_losses', 0.14)
-        }
-
-        # Initialize the PV device attributes
-        self._pv_module = {
-            'efficiency': pv_module.get('efficiency'),
-
-            # Optional parameters
-            'temperature_coefficient': pv_module.get('temperature_coefficient', -0.0035)
-        }
+        # Initialize and validate environment attributes
+        self.environment = environment
+        self.installation = installation
+        self.pv_module = pv_module
 
         print(f"INFO \t Successful initialization of input parameters.")
 
@@ -77,100 +40,80 @@ class PVSimulator:
 
         # Create location, weather data and PV system objects
         self.location = self._create_location()
-        self.weather_data =  self._fetch_weather_data()
-        self.pv_system = self._create_pv_system()        
+        self.weather_data = self._fetch_weather_data()
+        self.pv_system = self._create_pv_system()
 
-    # Properties and Setters 
+    # Properties and Setters with validation
 
     @property
     def environment(self) -> dict:
-        """Gets the environment settings.
-
-        Returns:
-            dict: The environment settings as a dictionary.
-        """
         return self._environment
 
     @environment.setter
     def environment(self, value: dict) -> None:
-        """Sets the environment settings.
-
-        Args:
-            value (dict): A dictionary containing the environment settings.
-
-        Raises:
-            ValueError: If the provided value is not a dictionary.
-        """
-        if isinstance(value, dict):
-            self._environment.update(value)
-        else:
+        if not isinstance(value, dict):
             raise ValueError("Environment must be a dictionary")
+
+        latitude = value.get('latitude')
+        longitude = value.get('longitude')
+        year = value.get('year')
+
+        if not (-90 <= latitude <= 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        if not (-180 <= longitude <= 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        if not isinstance(year, int):
+            raise ValueError("Year must be an integer")
+
+        self._environment = value
 
     @property
     def installation(self) -> dict:
-        """Gets the installation settings.
-
-        Returns:
-            dict: The installation settings as a dictionary.
-        """
         return self._installation
 
     @installation.setter
     def installation(self, value: dict) -> None:
-        """Sets the installation settings.
-
-        Args:
-            value (dict): A dictionary containing the installation settings.
-
-        Raises:
-            ValueError: If the provided value is not a dictionary.
-        """
-        if isinstance(value, dict):
-            self._installation.update(value)
-        else:
+        if not isinstance(value, dict):
             raise ValueError("Installation must be a dictionary")
+
+        install_type = value.get('type')
+        system_losses = value.get('system_losses')
+
+        if install_type not in [
+            'groundmounted_fixed', 'rooftop', 'groundmounted_dualaxis',
+            'groundmounted_singleaxis_horizontal', 'groundmounted_singleaxis_vertical']:
+            raise ValueError("Invalid installation type specified")
+        if not (0 <= system_losses <= 1):
+            raise ValueError("System losses must be between 0 and 1")
+
+        self._installation = value
 
     @property
     def pv_module(self) -> dict:
-        """Gets the photovoltaic module settings.
-
-        Returns:
-            dict: The PV module settings as a dictionary.
-        """
         return self._pv_module
 
     @pv_module.setter
     def pv_module(self, value: dict) -> None:
-        """Sets the photovoltaic module settings.
-
-        Args:
-            value (dict): A dictionary containing the PV module settings.
-
-        Raises:
-            ValueError: If the provided value is not a dictionary.
-        """
-        if isinstance(value, dict):
-            self._pv_module.update(value)
-        else:
+        if not isinstance(value, dict):
             raise ValueError("PV module must be a dictionary")
+
+        efficiency = value.get('efficiency')
+        temperature_coefficient = value.get('temperature_coefficient')
+
+        if not (0 < efficiency <= 1):
+            raise ValueError("Efficiency must be a positive decimal not exceeding 1")
+        if not isinstance(temperature_coefficient, float):
+            raise ValueError("Temperature coefficient must be a float")
+
+        self._pv_module = value
 
     # Results
     @property
     def results(self) -> pd.DataFrame:
-        """Get the results DataFrame.
-
-        Returns:
-            pd.DataFrame: The results DataFrame.
-        """
         return self._results
 
     @results.setter
     def results(self, results_df: pd.DataFrame):
-        """Set the results DataFrame.
-
-        Args:
-            results_df (pd.DataFrame): A DataFrame containing results data.
-        """
         self._results = results_df
 
     # Location, Weather, PV System 
@@ -181,13 +124,17 @@ class PVSimulator:
         Returns:
             location.Location: A location object containing latitude, longitude, and timezone information.
         """
-        print(f"INFO \t Creating location object for timezone {self.environment['timezone']}...")
+        print(f"INFO \t Creating location object...")
+
+        timezone = self.get_timezone(self.environment.get('latitude'), self.environment.get('longitude'))
+
         print(f"\t > Lat.: {self.environment['latitude']} - Lon.: {self.environment['longitude']}")
+        print(f"\t > Timezone: {timezone}")        
 
         return location.Location(
             latitude=self.environment['latitude'],
             longitude=self.environment['longitude'],
-            tz=self.environment['timezone']
+            tz=timezone
         )
 
     def _fetch_weather_data(self) -> pd.DataFrame:
@@ -255,11 +202,11 @@ class PVSimulator:
         weather_data_poa.index = pd.to_datetime(weather_data_poa.index)
 
         # Convert the to local timezone
-        weather_data_poa = weather_data_poa.tz_convert(self.environment['timezone'])
+        weather_data_poa = weather_data_poa.tz_convert(self.location.tz)
 
         # Because of the converting of the time zone, the last rows could be those of the next year
         # Here, we detect how many rows we have and shift them to the beginning of the data
-        tz = pytz.timezone(self.environment['timezone']) 
+        tz = pytz.timezone(self.location.tz) 
         n = int(tz.localize(datetime.utcnow()).utcoffset().total_seconds() / 3600)  # Get the number of hours from UTC
 
         last_n_rows = weather_data_poa.tail(n)
@@ -298,8 +245,6 @@ class PVSimulator:
 
         if self.installation['type'] == 'rooftop':
             mounting = 'insulated'
-
-        print(self.installation['tilt'])
 
         system = pvsystem.PVSystem(
             module_parameters={

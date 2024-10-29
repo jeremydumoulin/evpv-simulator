@@ -46,15 +46,17 @@ region = Region(
 
 pv = PVSimulator(
     environment = {
-        'latitude': 48.864716, #region.centroid_coords()[0],  
-        'longitude': 2.349014, #region.centroid_coords()[1],  
-        'year': '2020'  
+        'latitude': region.centroid_coords()[0],  
+        'longitude': region.centroid_coords()[1],  
+        'year': 2020  
         }, 
     pv_module = {
-        'efficiency': 0.22  
+        'efficiency': 0.22,
+        'temperature_coefficient': -0.004  
         }, 
     installation = {
-        'type': 'rooftop'  # groundmounted_fixed
+        'type': 'rooftop',  # groundmounted_fixed
+        'system_losses': 0.14
     })
 pv.compute_pv_production()
 
