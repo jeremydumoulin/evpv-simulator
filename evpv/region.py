@@ -35,7 +35,7 @@ class Region:
     zones within the region's boundaries.
     """
 
-    def __init__(self, region_geojson, population_raster, workplaces_csv, pois_csv, traffic_zone_properties):
+    def __init__(self, region_geojson: str, population_raster: str, workplaces_csv: str, pois_csv: str, traffic_zone_properties: dict):
         """
         Initializes the Region class with region data and properties for traffic zoning.
 
@@ -50,7 +50,7 @@ class Region:
                 'crop_to_region' (bool): Whether to crop zones to the region of interest.
         """
         print("=========================================")
-        print(f"INFO \t Creation of a new Region object.")
+        print(f"INFO \t Creation of a Region object.")
         print("=========================================")
 
         self._initialized = False  # Initialization flag
@@ -61,6 +61,8 @@ class Region:
         self.pois = pois_csv
         self.traffic_zone_properties = traffic_zone_properties
 
+        print(f"INFO \t Successful initialization of input parameters.")
+
         self._traffic_zones = None # To store resulting traffic zones as a DataFrame
 
         # Initialize traffic zones immediately
@@ -70,12 +72,14 @@ class Region:
         self._initialized = True  # Initialization flag
 
     # Traffic zones property (read-only)
+
     @property
     def traffic_zones(self):
         """pd.DataFrame: Data representing the traffic zones in the region."""
         return self._traffic_zones
 
     # Properties and Setters with automatic re-population of traffic zones on change
+
     @property
     def region_geometry(self)-> Polygon:
         """Polygon: The shapely polygon representing the region of interest."""
@@ -187,8 +191,8 @@ class Region:
             self._define_traffic_zones() # Re-define traffic zones
             self._populate_traffic_zones()  # Re-populate zones if data has changed and initialized
 
-
     # Helper Methods
+
     def _load_weighted_locations(self, path: str) -> list:
         """
         Loads weighted locations from a CSV file and returns a list of tuples representing (longitude, latitude) points.
@@ -224,6 +228,7 @@ class Region:
         return center_points
 
     # Zoning Methods
+
     def _define_traffic_zones(self):
         """Defines traffic zones based on the specified properties in traffic_zone_properties."""
         print(f"INFO \t Defining traffic zones...")
@@ -240,11 +245,14 @@ class Region:
 
         # Delete zones outside the boundaries of the shapefile
         if crop_to_region:
+            print(f"\t Removing zones outside region of interest (crop to region)...")
             # Identify the rows to remove
             rows_to_remove = self._traffic_zones[self._traffic_zones['is_inside_region'] == False]
 
             # Drop these rows from the original DataFrame
             self._traffic_zones = self._traffic_zones.drop(rows_to_remove.index)
+
+            print(f"\t > Remaining zones: {len(self._traffic_zones)}")
 
     def _create_rectangular_zones(self, target_size_km):
         """Creates a bounding box around the region of interest and splits it into rectangles based on the target size"""
@@ -260,8 +268,8 @@ class Region:
         # Calculate the width and height of each zone
         width = (maxx - minx) / n_rectangles
         height = (maxy - miny) / n_rectangles
-
-        print(f"\t > Number of zones: {n_rectangles} x {n_rectangles}")
+        
+        print(f"\t > Bounding box splitted into {n_rectangles} x {n_rectangles} zones")
         print(f"\t > Zone width: {bbox_width_km/n_rectangles} km")
         print(f"\t > Zone height: {bbox_height_km/n_rectangles} km")         
 
@@ -305,6 +313,7 @@ class Region:
         return pd.DataFrame(grid_data)    
 
     # Aggregation Methods
+
     def _populate_traffic_zones(self):
         """Populates traffic zones with aggregated data on population, workplaces, and POIs."""
 
@@ -359,6 +368,7 @@ class Region:
         print(f"\t > POIs: {self.traffic_zones["n_pois"].sum()}")
 
     # Region metrics
+
     def centroid_coords(self) -> tuple:
         """
         Get the coordinates of the centroid of the target area.
@@ -369,8 +379,32 @@ class Region:
         centroid = self.region_geometry.centroid
         return centroid.y, centroid.x
 
+    def average_zone_area_km2(self) -> float:
+        """
+        """
+        # Function to calculate the area using geodesic distances
+        def calculate_area(polygon):
+            # Get the bounds of the polygon
+            minx, miny, maxx, maxy = polygon.bounds
+            
+            # Calculate the area using geodesic
+            length = geodesic((minx, miny), (maxx, miny)).kilometers  # Width (in km)
+            height = geodesic((minx, miny), (minx, maxy)).kilometers  # Height (in km)
+            
+            # Area in km²
+            area_km2 = length * height
+            return area_km2
+
+        areas = self._traffic_zones['geometry'].apply(calculate_area)
+
+        # Calculate the average area
+        average_area_km2 = areas.mean()
+
+        return average_area_km2
+
     # Export and visualization
-    def to_map(self, filepath):
+
+    def to_map(self, filepath: str) -> None:
         """
         Saves a folium map with simulation setup properties, including region geometry, 
         zone geometry, population, workplaces, POIs.
@@ -442,7 +476,7 @@ class Region:
         
         m1.save(filepath)
 
-    def to_csv(self, filepath):
+    def to_csv(self, filepath: str) -> None:
         """
         Saves a csv file with all data
         """

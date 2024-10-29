@@ -12,11 +12,13 @@ class VehicleFleet:
             vehicle_types (list): A list of pairs [Vehicle, share], where each share is a value between 0 and 1.            
         """
         print("=========================================")
-        print(f"INFO \t Creation of a new VehicleFleet object.")
+        print(f"INFO \t Creation of a VehicleFleet object.")
         print("=========================================")
 
         self.vehicle_types = vehicle_types
         self.total_vehicles = total_vehicles
+
+        print(f"INFO \t Successful initialization of input parameters.")
 
     # Properties and Setters
     @property
