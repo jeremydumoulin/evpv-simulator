@@ -40,7 +40,7 @@ class MobilitySimulator:
     
     def __init__(self, vehicle_fleet: VehicleFleet, region: Region, vehicle_allocation_params: dict, trip_distribution_params: dict):
         """
-        Initializes the MobilityDemandModel class.
+        Initializes the MobilitySimulator class.
         
         Args:
             vehicle_fleet (VehicleFleet): An instance of the VehicleFleet class.

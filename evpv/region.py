@@ -191,7 +191,7 @@ class Region:
             self._define_traffic_zones() # Re-define traffic zones
             self._populate_traffic_zones()  # Re-populate zones if data has changed and initialized
 
-    # Helper Methods
+    # Helpers
 
     def _load_weighted_locations(self, path: str) -> list:
         """
@@ -227,7 +227,7 @@ class Region:
 
         return center_points
 
-    # Zoning Methods
+    # Zoning methods
 
     def _define_traffic_zones(self):
         """Defines traffic zones based on the specified properties in traffic_zone_properties."""
