@@ -61,4 +61,4 @@ class VehicleFleet:
         Returns:
             float: The average consumption in kWh/km.
         """
-        return sum(vehicle.consumption_kwh_per_km * share for vehicle, share in self.vehicle_types)
+        return sum(vehicle.consumption_kWh_per_km * share for vehicle, share in self.vehicle_types)

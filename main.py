@@ -10,9 +10,9 @@ from evpv.chargingsimulator import ChargingSimulator
 import numpy as np
 import matplotlib.pyplot as plt
 
-car = Vehicle(name = "car", battery_capacity_kwh = 70, consumption_kwh_per_km = 0.2)
-motorcycle = Vehicle(name = "motorcycle", battery_capacity_kwh = 10, consumption_kwh_per_km = 0.06, max_charging_power_kw = 3.2)
-fleet = VehicleFleet(total_vehicles = 10000, vehicle_types = [[car, 0.5], [motorcycle, 0.5]])
+car = Vehicle(name = "car", battery_capacity_kWh = 50, consumption_kWh_per_km = 0.15)
+motorcycle = Vehicle(name = "motorcycle", battery_capacity_kWh = 10, consumption_kWh_per_km = 0.01, max_charging_power_kW = 100)
+fleet = VehicleFleet(total_vehicles = 1000, vehicle_types = [[car, 1.0]])
 
 region = Region(
     region_geojson="examples/input/gadm41_ETH_1_AddisAbeba.json",    
@@ -45,8 +45,6 @@ mobility_sim = MobilitySimulator(
 mobility_sim.vehicle_allocation() 
 mobility_sim.trip_distribution()
 
-mobility_sim.to_csv("mobility_sim.csv")
-
 # pv = PVSimulator(
 #     environment = {
 #         'latitude': region.centroid_coords()[0],  
@@ -70,21 +68,29 @@ charging_sim = ChargingSimulator(
     charging_efficiency=0.9,
     scenario = {
         'home': {
-            'share': 0.0,  # 50% of EVs charge at home
-            'power_options_kW': [[3.7, 0.6], [7.4, 0.3], [11, 0.1]],    
-            'arrival_time_h': [9, 2]
+            'share': 1.0,  # 50% of EVs charge at home
+            'power_options_kW': [ [3.7, 0.9], [7.4, 0.1]],    
+            'arrival_time_h': [18, 2]
         },
         'work': {
-            'share': 0.8,  # 30% of EVs charge at work
-            'power_options_kW': [[3.7, 0.6], [7.4, 0.3], [11, 0.1]],    
-            'arrival_time_h': [9, 2]
+            'share': 0.0,  # 30% of EVs charge at work
+            'power_options_kW': [[7.4, 0.9], [11, 0.1]],    
+            'arrival_time_h': [9, 1]
         },
         'poi': {
-            'share': 0.2,  # 20% of EVs charge at pois
-            'power_options_kW': [[3.7, 0.6], [7.4, 0.3], [11, 0.1]],    
-            'arrival_time_h': [9, 2]
+            'share': 0.0,  # 20% of EVs charge at pois
+            'power_options_kW': [[3.7, 0.4], [22, 0.6]]    
         }
     }
 )
 
 charging_sim.compute_spatial_demand()
+charging_sim.compute_temporal_demand(0.1)
+
+# charging_sim.temporal_demand_profile_aggregated.to_csv("wo.csv")
+
+charging_sim.apply_smart_charging(location = "home", share = 1.0, charging_strategy = "multiply_by", factor = 2)
+
+# charging_sim.temporal_demand_profile_aggregated.to_csv("w.csv")
+
+
