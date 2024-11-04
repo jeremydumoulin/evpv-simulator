@@ -14,13 +14,18 @@ from evpv.chargingsimulator import ChargingSimulator
 from evpv.pvsimulator import PVSimulator
 
 # Suppress repeated IntegrationWarning
-warnings.filterwarnings("once", category=IntegrationWarning)
+warnings.filterwarnings("ignore", category=IntegrationWarning)
 
 class EVPVSynergies:
-    """
-    A class to assess the main EV-PV synergy metrics (self-sufficiency, ...) for a given day or a given timeframe, based on 
-    a PV hourly capacity factor, EV hourly charging demand, an PV installed capacity.
-    
+"""
+    A class to analyze energy synergies between electric vehicle (EV) charging demand and photovoltaic (PV) production. 
+    The main metrics calculated include energy coverage, self-sufficiency, self-consumption, and excess PV ratios, 
+    as well as the Spearman correlation between EV and PV profiles over specific days.
+
+    This class requires:
+        - A PVSimulator object, which holds the capacity factor time series data for PV production.
+        - A ChargingSimulator object, which stores EV charging demand profiles.
+        - The installed PV capacity (in megawatts, MW) as a float value.
     """
 
     def __init__(self, pv: PVSimulator, ev: ChargingSimulator, pv_capacity_MW: float):
@@ -267,7 +272,7 @@ class EVPVSynergies:
         results = []
 
         for day in filtered_days:
-            print(day, end='\r')
+            print(f"\t > Day: {day}", end='\r')
             
             # Determine if we should recompute EV demand based on probability
             if np.random.rand() < recompute_probability:
@@ -275,8 +280,7 @@ class EVPVSynergies:
                 # Suppress output during recomputing
                 with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
                     self.ev_calculator.compute_temporal_demand(0.1)  # Recalculate demand profile in ev_calculator
-                self.ev_charging_demand_MW = self.ev_calculator  # Update the interpolation function
-            print("")
+                self.ev_charging_demand_MW = self.ev_calculator  # Update the interpolation function            
 
             # Calculate metrics
             spearman_coef, p_value = self.spearman_correlation(day, n_points)
@@ -303,6 +307,7 @@ class EVPVSynergies:
                 'Self Consumption Ratio': self_cons_ratio,
                 'Excess PV Ratio': excess_pv_rat
             })
+        print("")
 
         # Create a DataFrame from the results
         df = pd.DataFrame(results)

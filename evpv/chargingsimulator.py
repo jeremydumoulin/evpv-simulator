@@ -26,12 +26,43 @@ from evpv.pvsimulator import PVSimulator
 from evpv import helpers as hlp
 
 class ChargingSimulator:
-    """  
-    A class to simulate the daily charging demand.
     """
+    A class to simulate the spatio-temporal daily charging demand of an electric vehicle fleet within a specified region.
+
+    This class models charging demand by integrating data from mobility simulations, region-specific characteristics, 
+    and vehicle fleet details, along with user-defined charging scenarios that include charging efficiency and behavior settings.
+
+    Key Features:
+    - Spatial Charging Demand: Computes the charging demand per traffic zone within the specified region, enabling 
+      geographically detailed assessments of charging needs.
+    - Temporal Charging Demand: Generates a load profile for each electric vehicle across all traffic zones using stochastic allocation.
+      The number of vehicles charging and charging times are based on a state-of-charge (SOC) decision model, with a "dumb charging" 
+      strategy by default (where vehicles charge at full charger power upon arrival).
+    - Scenario-Based Modeling: Allows flexible scenario configuration, including charging locations (with varying charger power levels), 
+      and custom arrival times at home and work, to reflect realistic charging patterns.
+    - Smart Charging Compatibility: Enables the application of smart charging strategies in a secondary processing step, with 
+      pre-implemented strategies such as peak shaving to manage grid impact.
+
+    Note: This class assumes the use of a predefined region, vehicle fleet, and mobility demand simulator. Charging scenario parameters are provided
+    as a dictionary, allowing flexible configuration of different charging behaviors.
+    """
+
     def __init__(self, region: Region, vehicle_fleet: VehicleFleet, mobility_demand: MobilitySimulator, scenario: dict, charging_efficiency: float):
         """
-        Initializes the ChargingDemandSimulator class.
+        Initializes the ChargingSimulator class.
+
+        Args:
+            region (Region): An instance representing the geographic area for the simulation.
+            vehicle_fleet (VehicleFleet): The electric vehicle fleet to be simulated.
+            mobility_demand (MobilitySimulator): An instance of MobilitySimulator providing mobility demand data.
+            scenario (dict): Configuration parameters for the charging scenario. Keys:
+                'charging_power' (float): The average power used for charging (in kW).
+                'max_charging_sessions' (int): Maximum number of charging sessions per day.
+                'charging_schedule' (str): Type of schedule for charging (e.g., 'daytime', 'nighttime').
+            charging_efficiency (float): The efficiency factor for charging, ranging between 0 and 1.
+
+        Prints:
+            Initialization details, including the chosen region, vehicle fleet characteristics, and scenario configuration.
         """
         print("=========================================")
         print(f"INFO \t Creation of a MobilitySimulator object.")
@@ -854,3 +885,68 @@ class ChargingSimulator:
         # Additional strategies can be implemented here
 
         return smart_vehicles_df
+
+    # Visualization
+
+    def chargingdemand_total_to_map(self, filepath: str):
+        """
+        Creates a Folium map visualizing the total charging demand at origin and destination points.S
+        """
+        df = self.spatial_demand
+
+        # 1. Create base map with administrative boundaries
+        m = hlp.create_base_map(self.region)
+
+        # 2. Add TAZ boundaries
+        hlp.add_taz_boundaries(m, self.region.traffic_zones)
+
+        # 3. Add color-mapped feature groups for charging demand
+        hlp.add_colormapped_feature_group(m, df, self.region, 'Etot_home_kWh', 'Charging demand at Home', 'Charging demand (kWh)')
+        hlp.add_colormapped_feature_group(m, df, self.region, 'Etot_work_kWh', 'Charging demand at Work', 'Charging demand (kWh)')
+        hlp.add_colormapped_feature_group(m, df, self.region, 'Etot_poi_kWh', 'Charging demand at POIs', 'Charging demand (kWh)')
+
+        # 4. Add Layer Control and Save the map
+        folium.LayerControl().add_to(m)
+        m.save(filepath)
+
+    def chargingdemand_pervehicle_to_map(self, filepath: str):
+        """
+        Creates a Folium map visualizing the charging demand per vehicle at home, work, and POI.
+        """
+        df = self.spatial_demand
+
+        # 1. Create base map with administrative boundaries
+        m = hlp.create_base_map(self.region)
+
+        # 2. Add TAZ boundaries
+        hlp.add_taz_boundaries(m, self.region.traffic_zones)
+
+        # 3. Add color-mapped feature groups for charging demand per vehicle
+        hlp.add_colormapped_feature_group(m, df, self.region, 'E_per_vehicle_home_kWh', 'Charging need per vehicle at Home', 'Charging demand (kWh/vehicle)')
+        hlp.add_colormapped_feature_group(m, df, self.region, 'E_per_vehicle_work_kWh', 'Charging need per vehicle at Work', 'Charging demand (kWh/vehicle)')
+        hlp.add_colormapped_feature_group(m, df, self.region, 'E_per_vehicle_poi_kWh', 'Charging need per vehicle at POIs', 'Charging demand (kWh/vehicle)')
+
+        # 4. Add Layer Control and Save the map
+        folium.LayerControl().add_to(m)
+        m.save(filepath)
+
+    def chargingdemand_nvehicles_to_map(self, filepath: str):
+        """
+        Creates a Folium map visualizing the number of vehicles charging at home, work, and POI locations.
+        """
+        df = self.spatial_demand
+
+        # 1. Create base map with administrative boundaries
+        m = hlp.create_base_map(self.region)
+
+        # 2. Add TAZ boundaries
+        hlp.add_taz_boundaries(m, self.region.traffic_zones)
+
+        # 3. Add color-mapped feature groups for number of vehicles charging
+        hlp.add_colormapped_feature_group(m, df, self.region, 'n_vehicles_home', 'Number of vehicles charging at Home', 'Number of vehicles')
+        hlp.add_colormapped_feature_group(m, df, self.region, 'n_vehicles_work', 'Number of vehicles charging at Work', 'Number of vehicles')
+        hlp.add_colormapped_feature_group(m, df, self.region, 'n_vehicles_poi', 'Number of vehicles charging at POIs', 'Number of vehicles')
+
+        # 4. Add Layer Control and Save the map
+        folium.LayerControl().add_to(m)
+        m.save(filepath)

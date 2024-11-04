@@ -15,6 +15,8 @@ from pyproj import Geod
 import folium
 import branca.colormap as cm
 
+from evpv import helpers as hlp
+
 class Region:
     """
     A class to represent the region of interest, subdivided into traffic zones populated with aggregated geospatial data.
@@ -407,73 +409,27 @@ class Region:
     def to_map(self, filepath: str) -> None:
         """
         Saves a folium map with simulation setup properties, including region geometry, 
-        zone geometry, population, workplaces, POIs.
+        zone geometry, population, workplaces, and POIs.
         """
         df = self.traffic_zones
 
-        # 1. Create an empty map
-        m1 = folium.Map(location=self.centroid_coords(), zoom_start=12, tiles='CartoDB Positron', control_scale=True)
+        # 1. Create the base map with administrative boundaries
+        m1 = hlp.create_base_map(self)
 
-        # 2. Add Administrative Boundaries
-        def style_function(feature):
-            return {
-                'color': 'blue',
-                'weight': 3,
-                'fillColor': 'none',
-            }
-        
-        folium.GeoJson(self.region_geometry, name='Region', style_function=style_function).add_to(m1)
-
-        # 3. Add Simulation bbox
+        # 2. Add Simulation bounding box
         minx, miny, maxx, maxy = self.region_geometry.bounds
         folium.Rectangle(bounds=[[miny, minx], [maxy, maxx]], fill=True, fill_opacity=0, color='blue', weight=2).add_to(m1)
 
-        # 4. Add rectangles (using apply)
-        def add_rectangle(row, colormap, col, map_obj):
-            bbox_polygon = row['geometry']
-            bbox_coords = bbox_polygon.bounds
-            folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color=None, fill=True, fill_color=colormap(row[col]), fill_opacity=0.7
-            ).add_to(map_obj)
+        # 3. Add TAZ boundaries
+        hlp.add_taz_boundaries(m1, df)
 
-        # Normalize data for destinations and population
-        linear1 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['n_workplaces'].min(), vmax=df['n_workplaces'].max())
-        linear2 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['n_people'].min(), vmax=df['n_people'].max())
-        linear3 = cm.LinearColormap(["white", "yellow", "red"], vmin=df['n_pois'].min(), vmax=df['n_pois'].max())
+        # 4. Add Feature Groups for 'n_workplaces', 'n_people', and 'n_pois'
+        hlp.add_colormapped_feature_group(m1, df, self, 'n_workplaces', 'Number of workplaces', 'Workplaces')
+        hlp.add_colormapped_feature_group(m1, df, self, 'n_people', 'Number of people', 'Population')
+        hlp.add_colormapped_feature_group(m1, df, self, 'n_pois', 'Number of POIs', 'POIs')
 
-        # Create FeatureGroups for destinations and population
-        workplaces_group = folium.FeatureGroup(name='Number of workplaces', show=False)
-        population_group = folium.FeatureGroup(name='Number of people', show=True)
-        pois_group = folium.FeatureGroup(name='Number of pois', show=False)
-
-        # Add workplaces rectangles to the group
-        df.apply(lambda row: add_rectangle(row, linear1, 'n_workplaces', workplaces_group), axis=1)
-
-        # Add population rectangles to the group
-        df.apply(lambda row: add_rectangle(row, linear2, 'n_people', population_group), axis=1)
-
-        # Add pois rectangles to the group
-        df.apply(lambda row: add_rectangle(row, linear3, 'n_pois', pois_group), axis=1)
-
-        # Add the FeatureGroups to the map
-        workplaces_group .add_to(m1)
-        population_group.add_to(m1)
-        pois_group.add_to(m1)
-
-        # Add color scales
-        linear1.caption = 'Number of workplaces'
-        linear1.add_to(m1)
-        
-        linear2.caption = 'Number of people'
-        linear2.add_to(m1)
-
-        linear3.caption = 'Number of POIs'
-        linear3.add_to(m1)
-
-        # 6. Add Layer Control
+        # 5. Add Layer Control and save the map
         folium.LayerControl().add_to(m1)
-        
         m1.save(filepath)
 
     def to_csv(self, filepath: str) -> None:

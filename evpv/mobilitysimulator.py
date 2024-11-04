@@ -20,6 +20,7 @@ import branca.colormap as cm
 from evpv.vehicle import Vehicle
 from evpv.vehiclefleet import VehicleFleet
 from evpv.region import Region
+from evpv import helpers as hlp
 
 class MobilitySimulator:
     """
@@ -901,162 +902,33 @@ class MobilitySimulator:
         self._flows.to_csv(f"{filepath_without_ext}_flows.csv")
         self._aggregated_zone_metrics.to_csv(f"{filepath_without_ext}_aggregated_zone_metrics.csv")
 
-    def vehicle_allocation_to_map(self, filepath: str) -> folium.Map:
-        """
-        Generates a folium map from trip generation results, including administrative boundaries 
-        and TAZ boundaries, and visualizing the number of outflows.
-
-        Returns:
-            folium.Map: A folium map object showing trip generation results.
-        """
+    def vehicle_allocation_to_map(self, filepath: str):
         df = self.aggregated_zone_metrics
 
-        # 1. Create an empty map
-        m = folium.Map(location=self.region.centroid_coords(), zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
-
-        # 2. Add Administrative Boundaries
-        def style_function(feature):
-            return {
-                'color': 'blue',
-                'weight': 3,
-                'fillColor': 'none',
-            }
-        
-        folium.GeoJson(self.region.region_geometry, name='Administrative boundary', style_function=style_function).add_to(m)
-
-        # 2. Add TAZ boundaries
-
-        # Function to add rectangles to the map
-        def add_rectangle(row):
-            # Parse the WKT string to create a Polygon object
-            bbox_polygon = row['geometry']
-            bbox_coords = bbox_polygon.bounds
-            
-            # Add rectangle to map
-            folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color='grey',
-                fill=True,
-                fill_color='grey',
-                fill_opacity=0.0
-            ).add_to(m)
-
-        # Apply the function to each row in the DataFrame
-        self.region.traffic_zones.apply(add_rectangle, axis=1)
-
-        # 3. Add number of outflows
-
-        # Normalize data for color scaling
-        linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df['n_outflows'].min(), vmax=df['n_outflows'].max())
-
-        # Create a feature group for all polygons
-        feature_group = folium.FeatureGroup(name='Number of trips')
-
-        # Add polygons to the feature group
-        for idx, row in df.iterrows():
-            # bbox_polygon = row['geometry']
-            bbox_polygon = self.region.traffic_zones.loc[self.region.traffic_zones['id'] == row['id'], 'geometry'].values[0]
-            bbox_coords = bbox_polygon.bounds
-
-            # Create a rectangle for each row
-            rectangle = folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color=None,
-                fill=True,
-                fill_color=linear(row['n_outflows']),
-                fill_opacity=0.7,
-                popup=f"ID: {row['id']} - Trips: {int(row['n_outflows'])}"
-            )
-
-            # Add the rectangle to the feature group
-            rectangle.add_to(feature_group)
-
-        # Add the feature group to the map
-        feature_group.add_to(m)
-
-        # Add the color scale legend to the map
-        linear.caption = 'Number of Trips (n_outflows)'
-        linear.add_to(m)
-
-        # Add Layer Control and Save 
-
-        folium.LayerControl().add_to(m)
-
-        m.save(filepath)
-
-    def trip_distribution_to_map(self, filepath: str, trip_id: int) -> folium.Map:
-        """
-        Generates a folium map using trip distribution for a specified trip ID, visualizing the number 
-        of trips from the given trip ID.
-
-        Args:
-            trip_id (int): The ID of the trip to visualize.
-
-        Returns:
-            folium.Map: A folium map object showing trip distribution for the specified trip ID.
-        """
-        m = folium.Map(location=self.region.centroid_coords(), zoom_start=12, tiles='CartoDB Positron', control_scale=True) # Create the map
-
-        # Add administrative boundaries
-
-        # Define style function to only show lines
-        def style_function(feature):
-            return {
-                'color': 'blue',  # Set line color
-                'weight': 3,      # Set line weight
-                'fillColor': 'none',  # Set fill color to 'none'
-            }
-
-        folium.GeoJson(self.region.region_geometry, name='Administrative boundary', style_function=style_function).add_to(m)
+        # Create the base map with admin boundaries
+        m = hlp.create_base_map(self.region)
 
         # Add TAZ boundaries
+        hlp.add_taz_boundaries(m, self.region.traffic_zones)
 
-        # Function to add rectangles to the map
-        def add_rectangle(row):
-            # Parse the WKT string to create a Polygon object
-            bbox_polygon = row['geometry']
-            bbox_coords = bbox_polygon.bounds
-            
-            # Add rectangle to map
-            folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color='grey',
-                fill=True,
-                fill_color='grey',
-                fill_opacity=0.0
-            ).add_to(m)
+        # Add number of outflows
+        hlp.add_colormapped_feature_group(m, df, self.region, 'n_outflows', 'Number of trips', 'Trips')
 
-        # Apply the function to each row in the DataFrame
-        self.region.traffic_zones.apply(add_rectangle, axis=1)
-
-        #Add flow
-
-        df = self.flows
-        group = df[df['Origin'] == trip_id]
-
-        if len(group) == 0:
-            print("No TAZ")
-
-        feature_group = folium.FeatureGroup(name=f'Number of trips from {trip_id}')
-    
-        # Add flows to the feature group
-        for idx, row in group.iterrows():
-            linear = cm.LinearColormap(["white", "yellow", "red"], vmin=group['Flow'].min(), vmax=group['Flow'].max())
-
-            bbox_polygon = self.region.traffic_zones[self.region.traffic_zones['id'] == row['Destination']]['geometry'].values[0]
-            #print(bbox_polygon[1])
-            bbox_coords = bbox_polygon.bounds
-
-            folium.Rectangle(
-                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
-                color=None,
-                fill=True,
-                fill_color=linear(row.Flow),
-                fill_opacity=0.7,
-                tooltip=f'Flows: {row.Flow} '
-            ).add_to(feature_group)
-
-        feature_group.add_to(m)
+        # Add Layer Control and Save
         folium.LayerControl().add_to(m)
+        m.save(filepath)
 
+    def trip_distribution_to_map(self, filepath: str, trip_id: int):
+        # Create the base map with admin boundaries
+        m = hlp.create_base_map(self.region)
+
+        # Add TAZ boundaries
+        hlp.add_taz_boundaries(m, self.region.traffic_zones)
+
+        # Add trip distribution flows
+        group = self.flows[self.flows['Origin'] == trip_id]
+        if not group.empty:
+            hlp.add_colormapped_feature_group(m, group, self.region, 'Flow', f'Number of trips from {trip_id}', 'Flows', zone_id_col='Destination')
+
+        folium.LayerControl().add_to(m)
         m.save(filepath)

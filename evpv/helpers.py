@@ -230,3 +230,91 @@ def calculate_days_between_charges_single_vehicle(
 
     # Ensure that the days between charges is at least 1
     return max(days, 1)
+
+def create_base_map(region):
+    """
+    Creates a base Folium map centered on the region's centroid with administrative boundaries.
+    
+    Args:
+        region (object): An object representing the region with `centroid_coords` and `region_geometry` attributes.
+
+    Returns:
+        folium.Map: The base map with administrative boundaries added.
+    """
+    # Create the map
+    m = folium.Map(location=region.centroid_coords(), zoom_start=12, tiles='CartoDB Positron', control_scale=True)
+
+    # Define style for administrative boundaries
+    def style_function(feature):
+        return {
+            'color': 'blue',
+            'weight': 3,
+            'fillColor': 'none',
+        }
+
+    # Add administrative boundaries
+    folium.GeoJson(region.region_geometry, name='Administrative boundary', style_function=style_function).add_to(m)
+    return m
+
+def add_taz_boundaries(map_obj, traffic_zones):
+    """
+    Adds TAZ boundaries as rectangles to the map.
+    
+    Args:
+        map_obj (folium.Map): The map to which TAZ boundaries will be added.
+        traffic_zones (pd.DataFrame): DataFrame with `geometry` column containing zone boundaries.
+    """
+    def add_rectangle(row):
+        bbox_polygon = row['geometry']
+        bbox_coords = bbox_polygon.bounds
+        folium.Rectangle(
+            bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+            color='grey',
+            fill=True,
+            fill_color='grey',
+            fill_opacity=0.0
+        ).add_to(map_obj)
+    
+    # Apply the function to each row in the DataFrame
+    traffic_zones.apply(add_rectangle, axis=1)
+
+def add_colormapped_feature_group(m, df, region, value_col, group_name, popup_label, zone_id_col='id'):
+    """
+    Adds a feature group to the folium map `m` with rectangles for each zone in `df`.
+    
+    Parameters:
+        m (folium.Map): The folium map object.
+        df (pandas.DataFrame): DataFrame containing the data to display.
+        region (object): Region object with `traffic_zones`.
+        value_col (str): Column name for the value to color by.
+        group_name (str): Name for the feature group layer.
+        popup_label (str): Label for the popup showing the data value.
+        zone_id_col (str): Column name in `df` used to match `region.traffic_zones`.
+    """
+    # Normalize data for color scaling
+    linear = cm.LinearColormap(["white", "yellow", "red"], vmin=df[value_col].min(), vmax=df[value_col].max())
+    feature_group = folium.FeatureGroup(name=group_name)
+
+    # Iterate through the DataFrame and add each rectangle
+    for _, row in df.iterrows():
+        try:
+            # Match traffic zone geometry based on `zone_id_col`
+            bbox_polygon = region.traffic_zones.loc[region.traffic_zones['id'] == row[zone_id_col], 'geometry'].values[0]
+            bbox_coords = bbox_polygon.bounds
+
+            # Add rectangle to map
+            folium.Rectangle(
+                bounds=[(bbox_coords[1], bbox_coords[0]), (bbox_coords[3], bbox_coords[2])],
+                color=None,
+                fill=True,
+                fill_color=linear(row[value_col]),
+                fill_opacity=0.7,
+                popup=f"{popup_label}: {int(row[value_col])}"
+            ).add_to(feature_group)
+
+        except IndexError:
+            print(f"Warning: No geometry found for {zone_id_col} '{row[zone_id_col]}' in traffic_zones.")
+    
+    feature_group.add_to(m)
+    linear.caption = f'{popup_label} ({value_col})'
+    linear.add_to(m)

@@ -27,6 +27,8 @@ region = Region(
     }
 )
 
+region.to_map("myregion.html")
+
 mobility_sim = MobilitySimulator(
     vehicle_fleet=fleet,
     region=region,
@@ -46,26 +48,30 @@ mobility_sim = MobilitySimulator(
 mobility_sim.vehicle_allocation() 
 mobility_sim.trip_distribution()
 
+mobility_sim.vehicle_allocation_to_map("mappp.html")
+mobility_sim.trip_distribution_to_map("mappp.html", "2_2")
+
+
 # ms = mobility_sim + mobility_sim2
 
 
-pv = PVSimulator(
-    environment = {
-        'latitude': region.centroid_coords()[0],  
-        'longitude': region.centroid_coords()[1],  
-        'year': 2020  
-        }, 
-    pv_module = {
-        'efficiency': 0.22,
-        'temperature_coefficient': -0.004  
-        }, 
-    installation = {
-        'type': 'rooftop',  # groundmounted_fixed
-        'system_losses': 0.14
-    })
-pv.compute_pv_production()
+# pv = PVSimulator(
+#     environment = {
+#         'latitude': region.centroid_coords()[0],  
+#         'longitude': region.centroid_coords()[1],  
+#         'year': 2020  
+#         }, 
+#     pv_module = {
+#         'efficiency': 0.22,
+#         'temperature_coefficient': -0.004  
+#         }, 
+#     installation = {
+#         'type': 'rooftop',  # groundmounted_fixed
+#         'system_losses': 0.14
+#     })
+# pv.compute_pv_production()
 
-print(pv.results)
+# print(pv.results)
 
 charging_sim = ChargingSimulator(
     vehicle_fleet=fleet,
@@ -93,11 +99,17 @@ charging_sim = ChargingSimulator(
 charging_sim.compute_spatial_demand()
 charging_sim.compute_temporal_demand(0.1)
 
-print(charging_sim.temporal_demand_profile_aggregated)
+charging_sim.chargingdemand_total_to_map("map1.html")
+charging_sim.chargingdemand_pervehicle_to_map("map2.html")
+charging_sim.chargingdemand_nvehicles_to_map("map3.html")
+
+
+
+# print(charging_sim.temporal_demand_profile_aggregated)
 
 evpv = EVPVSynergies(pv, charging_sim, 10)
 
-print(evpv.daily_metrics("01-01", "01-30", recompute_probability = 0.5))
+# print(evpv.daily_metrics("01-01", "01-30", recompute_probability = 0.0))
 
 # charging_sim.temporal_demand_profile_aggregated.to_csv("wo.csv")
 # charging_sim.apply_smart_charging(location = ["home", "work", "poi"], share = 1.0, charging_strategy = "peak_shaving")
