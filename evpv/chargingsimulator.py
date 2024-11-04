@@ -65,7 +65,7 @@ class ChargingSimulator:
             Initialization details, including the chosen region, vehicle fleet characteristics, and scenario configuration.
         """
         print("=========================================")
-        print(f"INFO \t Creation of a MobilitySimulator object.")
+        print(f"INFO \t Creation of a ChargingSimulator object.")
         print("=========================================")
 
         self.vehicle_fleet = vehicle_fleet
@@ -78,7 +78,6 @@ class ChargingSimulator:
 
         # Modeling results
         self._spatial_demand = None
-
         self._temporal_demand_vehicle_properties = None
         self._temporal_demand_profile = None
         self._temporal_demand_profile_aggregated = None
@@ -886,7 +885,24 @@ class ChargingSimulator:
 
         return smart_vehicles_df
 
-    # Visualization
+    # Export and visualization
+
+    def to_csv(self, filepath: str):
+        """
+        Saves two CSV files with the main output data for flows and aggregated zone metrics.
+
+        Args:
+            filepath (str): Base path for the output files. Automatically appends suffixes
+                            "_flows" and "_aggregated_zone_metrics" before ".csv".
+        """
+        # Remove any existing file extension
+        filepath_without_ext, _ = os.path.splitext(filepath)
+
+        # Save each dataframe with the respective suffix
+        self._spatial_demand.to_csv(f"{filepath_without_ext}_spatial_demand.csv")
+        self._temporal_demand_vehicle_properties.to_csv(f"{filepath_without_ext}_temporal_demand_vehicle_properties.csv")
+        self._temporal_demand_profile.to_csv(f"{filepath_without_ext}_temporal_demand_profile.csv")
+        self._temporal_demand_profile_aggregated.to_csv(f"{filepath_without_ext}_temporal_demand_profile_aggregated.csv")
 
     def chargingdemand_total_to_map(self, filepath: str):
         """

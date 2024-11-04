@@ -17,7 +17,7 @@ from evpv.pvsimulator import PVSimulator
 warnings.filterwarnings("ignore", category=IntegrationWarning)
 
 class EVPVSynergies:
-"""
+    """
     A class to analyze energy synergies between electric vehicle (EV) charging demand and photovoltaic (PV) production. 
     The main metrics calculated include energy coverage, self-sufficiency, self-consumption, and excess PV ratios, 
     as well as the Spearman correlation between EV and PV profiles over specific days.
