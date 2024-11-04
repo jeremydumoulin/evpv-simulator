@@ -399,6 +399,9 @@ class ChargingSimulator:
                 "strategy": np.zeros(vehicle_counts),                                
             })
 
+            # Update the vehicle counter to ensure unique IDs
+            vehicle_id_counter += vehicle_counts
+
             # Aggregate flows and calculate distances and probabilities
             df_sum = self.mobility_demand.flows.copy()
             grouped_df = df_sum.groupby('Travel Distance (km)')['Flow'].sum().reset_index()
@@ -690,28 +693,44 @@ class ChargingSimulator:
 
     # Smart charging
 
-    def apply_smart_charging(self, location: str, charging_strategy: str, share: float, **kwargs):
+    def apply_smart_charging(self, location: list, charging_strategy: str, share: float, **kwargs):
         """
-        Apply a smart charging strategy to a subset of vehicles at a specific location.
+        Apply a smart charging strategy to a subset of vehicles at specific locations.
+        
         Args:
-            location (str): The location type ('home', 'work', or 'poi').
+            location (list): List of location types ('home', 'work', 'poi').
             charging_strategy (str): The name of the charging strategy to apply.
             share (float): Proportion of vehicles participating (between 0 and 1).
             **kwargs: Additional parameters for specific charging strategies.
         """
+        print(f"INFO \t Applying '{charging_strategy}' charging strategy...")
+
         # Check that share is within the valid range
         if not (0 <= share <= 1):
             raise ValueError("Share must be between 0 and 1.")
         
-        # Filter vehicles by location
-        location_vehicles = self._temporal_demand_vehicle_properties[
-            self._temporal_demand_vehicle_properties['location'] == location]
-        
-        # Determine the number of vehicles to modify
-        num_smart_vehicles = int(share * len(location_vehicles))
-        selected_vehicle_ids = random.sample(list(location_vehicles['vehicle_id']), num_smart_vehicles)
-        
-        print(f"INFO \t Applying '{charging_strategy}' charging strategy to {num_smart_vehicles} vehicles at {location}.")
+        selected_vehicle_ids = []  # Initialize an empty list for selected vehicle IDs
+
+        # Iterate through each specified location
+        for l in location:
+            # Filter vehicles by the current location
+            location_vehicles = self._temporal_demand_vehicle_properties[self._temporal_demand_vehicle_properties['location'] == l]
+            
+            # Determine the number of vehicles to modify for the current location
+            num_smart_vehicles = int(share * len(location_vehicles))
+            
+            # If there are vehicles at this location, select some
+            if num_smart_vehicles > 0:
+                # Ensure that we do not attempt to select more vehicles than available
+                selected_vehicles = random.sample(list(location_vehicles['vehicle_id']), min(num_smart_vehicles, len(location_vehicles)))
+                selected_vehicle_ids.extend(selected_vehicles)  # Add to the total list of selected vehicle IDs
+                
+                print(f"\t > Selected {len(selected_vehicles)} vehicles from '{l}'")
+
+        # Check if there are any vehicles to process
+        if not selected_vehicle_ids:
+            print(">\t No vehicles found for the given locations.")
+            return
         
         # Update the strategy column for selected and non-selected vehicles
         self._temporal_demand_vehicle_properties['strategy'] = self._temporal_demand_vehicle_properties[
@@ -750,6 +769,85 @@ class ChargingSimulator:
             # Multiply each vehicle's charging profile by factor (skip the 'time' column)
             for column in smart_vehicles_df.columns[1:]:  # Skip the 'time' column
                 smart_vehicles_df[column] *= factor
+
+        # Peak shaving through ideal coordination 
+        #########################################
+        elif strategy == "peak_shaving":
+
+            # Initialize peak power and power demand array
+            peak_power = 0  # Total power peak
+            time = smart_vehicles_df.iloc[:, 0].values
+            time_step = time[1] - time[0]
+            power_demand = np.zeros(len(time))  # Tracks power demand over time intervals
+
+            # Initialize charging profile for each vehicle
+            smart_charging_profile = pd.DataFrame(0, index=time, columns=smart_vehicles_df.columns[1:], dtype=float)
+
+            # Filter for vehicles by vehicle_id in the smart_vehicle_ids list
+            smart_vehicle_ids = smart_vehicles_df.columns[1:]
+            smart_vehicles_props = self.temporal_demand_vehicle_properties[self.temporal_demand_vehicle_properties['vehicle_id'].isin(smart_vehicle_ids)]
+
+            # Process each vehicle
+            for i, row in smart_vehicles_props.iterrows():
+                # print(i)
+                vehicle_id = row['vehicle_id']
+                arrival_time = row['arrival_time']
+                departure_time = row['departure_time']
+                charging_demand = row['charging_demand']
+                max_power = row['charging_power']
+
+                # Calculate start and end indices in the time array for charging window
+                start_idx = np.searchsorted(time, arrival_time)
+                end_idx = np.searchsorted(time, departure_time)
+                if end_idx < start_idx:                    
+                    end_idx += len(time)  # Handle wrap-around for overnight charging
+
+                # Remaining demand to be met
+                remaining_demand = charging_demand
+
+                # Minimize the total peak load
+                for t in range(start_idx, end_idx):
+                    current_time_idx = t % len(time)  # Wrap around 24-hour period
+                    current_total_power = power_demand[current_time_idx]
+
+                    # If the current total power is below the peak power, charge with maximum power to stay below the limit
+                    if current_total_power < peak_power:
+                        charge_power = min(peak_power - current_total_power, max_power)
+                        charge_energy = charge_power * time_step
+
+                        # Ensure not to exceed remaining charging demand
+                        if charge_energy > remaining_demand:
+                            charge_energy = remaining_demand
+                            charge_power = charge_energy / time_step
+
+                        power_demand[current_time_idx] += charge_power
+                        remaining_demand -= charge_energy
+                        smart_charging_profile.at[time[current_time_idx], vehicle_id] = charge_power
+
+                        # Stop charging if demand is fully met
+                        if remaining_demand <= 0:
+                            break
+
+                # If there’s still demand, distribute uniformly across the charging window
+                if remaining_demand > 0:
+                    charging_duration = (24 - arrival_time + departure_time) if departure_time < arrival_time else (departure_time - arrival_time)
+                    charge_power = remaining_demand / charging_duration
+
+                    for t in range(start_idx, end_idx):
+                        current_time_idx = t % len(time)
+                        power_demand[current_time_idx] += charge_power
+                        smart_charging_profile.at[time[current_time_idx], vehicle_id] += charge_power
+
+                # Update peak power if needed
+                peak_power = max(power_demand)
+
+            # Reset the index to convert the time index into a column
+            smart_charging_profile.reset_index(drop=False, inplace=True)
+
+            # Rename the 'index' column to 'time' to reflect its content
+            smart_charging_profile.rename(columns={'index': 'time'}, inplace=True)
+
+            smart_vehicles_df = smart_charging_profile
         else:
             raise ValueError(f"Charging strategy is unknown.")
 

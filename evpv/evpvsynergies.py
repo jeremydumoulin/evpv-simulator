@@ -2,24 +2,16 @@
 
 import numpy as np
 import pandas as pd
-import geopandas as gpd
-import json
 import warnings
-import os
-import time
-import math
-import csv
 from scipy.interpolate import interp1d
 import scipy.integrate as integrate
 from scipy.stats import spearmanr
 from scipy.integrate import IntegrationWarning
-import matplotlib.pyplot as plt
-from pathlib import Path
+import os
+import contextlib
 
-from evpv import helpers as hlp
-from evpv.pvcalculator import PVCalculator 
-from evpv.evcalculator import EVCalculator 
-from evpv.chargingscenario import ChargingScenario
+from evpv.chargingsimulator import ChargingSimulator
+from evpv.pvsimulator import PVSimulator
 
 # Suppress repeated IntegrationWarning
 warnings.filterwarnings("once", category=IntegrationWarning)
@@ -31,99 +23,58 @@ class EVPVSynergies:
     
     """
 
-    #######################################
-    ############# Constructor #############
-    #######################################
-
-    def __init__(self, pv_calculator: 'PVCalculator', ev_calculator: 'ChargingScenario or EVCalculator', pv_capacity_MW: float):
+    def __init__(self, pv: PVSimulator, ev: ChargingSimulator, pv_capacity_MW: float):
         """
         Initialize the EVPVSynergies object.
         
         Args:
-            pv_calculator: Object containing PV production calculations.
-            ev_calculator: Object containing EV charging demand calculations.
+            pv: Object containing PV production calculations.
+            ev: Object containing EV charging demand calculations.
             pv_capacity_MW: PV capacity in megawatts (MW).
         """
-        print("")
-        print(f"INFO \t Creating a new EVPVSynergies object")
+        print("=========================================")
+        print(f"INFO \t Creation of a EVPVSynergies object.")
+        print("=========================================")
         
-        self.pv_calculator = pv_calculator
-        self.ev_calculator = ev_calculator
         self.pv_capacity_MW = pv_capacity_MW
-        
-        # Extract required data from the calculator objects
-        self.pv_capacity_factor = self._get_pv_capacity_factor()
-        self.ev_charging_demand_MW = self._get_ev_charging_demand()
+        self.pv_capacity_factor = pv       
 
-    ########################################
-    # Get PV capacity factor and EV Demand #
-    ########################################
+        self.ev_calculator = ev  # Store the ChargingSimulator object as an instance variable (usefull for recomputing if needed)
+        self.ev_charging_demand_MW = ev # Store only the interpolate charging demand
 
-    def _get_pv_capacity_factor(self) -> pd.DataFrame:
-        """
-        Extract PV capacity factor from PVCalculator object.
-        """
-        
-        return self.pv_calculator.results['Capacity Factor'].reset_index() 
-
-    def _get_ev_charging_demand(self) -> pd.DataFrame:
-        """
-        Extract EV charging demand from ChargingScenario or EVCalculator object.
-        """
-
-        if isinstance(self.ev_calculator, ChargingScenario):
-            return self.ev_calculator.charging_profile[['Time', 'Total (MW)']]
-        elif isinstance(self.ev_calculator, EVCalculator):
-            return self.ev_calculator.charging_demand.charging_profile[['Time', 'Total (MW)']]
-        else:
-            raise ValueError("Invalid ev_calculator object. Must be either ChargingScenario or EVCalculator.")
-
-    #######################################
-    ### Parameters Setters and Getters ####
-    #######################################
+        print(f"INFO \t Successful initialization of input parameters.")
 
     @property
     def ev_charging_demand_MW(self) -> interp1d:
-        """Get the EV charging demand interpolation function.
-
-        Returns:
-            interp1d: Interpolation function for EV charging demand.
-        """
+        """interp1d: Interpolation function for EV charging demand."""
         return self._ev_charging_demand_MW
 
     @ev_charging_demand_MW.setter
-    def ev_charging_demand_MW(self, ev_charging_demand_MW: pd.DataFrame) -> None:
-        """Set the EV charging demand and create an interpolation function.
+    def ev_charging_demand_MW(self, ev_charging_demand_MW: ChargingSimulator):
 
-        Args:
-            ev_charging_demand_MW (pd.DataFrame): DataFrame containing time and total profile in MW.
-        """
+        if isinstance(ev_charging_demand_MW, ChargingSimulator):
+            demand = ev_charging_demand_MW.temporal_demand_profile_aggregated[['time', 'total']]
+        else:
+            raise ValueError("Invalid ev object. Must be ChargingSimulator.")
+
         # Extract the 'Time' and 'Total profile (MW)' columns
-        time = ev_charging_demand_MW['Time']
-        profile = ev_charging_demand_MW['Total (MW)']
+        time = demand['time']
+        profile = demand['total'] / 1000.0
 
         self._ev_charging_demand_MW = interp1d(time, profile, kind='linear', fill_value='extrapolate') 
 
     @property
     def pv_capacity_factor(self) -> dict:
-        """Get the PV capacity factor interpolation functions.
-
-        Returns:
-            dict: Dictionary of interpolation functions for PV capacity factors by day.
-        """
+        """ dict: Dictionary of interpolation functions for PV capacity factors by day."""
         return self._pv_capacity_factor
 
     @pv_capacity_factor.setter
-    def pv_capacity_factor(self, pv_capacity_factor: pd.DataFrame) -> None:
-        """Set the PV capacity factor and create interpolation functions for each day.
-
-        Args:
-            pv_capacity_factor (pd.DataFrame): DataFrame containing PV capacity factors.
-        """
-        df = pv_capacity_factor
+    def pv_capacity_factor(self, pv: PVSimulator):
+        """pv_capacity_factor (pd.DataFrame): DataFrame containing PV capacity factors."""
+        df = pv.results['Capacity Factor'].reset_index() 
 
         # Rename the columns for convenience (optional, but helpful)
-        df.columns = ['Timestamp', 'Total profile (MW)']
+        df.columns = ['Timestamp', 'Capacity Factor']
 
         # Convert the first column to datetime format
         df['Timestamp'] = pd.to_datetime(df['Timestamp'])
@@ -141,7 +92,7 @@ class EVPVSynergies:
         # Create an interpolation function for each day
         for day, group in grouped:
             hours = group['Hour']
-            profile = group['Total profile (MW)']
+            profile = group['Capacity Factor']
 
             # Create the interpolation function for this day
             interpolation_function = interp1d(hours, profile, kind='linear', fill_value='extrapolate')
@@ -153,25 +104,14 @@ class EVPVSynergies:
 
     @property
     def pv_capacity_MW(self) -> float:
-        """Get the PV capacity in megawatts.
-
-        Returns:
-            float: PV capacity in megawatts (MW).
-        """
+        """ float: PV capacity in megawatts (MW)."""
         return self._pv_capacity_MW
 
     @pv_capacity_MW.setter
-    def pv_capacity_MW(self, pv_capacity_MW: float) -> None:
-        """Set the PV capacity in megawatts.
-
-        Args:
-            pv_capacity_MW (float): PV capacity in megawatts (MW).
-        """
+    def pv_capacity_MW(self, pv_capacity_MW: float):
         self._pv_capacity_MW = pv_capacity_MW
         
-    #######################################
-    ########### PV Production #############
-    #######################################
+    # PV Production
 
     def pv_power_MW(self, day: str = '01-01') -> callable:
         """Return the PV power in megawatts for a given day as a function of time.
@@ -196,9 +136,7 @@ class EVPVSynergies:
         result, error = integrate.quad(self.pv_power_MW(day), 0, 24)
         return result
 
-    #######################################
-    ########### EV Charging Demand ########
-    #######################################
+    # EV Charging demand
 
     def ev_demand(self) -> float:
         """Calculate the total EV charging demand by integrating over 24 hours.
@@ -209,9 +147,7 @@ class EVPVSynergies:
         result, error = integrate.quad(self.ev_charging_demand_MW, 0, 24)
         return result
 
-    #######################################
-    ############# EV-PV Synergies #########
-    #######################################
+    # EV-PV Synergies 
 
     def energy_coverage_ratio(self, day: str = '01-01') -> float:
         """Calculate the ratio of PV production to EV charging demand for a given day.
@@ -305,13 +241,14 @@ class EVPVSynergies:
 
         return spearman_coef, p_value
 
-    def daily_metrics(self, start_date: str, end_date: str, n_points: int = 100) -> pd.DataFrame:
+    def daily_metrics(self, start_date: str, end_date: str, n_points: int = 100, recompute_probability: float = 0.0) -> pd.DataFrame:
         """Compute all energy and synergy metrics over a given period.
 
         Args:
             start_date (str): Start date in 'MM-DD' format.
             end_date (str): End date in 'MM-DD' format.
             n_points (int): The number of points to sample for each day. Defaults to 100.
+            recompute_probability (float): Probability (between 0 and 1) of recomputing EV demand for each day.
 
         Returns:
             pd.DataFrame: DataFrame containing all metrics for each day within the specified range.
@@ -331,6 +268,17 @@ class EVPVSynergies:
 
         for day in filtered_days:
             print(day, end='\r')
+            
+            # Determine if we should recompute EV demand based on probability
+            if np.random.rand() < recompute_probability:
+                print("Recomputing the charging profile to add randomness...", end='')  # Optional: You may keep this line to indicate recomputing without verbose output
+                # Suppress output during recomputing
+                with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+                    self.ev_calculator.compute_temporal_demand(0.1)  # Recalculate demand profile in ev_calculator
+                self.ev_charging_demand_MW = self.ev_calculator  # Update the interpolation function
+            print("")
+
+            # Calculate metrics
             spearman_coef, p_value = self.spearman_correlation(day, n_points)
             pv_prod = self.pv_production(day)
             ev_dmd = self.ev_demand()
@@ -360,5 +308,4 @@ class EVPVSynergies:
         df = pd.DataFrame(results)
 
         return df
-
         

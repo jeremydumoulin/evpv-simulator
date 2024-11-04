@@ -788,6 +788,102 @@ class MobilitySimulator:
 
         return final_flows
 
+    # Overloading sum 
+
+    def __add__(self, other):
+        print("***********************************************")        
+        print(f"INFO \t Summing two MobilitySimulator objects")
+        print(f"\t Warning: This method implementation is not fully mature and may not handle all edge cases. Note that summing only concerns the results, input properties might make no sense anymore.")        
+
+        if not isinstance(other, MobilitySimulator):
+            return NotImplemented
+        if self.trip_distribution_params['distance_offset_km'] != .0 or other.trip_distribution_params['distance_offset_km'] != .0:
+            print("ERROR \t Cannot handle the case where 'distance_offset_km' is not zero.")
+            return NotImplemented
+        
+        # Sum flows
+        if self._flows is not None and other._flows is not None:
+            # Concatenate the flows
+            combined_flows = pd.concat([self._flows, other._flows], ignore_index=True)
+            
+            # Group by Origin and Destination and sum the Flow column
+            combined_flows = combined_flows.groupby(['Origin', 'Destination'], as_index=False).agg({
+                'Flow': 'sum',  # Sum the Flow column
+                'Travel Time (min)': 'first',  # Keep first or customize as needed
+                'Travel Distance (km)': 'first',  # Keep first or customize as needed
+                'Centroid Distance (km)': 'first'  # Keep first or customize as needed
+            })
+        else:
+            ValueError("Run the two simulations before adding two objects.")
+
+        # Create a new MobilitySimulator instance for the result
+        new_simulator = MobilitySimulator(
+            vehicle_fleet=self.vehicle_fleet,
+            region=self.region,
+            vehicle_allocation_params=self.vehicle_allocation_params,
+            trip_distribution_params=self.trip_distribution_params
+        )
+
+        # Assign the combined flows
+        new_simulator._flows = combined_flows
+
+        # Sum total vehicles from the vehicle_fleet of both instances
+        total_vehicles = self.vehicle_fleet.total_vehicles + other.vehicle_fleet.total_vehicles
+        new_simulator.vehicle_fleet.total_vehicles = total_vehicles  # Update the total vehicles in the new instance
+        
+        # Initialize the aggregated metrics and update
+        new_simulator._aggregated_zone_metrics = self._aggregated_zone_metrics
+        new_simulator.update_aggregated_metrics()
+
+        # Print
+        print(f"\t > Total vehicle-km (by road): {new_simulator.aggregated_zone_metrics['fkt_outflows'].sum()} km")
+        print(f"\t > Average distance travelled per vehicle (by road): {new_simulator.aggregated_zone_metrics['fkt_outflows'].sum() / new_simulator.aggregated_zone_metrics['n_outflows'].sum()} km")
+        print("***********************************************")  
+        return new_simulator
+
+    def update_aggregated_metrics(self):
+        """
+        Updates the aggregated zone metrics based on flows data.
+        """
+        if self._flows is None:
+            print("Flows or aggregated metrics are not initialized.")
+            return
+        
+        # Loop through each zone ID in the aggregated metrics
+        for index, row in self._aggregated_zone_metrics.iterrows():
+            zone_id = row['id']
+
+            # Calculate inflows (flows into the zone)
+            inflows = self._flows[self._flows['Destination'] == zone_id]['Flow'].sum()
+
+            # Calculate outflows (flows out of the zone)
+            outflows = self._flows[self._flows['Origin'] == zone_id]['Flow'].sum()
+
+            # Update inflows and outflows counts
+            self._aggregated_zone_metrics.at[index, 'n_inflows'] = inflows
+            self._aggregated_zone_metrics.at[index, 'n_outflows'] = round(outflows)
+
+            # Calculate total kilometers (fkt)
+            total_km_outflows = (self._flows[self._flows['Origin'] == zone_id]['Travel Distance (km)'] *
+                                 self._flows[self._flows['Origin'] == zone_id]['Flow']).sum()
+            total_km_inflows = (self._flows[self._flows['Destination'] == zone_id]['Travel Distance (km)'] *
+                                self._flows[self._flows['Destination'] == zone_id]['Flow']).sum()
+
+            # Update total kilometers
+            self._aggregated_zone_metrics.at[index, 'fkt_outflows'] = total_km_outflows 
+            self._aggregated_zone_metrics.at[index, 'fkt_inflows'] = total_km_inflows
+
+            # Calculate average distance (vkt)
+            if outflows > 0:
+                self._aggregated_zone_metrics.at[index, 'vkt_outflows'] = total_km_outflows / outflows
+            else:
+                self._aggregated_zone_metrics.at[index, 'vkt_outflows'] = 0
+
+            if inflows > 0:
+                self._aggregated_zone_metrics.at[index, 'vkt_inflows'] = total_km_inflows / inflows
+            else:
+                self._aggregated_zone_metrics.at[index, 'vkt_inflows'] = 0
+
     # Export and visualization
 
     def to_csv(self, filepath: str) -> None:

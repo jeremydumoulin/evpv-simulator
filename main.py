@@ -6,6 +6,7 @@ from evpv.region import Region
 from evpv.mobilitysimulator import MobilitySimulator
 from evpv.pvsimulator import PVSimulator
 from evpv.chargingsimulator import ChargingSimulator
+from evpv.evpvsynergies import EVPVSynergies
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -45,21 +46,26 @@ mobility_sim = MobilitySimulator(
 mobility_sim.vehicle_allocation() 
 mobility_sim.trip_distribution()
 
-# pv = PVSimulator(
-#     environment = {
-#         'latitude': region.centroid_coords()[0],  
-#         'longitude': region.centroid_coords()[1],  
-#         'year': 2020  
-#         }, 
-#     pv_module = {
-#         'efficiency': 0.22,
-#         'temperature_coefficient': -0.004  
-#         }, 
-#     installation = {
-#         'type': 'rooftop',  # groundmounted_fixed
-#         'system_losses': 0.14
-#     })
-# pv.compute_pv_production()
+# ms = mobility_sim + mobility_sim2
+
+
+pv = PVSimulator(
+    environment = {
+        'latitude': region.centroid_coords()[0],  
+        'longitude': region.centroid_coords()[1],  
+        'year': 2020  
+        }, 
+    pv_module = {
+        'efficiency': 0.22,
+        'temperature_coefficient': -0.004  
+        }, 
+    installation = {
+        'type': 'rooftop',  # groundmounted_fixed
+        'system_losses': 0.14
+    })
+pv.compute_pv_production()
+
+print(pv.results)
 
 charging_sim = ChargingSimulator(
     vehicle_fleet=fleet,
@@ -68,17 +74,17 @@ charging_sim = ChargingSimulator(
     charging_efficiency=0.9,
     scenario = {
         'home': {
-            'share': 1.0,  # 50% of EVs charge at home
+            'share': 0.5,  # 50% of EVs charge at home
             'power_options_kW': [ [3.7, 0.9], [7.4, 0.1]],    
             'arrival_time_h': [18, 2]
         },
         'work': {
-            'share': 0.0,  # 30% of EVs charge at work
+            'share': 0.4,  # 30% of EVs charge at work
             'power_options_kW': [[7.4, 0.9], [11, 0.1]],    
             'arrival_time_h': [9, 1]
         },
         'poi': {
-            'share': 0.0,  # 20% of EVs charge at pois
+            'share': 0.1,  # 20% of EVs charge at pois
             'power_options_kW': [[3.7, 0.4], [22, 0.6]]    
         }
     }
@@ -87,10 +93,14 @@ charging_sim = ChargingSimulator(
 charging_sim.compute_spatial_demand()
 charging_sim.compute_temporal_demand(0.1)
 
+print(charging_sim.temporal_demand_profile_aggregated)
+
+evpv = EVPVSynergies(pv, charging_sim, 10)
+
+print(evpv.daily_metrics("01-01", "01-30", recompute_probability = 0.5))
+
 # charging_sim.temporal_demand_profile_aggregated.to_csv("wo.csv")
-
-charging_sim.apply_smart_charging(location = "home", share = 1.0, charging_strategy = "multiply_by", factor = 2)
-
+# charging_sim.apply_smart_charging(location = ["home", "work", "poi"], share = 1.0, charging_strategy = "peak_shaving")
 # charging_sim.temporal_demand_profile_aggregated.to_csv("w.csv")
 
 
