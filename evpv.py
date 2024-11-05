@@ -5,9 +5,15 @@ import os
 import importlib.util
 import time
 
-from evpv.evcalculator import EVCalculator
-from evpv.pvcalculator import PVCalculator
+from evpv.vehicle import Vehicle
+from evpv.vehiclefleet import VehicleFleet
+from evpv.region import Region
+from evpv.mobilitysimulator import MobilitySimulator
+from evpv.pvsimulator import PVSimulator
+from evpv.chargingsimulator import ChargingSimulator
 from evpv.evpvsynergies import EVPVSynergies
+
+# Main
 
 def main():
     # Welcome message
@@ -30,10 +36,11 @@ def main():
     # Run the simulation using the loaded config module
     run_simulation(config)
 
+# Run the simulation
+
 def run_simulation(config):
-    ######################
-    ####### Message ######
-    ######################
+
+    # Welcome message
 
     print("")
     print("------------------------------------------------")
@@ -43,98 +50,116 @@ def run_simulation(config):
     print("")
 
     # Start time
+
     start_time = time.time()
 
-    ######################################
-    ##### STEP 1: EV Charging Demand #####
-    ######################################
+    # STEP 1: Define the electric vehicle fleet
+    # Create instances of Vehicle representing different types with specific attributes (e.g., battery capacity, consumption rate)
 
-    ev = EVCalculator(
-        mobility_demand = {
-            # Required parameters
-            'target_area_geojson': config.target_area_geojson, 
-            'population_raster': config.population_raster,  
-            'destinations_csv': config.destinations_csv,
-            'intermediate_stops_csv': config.intermediate_stops_csv,    
-            'n_vehicles': config.n_vehicles,  
-            'zone_width_km': config.zone_width_km,  
-            'ORS_key': config.ORS_key,
+    fleet = create_fleet_from_config(config)
 
-            # Optional parameters            
-            'road_to_euclidian_ratio': config.road_to_euclidian_ratio, 
-            'target_area_extension_km': config.target_area_extension_km, 
-            'crop_zones_to_shapefile': config.crop_zones_to_shapefile, 
-            'spatial_interaction_model': config.spatial_interaction_model, 
-            'attraction_feature': config.attraction_feature, 
-            'cost_feature': config.cost_feature, 
-            'vkt_offset': config.vkt_offset       
-        },
-        ev_fleet = config.ev_fleet(), # Warning, this is a function !
-        charging_efficiency = config.charging_efficiency,
-        charging_scenario = {
-            # Required
-            'Home': config.charging_scenario['Home'],
-            'Destination': config.charging_scenario['Destination'],
-            'Intermediate': config.charging_scenario['Intermediate'],
+    # STEP 2: Define the region of interest and its traffic zone properties
+    # Create a region using geospatial data (region boundaries, population raster, workplaces, points of interest)
 
-            # Optional
-            'travel_time_origin_destination_h': config.travel_time_origin_destination_h, 
-            'time_step_h': config.time_step_h, 
-            }  
-        )
+    region = Region(
+        region_geojson=config.region_geojson,    
+        population_raster=config.population_raster,
+        workplaces_csv=config.workplaces_csv,
+        pois_csv=config.pois_csv,
+        traffic_zone_properties={
+            "target_size_km": config.target_size_km,
+            "shape": config.zone_shape,
+            "crop_to_region": config.crop_to_region
+        }
+    )
 
-    # Run the EV demand simulation based on the provided parameters
-    ev.compute_ev_demand()
+    region.to_map(f"{config.output_folder}/{config.scenario_name}_region.html") # Save region map to file
 
-    # Save the EV charging demand results to the output folder
-    ev.save_results(output_folder = config.output_folder, prefix = config.scenario_name)
+    # STEP 3: Perform mobility simulation using a gravity model for commuting
+    # Initialize the MobilitySimulator to simulate commuting patterns based on region and vehicle fleet data
 
-    ######################################
-    ######## STEP 2: PV Production #######
-    ######################################
+    mobility_sim = MobilitySimulator(
+        vehicle_fleet=fleet,
+        region=region,
+        vehicle_allocation_params={
+            "method": config.allocation_method,                
+            "randomness": config.randomness
+        }, 
+        trip_distribution_params={
+            "model_type": config.model_type,                
+            "attraction_feature": config.attraction_feature,     
+            "cost_feature": config.cost_feature,             
+            "road_to_euclidian_ratio": config.road_to_euclidian_ratio,         
+            "ors_key": config.ors_key,
+            "distance_offset_km": config.distance_offset_km                        
+        }
+    )
 
-    pv = PVCalculator(
-        environment = {
-            'latitude': config.latitude, 
-            'longitude': config.longitude,  
-            'year': config.year
-            }, 
-        pv_module = {
+    # Allocate vehicles to zones and simulate trips
+    mobility_sim.vehicle_allocation()
+    mobility_sim.trip_distribution()
+
+    # Save mobility simulation results and generate visualizations
+    mobility_sim.to_csv(f"{config.output_folder}/{config.scenario_name}_results.csv")
+    mobility_sim.vehicle_allocation_to_map(f"{config.output_folder}/{config.scenario_name}_MobilitySimulation_allocation.html")
+
+    # STEP 4: Charging demand simulation based on EV travel patterns and charging scenarios
+    # Define charging options (home, work, points of interest) with corresponding power and arrival time distributions
+
+    charging_sim = ChargingSimulator(
+        vehicle_fleet=fleet,
+        region=region,
+        mobility_demand=mobility_sim,
+        charging_efficiency=config.charging_efficiency,
+        scenario=config.scenario
+    )
+
+    # Compute spatial and temporal charging demand
+    charging_sim.compute_spatial_demand()
+    charging_sim.compute_temporal_demand(time_step=config.time_step) # Time step in hours
+
+    # Optional: Apply smart charging to reduce peak demand
+    # charging_sim.apply_smart_charging(location=["home"], charging_strategy="peak_shaving", share=0.5)
+
+    # Save charging demand data and visualizations
+    charging_sim.to_csv(f"{config.output_folder}/{config.scenario_name}_ChargingDemand.csv")
+    charging_sim.chargingdemand_total_to_map(f"{config.output_folder}/{config.scenario_name}_ChargingDemand_total.html")
+    charging_sim.chargingdemand_pervehicle_to_map(f"{config.output_folder}/{config.scenario_name}_ChargingDemand_pervehicle.html")
+    charging_sim.chargingdemand_nvehicles_to_map(f"{config.output_folder}/{config.scenario_name}_ChargingDemand_n_vehicles.html")
+
+    # STEP 5: PV Simulation for calculating photovoltaic power production
+    # Initialize PVSimulator using location coordinates, module characteristics, and installation type
+
+    pv = PVSimulator(
+        environment={
+            'latitude': region.centroid_coords()[0],  
+            'longitude': region.centroid_coords()[1],  
+            'year': config.year  
+        }, 
+        pv_module={
             'efficiency': config.efficiency,
-
-            # Optional
             'temperature_coefficient': config.temperature_coefficient 
-            }, 
-        installation = {
-            'type': config.installation,
-            # Optional
+        }, 
+        installation={
+            'type': config.installation_type,  
             'system_losses': config.system_losses
-        })
+        }
+    )
 
-    # Run the PV simulation for the specified parameters
-    pv.compute_pv_production()
+    pv.compute_pv_production()  # Calculate PV production based on the defined parameters
+    pv.results.to_csv(f"{config.output_folder}/{config.scenario_name}_PVProduction.csv")  # Save PV production data
 
-    # Save the PV production results to a CSV file in the output folder
-    pv.results.to_csv(f"{config.output_folder}/{config.scenario_name}_PVproduction.csv")
+    # STEP 6: EV-PV Synergy Analysis
+    # Calculate synergies between PV generation and EV charging demand over a defined time period
 
-    ######################################
-    ####### STEP 3: EV-PV Synergies ######
-    ######################################
+    evpv = EVPVSynergies(pv=pv, ev=charging_sim, pv_capacity_MW=config.pv_capacity_MW)
 
-    evpv = EVPVSynergies(pv_calculator = pv, ev_calculator = ev, pv_capacity_MW = config.pv_capacity_MW)
+    # Calculate daily synergy metrics for the first week of January, adjusting recompute_probability as needed
+    synergy_metrics = evpv.daily_metrics(config.start_date, config.end_date, recompute_probability=config.recompute_probability)
+    synergy_metrics.to_csv(f"{config.output_folder}/{config.scenario_name}_EVPVSynergies.csv") # Save synergy metrics data
 
-    # Compute all synergy metrics over a given time period (January 1st to January 30th).
-    # This will include metrics such as energy coverage ratio, self-consumption ratio, and others.
-    daily_kpis = evpv.daily_metrics(start_date = config.start_date, end_date = config.end_date)
+    # End time and message 
 
-    # Save the calculated daily synergy metrics (KPI values) to a CSV file in the output folder
-    daily_kpis.to_csv(f"{config.output_folder}/{config.scenario_name}_EVPV_KPIs.csv")
-
-    ######################
-    ####### Message ######
-    ######################
-
-    # End time
     end_time = time.time()
 
     # Calculate the duration
@@ -148,6 +173,8 @@ def run_simulation(config):
     print(f"Simulation completed")
     print(f"Elapsed time: : {minutes} minutes and {seconds:.2f} seconds")
     print("------------------------------------------------")
+
+# Helper functions
 
 def load_config(config_path):
     # Ensure the provided config file exists
@@ -164,6 +191,24 @@ def load_config(config_path):
     spec.loader.exec_module(config_module)
 
     return config_module
+
+def create_fleet_from_config(config):
+    vehicles = []
+    for vehicle_data in config.fleet_config["vehicle_types"]:
+        vehicle = Vehicle(
+            name=vehicle_data["name"],
+            battery_capacity_kWh=vehicle_data["battery_capacity_kWh"],
+            consumption_kWh_per_km=vehicle_data["consumption_kWh_per_km"],
+            max_charging_power_kW=vehicle_data["max_charging_power_kW"]
+        )
+        vehicles.append((vehicle, vehicle_data["share"]))
+
+    # Instantiate the fleet with the total vehicle count and vehicles with proportions
+    fleet = VehicleFleet(
+        total_vehicles=config.fleet_config["total_vehicles"],
+        vehicle_types=vehicles
+    )
+    return fleet
 
 if __name__ == "__main__":
     main()

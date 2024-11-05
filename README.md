@@ -218,8 +218,6 @@ my_vehicle_2 = {
 
 - **Zone attractiveness**: When using the number of workplaces from OpenStreetMap (OSM) to determine the attractiveness of a zone for trip distribution, it does not include the number of jobs per workplace. This may reduce the model’s accuracy in areas where the number of jobs per workplace is not evenly distributed.
 
-- **POI charging**: Charging at points of interest (e.g., shopping malls) is not considered in the model.
-
 - **Charging Curve**: The charging curve is aggregated across all traffic zones and is based on the assumed arrival time . The model assumes a normal distribution for arrival times, which may not fully represent real behavior. We also assume that all vehicles charge every day, which may not be entirely accurate (see [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318)). Additionally, in reality, drivers may not charge their vehicles immediately upon arrival, as their decision could depend on factors such as varying electricity tariffs throughout the day (see, for instance, the charging habits of French citizen [here](https://www.enedis.fr/presse/mobilite-electrique-enedis-publie-deux-nouveaux-rapports-sur-les-habitudes-de-mobilite-et-de)). This behavior could be incorporated into future work to better reflect how drivers respond to price signals (or other incentives) when deciding when to charge.
 
 #### Photovoltaic simulation
@@ -235,9 +233,10 @@ my_vehicle_2 = {
 
 ### Open tasks
 
-- [ ] Finalize the README file
+- [ ] Update the README file to the new architecture
 - [ ] Add more advanced examples
 - [x] Enhance inline code documentation
+- [ ] Feature: energy demand per vehicle by traffic zone (i.e., use the distance distribution per zone and not the aggregated one). This will allow more advanced analysis, like variations in the average number of charging stations per vehicle because of higher travelled distances.
 - [ ] Create a CLI for easy usage
 - [ ] Create a readthedocs
 - [ ] Make a contributing guide
