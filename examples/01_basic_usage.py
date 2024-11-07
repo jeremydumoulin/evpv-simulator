@@ -42,7 +42,7 @@ region = Region(
     region_geojson="input/gadm41_ETH_1_AddisAbeba.json",    
     population_raster="input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif",
     workplaces_csv="input/workplaces.csv",
-    pois_csv="input/intermediate_stops.csv",
+    pois_csv="input/pois.csv",
     traffic_zone_properties={
         "target_size_km": 5,
         "shape": "rectangle",
@@ -110,6 +110,7 @@ charging_sim = ChargingSimulator(
 # Compute spatial and temporal charging demand
 charging_sim.compute_spatial_demand()
 charging_sim.compute_temporal_demand(time_step=0.1) # Time step in hours
+# Other possible options (travel_time_home_work: float = 0.5, soc_threshold_mean: float = 0.6, soc_threshold_std_dev: float = 0.2)
 
 # Optional: Apply smart charging to reduce peak demand
 # charging_sim.apply_smart_charging(location=["home"], charging_strategy="peak_shaving", share=0.5)

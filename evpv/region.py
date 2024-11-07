@@ -11,7 +11,7 @@ import numpy as np
 from shapely.geometry import shape, LineString, Point, Polygon, box, MultiPoint
 from shapely.ops import transform, nearest_points, snap
 from geopy.distance import geodesic, distance
-from pyproj import Geod
+from pyproj import Geod, Proj, Transformer
 import folium
 import branca.colormap as cm
 
@@ -64,6 +64,7 @@ class Region:
         self.traffic_zone_properties = traffic_zone_properties
 
         print(f"INFO \t Successful initialization of input parameters.")
+        print(f"\t > Region area: {self.calculate_area_km2()} km²")        
 
         self._traffic_zones = None # To store resulting traffic zones as a DataFrame
 
@@ -249,70 +250,74 @@ class Region:
         if crop_to_region:
             print(f"\t Removing zones outside region of interest (crop to region)...")
             # Identify the rows to remove
-            rows_to_remove = self._traffic_zones[self._traffic_zones['is_inside_region'] == False]
+            rows_to_remove = self._traffic_zones[self._traffic_zones['centroid_is_inside_region'] == False]
 
             # Drop these rows from the original DataFrame
             self._traffic_zones = self._traffic_zones.drop(rows_to_remove.index)
 
             print(f"\t > Remaining zones: {len(self._traffic_zones)}")
 
+
     def _create_rectangular_zones(self, target_size_km):
-        """Creates a bounding box around the region of interest and splits it into rectangles based on the target size"""
-        print(f"INFO \t Rectangular zoning...")        
-        # Get the bbox and width of the region of interest
-        minx, miny, maxx, maxy = self.region_geometry.bounds
-        bbox_width_km = geodesic((minx, miny), (maxx, miny)).kilometers
-        bbox_height_km = geodesic((minx, miny), (minx, maxy)).kilometers
+        """Creates a bounding box around the region of interest and splits it into rectangles based on the target size."""
+        print(f"INFO \t Rectangular zoning...")
 
-        # Compute the closest number of integer segments matching the target width 
-        n_rectangles = round(bbox_width_km / target_size_km)
+        # Define UTM projection based on the region centroid
+        lon, lat = self.region_geometry.centroid.x, self.region_geometry.centroid.y
+        utm_proj = Proj(proj="utm", zone=int((lon + 180) // 6) + 1, ellps="WGS84", preserve_units=False)
+        transformer_to_utm = Transformer.from_proj("epsg:4326", utm_proj, always_xy=True)
+        transformer_to_latlon = Transformer.from_proj(utm_proj, "epsg:4326", always_xy=True)
 
-        # Calculate the width and height of each zone
-        width = (maxx - minx) / n_rectangles
-        height = (maxy - miny) / n_rectangles
-        
-        print(f"\t > Bounding box splitted into {n_rectangles} x {n_rectangles} zones")
-        print(f"\t > Zone width: {bbox_width_km/n_rectangles} km")
-        print(f"\t > Zone height: {bbox_height_km/n_rectangles} km")         
+        # Transform the region geometry to UTM projection
+        region_geom_projected = transform(transformer_to_utm.transform, self.region_geometry)
+        minx, miny, maxx, maxy = region_geom_projected.bounds
+
+        # Compute the number of segments based on the target size in meters
+        target_size_m = target_size_km * 1000
+        n_rectangles_x = round((maxx - minx) / target_size_m)
+        n_rectangles_y = round((maxy - miny) / target_size_m)
+
+        # Calculate the width and height of each rectangle in the bounding box
+        width = (maxx - minx) / n_rectangles_x
+        height = (maxy - miny) / n_rectangles_y
+        rectangle_area_km2 = (width * height) / 1000000  # Convert m² to km²
+
+        print(f"\t > Bounding box split into {n_rectangles_x} x {n_rectangles_y} zones")
+        print(f"\t > Width: {width/1000:.4f} km - Height: {height/1000:.4f} km: - Area: {rectangle_area_km2:.4f} km²")
 
         grid_data = []
 
-        # Loop to create grid and calculate center of each square        
-        for i in range(n_rectangles):     
-            for j in range(n_rectangles):
-                # ID 
-                zone_id = f"{i}_{j}"
-
-                # Bounding box 
+        for i in range(n_rectangles_x):
+            for j in range(n_rectangles_y):
+                # Define each rectangle in the UTM projection
                 lower_left_x = minx + i * width
                 lower_left_y = miny + j * height
                 upper_right_x = lower_left_x + width
                 upper_right_y = lower_left_y + height
 
-                bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)                
-                bbox_polygon = Polygon(list(bbox_geom.exterior.coords))  # Convert to Polygon                
+                bbox_geom = box(lower_left_x, lower_left_y, upper_right_x, upper_right_y)
 
-                # Extract latitude and longitude from the centroid
+                # Transform the centroid back to latitude and longitude
+                center_point_proj = bbox_geom.centroid
+                center_lon, center_lat = transformer_to_latlon.transform(center_point_proj.x, center_point_proj.y)
 
-                # Get the geometric center (centroid) of the bounding box
-                center_point = bbox_geom.centroid  # returns a shapely Point
+                # Check if the centroid is within the region geometry (using original lat/lon coordinates)
+                center_point_latlon = transform(transformer_to_latlon.transform, center_point_proj)
+                is_inside = self.region_geometry.contains(center_point_latlon)
 
-                center_lat = center_point.x  # Longitude
-                center_lon = center_point.y  # Latitude
+                # Transform the bounding box to lat/lon and store it in "geometry"
+                bbox_geom_latlon = transform(transformer_to_latlon.transform, bbox_geom)
 
-                # Check if the point is within the region of interest
-                is_inside = self.region_geometry.contains(center_point)
-
-                # Append everything
                 grid_data.append({
-                    'id': zone_id, 
+                    'id': f"{i}_{j}", 
                     'centroid': (center_lat, center_lon), 
-                    'geometry': bbox_polygon, 
-                    'is_inside_region': is_inside
+                    'geometry': bbox_geom_latlon, 
+                    'area_km2': rectangle_area_km2,
+                    'centroid_is_inside_region': is_inside
                 })
 
-        # Convert to dataframe 
-        return pd.DataFrame(grid_data)    
+        # Convert to DataFrame
+        return pd.DataFrame(grid_data)
 
     # Aggregation Methods
 
@@ -358,6 +363,7 @@ class Region:
                 "id": zone["id"],
                 "geometric_center": zone["centroid"],
                 "geometry": zone["geometry"],
+                'area_km2': zone["area_km2"],
                 "n_people": n_people,
                 "n_workplaces": n_workplaces,
                 "n_pois": n_pois
@@ -382,27 +388,36 @@ class Region:
         return centroid.y, centroid.x
 
     def average_zone_area_km2(self) -> float:
-        """
-        """
-        # Function to calculate the area using geodesic distances
-        def calculate_area(polygon):
-            # Get the bounds of the polygon
-            minx, miny, maxx, maxy = polygon.bounds
-            
-            # Calculate the area using geodesic
-            length = geodesic((minx, miny), (maxx, miny)).kilometers  # Width (in km)
-            height = geodesic((minx, miny), (minx, maxy)).kilometers  # Height (in km)
-            
-            # Area in km²
-            area_km2 = length * height
-            return area_km2
+        """Calculates the average area of the traffic zones in square kilometers.
 
-        areas = self._traffic_zones['geometry'].apply(calculate_area)
+        Returns:
+            float: The area in square kilometers.
+        """
 
         # Calculate the average area
-        average_area_km2 = areas.mean()
+        average_area_km2 = self._traffic_zones['area_km2'].mean()
 
         return average_area_km2
+
+    def calculate_area_km2(self) -> float:
+        """Calculates the area of the region in square kilometers.
+
+        Returns:
+            float: The area in square kilometers.
+        """
+        # Get the centroid to determine the UTM zone
+        lon, lat = self._region_geometry.centroid.x, self._region_geometry.centroid.y
+
+        # Define UTM projection based on centroid
+        utm_proj = Proj(proj="utm", zone=int((lon + 180) // 6) + 1, ellps="WGS84", preserve_units=False)
+        transformer = Transformer.from_proj("epsg:4326", utm_proj, always_xy=True)
+
+        # Transform the polygon to UTM
+        utm_polygon = transform(transformer.transform, self._region_geometry)
+
+        # Calculate area in km2 (area in meters / 1,000,000)
+        area_km2 = utm_polygon.area / 1_000_000
+        return area_km2
 
     # Export and visualization
 
