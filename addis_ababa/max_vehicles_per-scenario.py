@@ -8,6 +8,8 @@ and evaluates synergies between EV charging and PV generation.
 
 import sys
 import os
+import numpy as np
+import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # Append parent directory to include evpv modules
 
 from evpv.vehicle import Vehicle
@@ -76,79 +78,68 @@ mobility_sim.trip_distribution_to_map("output/MobilitySimulation_flows_example.h
 # STEP 4: Charging demand simulation based on EV travel patterns and charging scenarios
 # Define charging options (home, work, points of interest) with corresponding power and arrival time distributions
 
-# List of scenarios to iterate over
+# Liste des scénarios de recharge
 scenarios = [
     {'name': 'Home', 'home': 1.0, 'work': 0.0, 'poi': 0.0},
     {'name': 'Work', 'home': 0.0, 'work': 1.0, 'poi': 0.0},
     {'name': 'Mixed', 'home': 0.2, 'work': 0.5, 'poi': 0.3}
 ]
 
-# Loop through scenarios
+# Nombre de répétitions pour chaque scénario
+repeats = 5
+
+# Dictionnaire pour stocker les résultats
+results = {}
+
 for scenario in scenarios:
-    charging_sim = ChargingSimulator(
-        vehicle_fleet=fleet,
-        region=region,
-        mobility_demand=mobility_sim,
-        charging_efficiency=0.9,
-        scenario={
-            'home': {
-                'share': scenario['home'],  
-                'power_options_kW': [[3.2, 0.45], [7.4, 0.4], [11, 0.15]],    
-                'arrival_time_h': [18, 2.7]  # Arrival time with mean and std deviation
-            },
-            'work': {
-                'share': scenario['work'],  
-                'power_options_kW': [[7.4, 0.25], [11, 0.5], [22, 0.25]],    
-                'arrival_time_h': [9, 1.8]
-            },
-            'poi': {
-                'share': scenario['poi'],  
-                'power_options_kW': [[7.4, 0.15], [11, 0.15], [22, 0.55], [50, 0.15]]    
+    scenario_name = scenario['name']
+    max_cars_charging = []  # Stocke les valeurs maximales pour chaque répétition
+
+    for _ in range(repeats):
+        # Initialisation de la simulation de recharge
+        charging_sim = ChargingSimulator(
+            vehicle_fleet=fleet,
+            region=region,
+            mobility_demand=mobility_sim,
+            charging_efficiency=0.9,
+            scenario={
+                'home': {
+                    'share': scenario['home'],  
+                    'power_options_kW': [[3.2, 0.45], [7.4, 0.4], [11, 0.15]],    
+                    'arrival_time_h': [18, 2.7]  # Arrival time with mean and std deviation
+                },
+                'work': {
+                    'share': scenario['work'],  
+                    'power_options_kW': [[7.4, 0.25], [11, 0.5], [22, 0.25]],    
+                    'arrival_time_h': [9, 1.8]
+                },
+                'poi': {
+                    'share': scenario['poi'],  
+                    'power_options_kW': [[7.4, 0.15], [11, 0.15], [22, 0.55], [50, 0.15]]    
+                }
             }
-        }
-    )
+        )
 
-    # Compute spatial and temporal charging demand
-    charging_sim.compute_spatial_demand()
-    charging_sim.compute_temporal_demand(time_step=1/30) # Time step in hours
-    # Other possible options (travel_time_home_work: float = 0.5, soc_threshold_mean: float = 0.6, soc_threshold_std_dev: float = 0.2)
+        # Calcul de la demande temporelle
+        charging_sim.compute_spatial_demand()
+        charging_sim.compute_temporal_demand(time_step=1/30)  # Pas de temps en heures
 
-    # Optional: Apply smart charging to reduce peak demand
-    # charging_sim.apply_smart_charging(location=["home"], charging_strategy="peak_shaving", share=0.5)
+        max_charging = charging_sim.temporal_demand_profile_aggregated["total_vehicle_charging"].max()   # Somme sur les profils pour chaque pas de temps
+        max_cars_charging.append(max_charging)
 
-    # Save charging demand data and visualizations
-    charging_sim.to_csv(f"output/ChargingDemand_{scenario['name']}.csv")
-    charging_sim.chargingdemand_total_to_map(f"output/ChargingDemand_total_{scenario['name']}.html")
-    charging_sim.chargingdemand_pervehicle_to_map(f"output/ChargingDemand_pervehicle_{scenario['name']}.html")
-    charging_sim.chargingdemand_nvehicles_to_map(f"output/ChargingDemand_n_vehicles_{scenario['name']}.html")
-
-# STEP 5: PV Simulation for calculating photovoltaic power production
-# Initialize PVSimulator using location coordinates, module characteristics, and installation type
-
-pv = PVSimulator(
-    environment={
-        'latitude': region.centroid_coords()[0],  
-        'longitude': region.centroid_coords()[1],  
-        'year': 2020  
-    }, 
-    pv_module={
-        'efficiency': 0.22,
-        'temperature_coefficient': -0.004  
-    }, 
-    installation={
-        'type': 'groundmounted_fixed',  
-        'system_losses': 0.14
+    # Calcul de la moyenne et de l'écart type pour ce scénario
+    results[scenario_name] = {
+        'mean_max_cars_charging': np.mean(max_cars_charging),
+        'std_max_cars_charging': np.std(max_cars_charging)
     }
-)
 
-pv.compute_pv_production()  # Calculate PV production based on the defined parameters
-pv.results.to_csv("output/PVProduction.csv")  # Save PV production data
+# Affichage des résultats
+for scenario, stats in results.items():
+    print(f"Scenario: {scenario}")
+    print(f"  Mean max cars charging: {stats['mean_max_cars_charging']:.2f}")
+    print(f"  Std dev: {stats['std_max_cars_charging']:.2f}")
 
-# STEP 6: EV-PV Synergy Analysis
-# Calculate synergies between PV generation and EV charging demand over a defined time period
 
-evpv = EVPVSynergies(pv=pv, ev=charging_sim, pv_capacity_MW=10)
-
-# Calculate daily synergy metrics for the first week of January, adjusting recompute_probability as needed
-synergy_metrics = evpv.daily_metrics("01-01", "01-07", recompute_probability=0.0)
-synergy_metrics.to_csv("output/EVPVSynergies.csv") # Save synergy metrics data
+# Export des résultats en CSV
+results_df = pd.DataFrame(results)
+results_df.to_csv("output/charging_scenarios_results.csv", index=False)

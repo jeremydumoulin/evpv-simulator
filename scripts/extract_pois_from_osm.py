@@ -41,19 +41,68 @@ import osmnx as ox
 ox.config(use_cache=False, log_console=False)
 
 # Bounding box (https://bboxfinder.com/)
-west, south, east, north = 37.408447, 7.754537, 40.089111, 10.055403 # Addis (38.639904,8.8331149,38.9080529,9.0985761)
+west, south, east, north = 38.639904,8.8331149,38.9080529,9.0985761 # Addis (38.639904,8.8331149,38.9080529,9.0985761)
 
-# Tags used to get workplaces
-tags = {"building": ["industrial", "office"],
-		"company": [],
-		"landuse": ["industrial"],
-		"industrial": [],
-		"office": ["company", "government"],
-		"amenity": ["university", "research_institute", "conference_centre", "bank", "hospital", "townhall", "police", "fire_station", "post_office", "post_depot"]
-        }
+# tags = {
+#     "building": ["industrial", "office"],
+#     "company": True,
+#     "landuse": ["industrial", "commercial", "retail"],
+#     "industrial": True,
+#     "office": True,
+#     "amenity": [
+#         "university",             # Large universities often have many staff members
+#         "research_institute",      # Research institutes tend to have a substantial workforce
+#         "hospital",                # Hospitals have a high number of employees
+#         "townhall",                # Municipal buildings with a large staff
+#         "conference_centre",       # May employ a large number of service staff
+#         "factory",                 # Industrial sites with large staff numbers
+#         "corporate_office",        # Corporate offices tend to have large workforces
+#         "government",              # Government offices
+#         "bank",                    # Larger banks can have many employees
+#         "police",                  # Police stations with a substantial workforce
+#         "fire_station",            # Fire stations in large cities may have multiple shifts
+#         "post_office",             # Post offices can have a significant number of employees
+#         "call_centre",             # High-density work environments
+#         "logistics_centre"         # Warehouses and logistics centers
+#     ]
+# }
+
+tags = {
+    "amenity": [
+        # Transport-related amenities
+        "fuel", "parking", "parking_entrance", "bicycle_parking",
+        
+        # Education-related amenities
+        "college", "university", "school", "kindergarten", "library", "music_school", "language_school",
+        
+        # Health-related amenities
+        "clinic", "dentist", "doctors", "hospital", "pharmacy", "veterinary",
+        
+        # Food and drink
+        "cafe", "ice_cream", "internet_cafe", "restaurant", "fast_food", "bar", "pub", "biergarten",
+        
+        # Entertainment and leisure
+        "theatre", "cinema", "music_venue", "nightclub", "casino", "gambling", "stripclub",
+        
+        # Cultural and community centers
+        "arts_centre", "community_centre", "social_centre", "exhibition_centre",        
+    
+        # Tourism-related amenities
+        "attraction", "viewpoint", "aquarium", "beach_resort", "gallery", "museum", "theme_park", "zoo", "artwork"
+    ],
+    "shop": [
+        "supermarket", "mall", "department_store", "convenience"
+    ],
+    "tourism": [
+        "hotel", "guest_house", "hostel", "motel", "camp_site", "apartment"
+    ],
+    "leisure": [
+        "stadium", "sports_centre", "swimming_pool", "fitness_centre"
+    ]
+}
 
 # Define the number of rows and columns for the grid
-n_rows, n_cols = 10, 10  # Adjust these values to control the size of the chunks
+n_rows, n_cols = 1, 1  # Adjust these values to control the size of the chunks
 
 print(f"INFO \t Getting the destinations from OSM. Tags: {tags}")
 

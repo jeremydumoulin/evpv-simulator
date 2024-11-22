@@ -407,7 +407,7 @@ class MobilitySimulator:
                           'Travel Distance (km)', and 'Centroid Distance (km)', with rows where 'Origin' equals 'Destination' removed.
         """       
         # Extract coordinates of the centroid
-        coordinates = [list(coord) for coord in df['geometric_center']]
+        coordinates = [[coord[1], coord[0]] for coord in df['geometric_center']]
         num_coordinates = len(coordinates)
 
         # Initialize the full matrices

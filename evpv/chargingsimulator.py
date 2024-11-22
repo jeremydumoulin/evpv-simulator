@@ -297,7 +297,7 @@ class ChargingSimulator:
         difference = desired_total_vehicles - total_vehicles
 
         if difference != 0:
-            print(f"ALERT \t Randomly allocating {difference} vehicles due to rounding erros...")
+            print(f"ALERT \t Randomly allocating {difference} vehicles due to rounding errors...")
 
         # Step 10: Adjust the number of vehicles by adding/removing one vehicle randomly
         while total_vehicles != desired_total_vehicles:
@@ -565,13 +565,14 @@ class ChargingSimulator:
 
         # Preliminary checks
         if np.any(charging_durations <= time_step):
-            print("ALERT \t Some charging durations are smaller than the timestep. Charging demand may not be met.")
+            num_alerts = np.sum(charging_durations <= time_step)
+            print(f"ALERT \t {num_alerts}  charging durations are smaller than the timestep. Charging demand may not be met.")
         
         # Check how many vehicles have a charging duration greater than their idling time
         vehicles_with_long_charging = (charging_durations - 0.01) > idling_durations # Adding a small correction to account for rounding issues
         count_long_charging = vehicles_with_long_charging.sum()
         if count_long_charging > 0:
-            print(f"ALERT \t {count_long_charging} vehicle(s) have a charging duration greater than their idling time. This may affect model consistency.")
+            print(f"ALERT \t {count_long_charging} vehicle(s) require charging durations longer than their idling periods. Charging continues beyond the expected idling time.")
 
         # Process each vehicle
         for idx, vehicle_id in enumerate(vehicle_properties["vehicle_id"]):

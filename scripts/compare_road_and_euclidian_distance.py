@@ -71,7 +71,7 @@ def get_road_distance(coord1, coord2):
         return None
 
 # Number of random points
-num_points = 10  # Adjust as needed
+num_points = 16  # Adjust as needed
 
 # Generate random locations
 locations = generate_random_coordinates(num_points, lat_min, lat_max, lon_min, lon_max)
@@ -103,6 +103,6 @@ for i in range(num_points):
 df = pd.DataFrame(results)
 
 # Save results to CSV
-df.to_csv('scripts/road_vs_euclidian_distances.csv', index=False)
+df.to_csv('road_vs_euclidian_distances.csv', index=False)
 
 print("Distance calculations completed and saved to 'distances.csv'.")
