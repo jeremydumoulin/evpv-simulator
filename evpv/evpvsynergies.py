@@ -23,9 +23,10 @@ class EVPVSynergies:
     as well as the Spearman correlation between EV and PV profiles over specific days.
 
     This class requires:
-        - A PVSimulator object, which holds the capacity factor time series data for PV production.
-        - A ChargingSimulator object, which stores EV charging demand profiles.
-        - The installed PV capacity (in megawatts, MW) as a float value.
+
+    - A PVSimulator object, which holds the capacity factor time series data for PV production.
+    - A ChargingSimulator object, which stores EV charging demand profiles.
+    - The installed PV capacity (in megawatts, MW) as a float value.
     """
 
     def __init__(self, pv: PVSimulator, ev: ChargingSimulator, pv_capacity_MW: float):
@@ -320,8 +321,7 @@ class EVPVSynergies:
 
         Args:
             day (str): The day for which to perform the calculation, in 'MM-DD' format.
-            recompute_probability (float): Probability (between 0 and 1) of recomputing EV demand 
-                to introduce randomness. Defaults to 0.0.
+            recompute_probability (float): Probability (between 0 and 1) of recomputing EV demand to introduce randomness. Defaults to 0.0.
 
         Returns:
             int: The number of vehicles fully charged using solar power.

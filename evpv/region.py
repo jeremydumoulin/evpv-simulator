@@ -27,9 +27,9 @@ class Region:
     zone data for further analysis and visualization through CSV files and Folium maps.
 
     Key Features:
+    
     - Input Data Validation: Validates input data and recalculates/repopulates traffic zones on-the-fly when key properties are modified.
-    - Traffic Zone Creation: Defines the traffic zones based of zone target size and shape, and provides the option to 
-      crop zones to the boundaries of the defined region.
+    - Traffic Zone Creation: Defines the traffic zones based of zone target size and shape, and provides the option to crop zones to the boundaries of the defined region.
     - Data Aggregation: Aggregates population, workplace, and POI data within each traffic zone.
     - Export and Visualizatio: Offers traffic zone export to CSV and visualization via Folium maps
 

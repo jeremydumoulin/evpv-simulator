@@ -32,8 +32,8 @@ class ChargingSimulator:
     and vehicle fleet details, along with user-defined charging scenarios that include charging efficiency and behavior settings.
 
     Key Features:
-    - Spatial Charging Demand: Computes the charging demand per traffic zone within the specified region, enabling 
-      geographically detailed assessments of charging needs.
+
+    - Spatial Charging Demand: Computes the charging demand per traffic zone within the specified region, enabling geographically detailed assessments of charging needs.
     - Temporal Charging Demand: Generates a load profile for each electric vehicle across all traffic zones using stochastic allocation.
       The number of vehicles charging and charging times are based on a state-of-charge (SOC) decision model, with a "dumb charging" 
       strategy by default (where vehicles charge at full charger power upon arrival).
@@ -731,7 +731,7 @@ class ChargingSimulator:
             location (list): List of location types ('home', 'work', 'poi').
             charging_strategy (str): The name of the charging strategy to apply.
             share (float): Proportion of vehicles participating (between 0 and 1).
-            **kwargs: Additional parameters for specific charging strategies.
+            kwargs: Additional parameters for specific charging strategies.
         """
         print(f"INFO \t Applying '{charging_strategy}' charging strategy...")
 

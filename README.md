@@ -117,6 +117,7 @@ from evpv.evpvsynergies import EVPVSynergies
 ```bash
 ├───environment.yml
 ├───setup.py
+├───version.py
 ├───LICENSE.md
 ├───README.md
 ├───doc/

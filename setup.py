@@ -1,10 +1,11 @@
 from setuptools import setup
+from version import __version__
 
 setup(
     name="evpv",          
-    version="0.1.0",              
+    version=__version__,              
     install_requires=[],        
-    description="A modelling tool for electric vehicles energy needs and solar charging in cities",
+    description="A modelling tool to calculate the spatio-temporal charging needs of electric vehicles and the potential for solar-based charging",
     long_description="README.md",
     long_description_content_type="text/markdown",
     author="Jérémy Dumoulin",
