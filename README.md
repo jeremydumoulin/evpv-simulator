@@ -64,6 +64,11 @@ $ conda env create -f environment.yml -n your_environment_name
 $ conda activate your_environment_name
 ```
 
+4. Install evpv as a python package (optionnal, but recommended to streamline the import and execution of the code). The "-e" option allows changes to the model (e.g., in case of pull ) to be to reflected immediately without reinstallation.
+```bash
+$ pip install -e .
+```
+
 ![](docs/installation.gif)
 
 ## Usage
@@ -77,19 +82,19 @@ The EV-PV model can be run in two ways:
 
 To run the EV-PV model in command-line mode, follow these steps:
 
-1. **Open a Terminal**: Use a terminal application, such as Anaconda Prompt, and navigate to the **root** of the EV-PV installation directory:
+1. **Open a Terminal**: Use a terminal application, such as Anaconda Prompt:
    ```bash
    cd [path_to_installation_folder]
    ```
 2. **Activate the conda environment** (if not already activated)
-3. **Create a configuration file for your case study**: Create a Python file (e.g., `config.py`) and populate it with your specific input values. Note that some input parameters are georeferenced data files (e.g., population raster). To see all required and optional parameters, refer to the `examples/00_basic_config.py` file. You can either clone this file to suit your needs or run it first to familiarize yourself with the inputs and outputs.
-4. **Run the EV-PV command-line script**: Execute the `evpv.py` script (depending on your Python version, you may need to use `python3` instead of `python`):
+3. **Create a configuration file for your case study**: Create a Python file (e.g., `config.py`) and populate it with your specific input values. Note that some input parameters are georeferenced data files (e.g., population raster). To see all required and optional parameters, refer to the `examples/00_cli_config.py` file. You can either clone this file to suit your needs or run it first to familiarize yourself with the inputs and outputs.
+4. **Run the EV-PV command-line script**: Execute the `evpv.py` script (depending on your Python installation, you may need to use `python3` instead of `python`):
    ```bash
-   python evpv.py
+   evpv
    ```
 5. **Provide configuration file path**: When prompted, enter the path to your configuration file, such as the basic example:
    ```bash
-   Enter the path to the python configuration file: C:\Users\(...)\00_basic_config.py
+   Enter the path to the python configuration file: C:\Users\(...)\00_cli_config.py
    ```
 6. **Check Outputs**: When to code is running, various output values will appear in the terminal. Once the simulation is complete, you will find all output files in the output directory you specified in your configuration file.
 
