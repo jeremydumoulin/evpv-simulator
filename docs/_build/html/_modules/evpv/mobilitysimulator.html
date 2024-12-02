@@ -1,0 +1,1343 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evpv.mobilitysimulator &#8212; EV-PV 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/evpv/mobilitysimulator';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">EV-PV 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">evpv.mobilit...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for evpv.mobilitysimulator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">shape</span><span class="p">,</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">MultiPoint</span>
+<span class="kn">from</span> <span class="nn">shapely.ops</span> <span class="kn">import</span> <span class="n">transform</span><span class="p">,</span> <span class="n">nearest_points</span><span class="p">,</span> <span class="n">snap</span>
+<span class="kn">from</span> <span class="nn">geopy.distance</span> <span class="kn">import</span> <span class="n">geodesic</span><span class="p">,</span> <span class="n">distance</span>
+<span class="kn">import</span> <span class="nn">openrouteservice</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">folium</span>
+<span class="kn">import</span> <span class="nn">branca.colormap</span> <span class="k">as</span> <span class="nn">cm</span>
+
+<span class="kn">from</span> <span class="nn">evpv.vehicle</span> <span class="kn">import</span> <span class="n">Vehicle</span>
+<span class="kn">from</span> <span class="nn">evpv.vehiclefleet</span> <span class="kn">import</span> <span class="n">VehicleFleet</span>
+<span class="kn">from</span> <span class="nn">evpv.region</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">evpv</span> <span class="kn">import</span> <span class="n">helpers</span> <span class="k">as</span> <span class="n">hlp</span>
+
+<div class="viewcode-block" id="MobilitySimulator">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator">[docs]</a>
+<span class="k">class</span> <span class="nc">MobilitySimulator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to perform a mobility demand simulation for a given region.</span>
+
+<span class="sd">    This class simulates the demand of commuting demand based on a given vehicle fleet and region, supporting various methods for </span>
+<span class="sd">    allocating vehicles spatially and performing trip distribution using spatial interaction modelling.</span>
+
+<span class="sd">    Key Features:</span>
+<span class="sd">    - Vehicle allocation: Allocates vehicles across zones of a region based on user-defined methods, supporting the addition of randomness.</span>
+<span class="sd">    - Trip distribution: Supports various spatial interaction models for trip distribution, such as the gravity and radiation models, allowing for customization of attraction and cost features to generate realistic commuting demand.</span>
+<span class="sd">    - Self-calibrated gravity model: Integrates a self-calibrated gravity model that can be used without calibration, following the work of Lenormand et. al. 2016  </span>
+<span class="sd">    - Routing and time/distance calculation: Enables flexible distance computation through both euclidean and road-based distances, with optional integration of OpenRouteService (ORS) API for advanced routing.</span>
+<span class="sd">    - Distance offset: Allows for adding a distance offset added to the distance calculated for commuting.</span>
+
+<span class="sd">    Note: This class assumes the region is pre-defined and vehicle allocation parameters are specified in a dictionary. The use of the `ors_key` parameter enables routing with real road network data, while omitting it defaults to basic distance calculations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_fleet</span><span class="p">:</span> <span class="n">VehicleFleet</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">vehicle_allocation_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">trip_distribution_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the MobilitySimulator class.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_fleet (VehicleFleet): An instance of the VehicleFleet class.</span>
+<span class="sd">            region (Region): An instance of the Region class.</span>
+<span class="sd">            vehicle_allocation_params (dict): Method for vehicle spatial allocation generation. Keys:</span>
+<span class="sd">                &#39;method&#39; (str): The method used for trip generation (e.g., &#39;population&#39;).</span>
+<span class="sd">                &#39;randomness&#39; (float): A value between 0 and 1 to introduce randomness.</span>
+<span class="sd">            trip_distribution_params (dict): Parameters specific to trip distribution. Keys:</span>
+<span class="sd">                &#39;road_to_euclidian_ratio&#39; (float): Ratio of road distance to Euclidean distance.</span>
+<span class="sd">                &#39;ors_key&#39; (str or None): Optional ORS (OpenRouteService) API key for routing.</span>
+<span class="sd">                &#39;model_type&#39; (str): Type of spatial interaction model (&#39;gravity&#39; or &#39;radiation&#39;).</span>
+<span class="sd">                &#39;attraction_feature&#39; (str): Feature to attract trips (e.g., &#39;workplaces&#39;).</span>
+<span class="sd">                &#39;cost_feature&#39; (str): Feature representing the cost of travel (e.g., &#39;distance_road&#39;).</span>
+<span class="sd">                &#39;distance_offset_km&#39; (float): Distance added to the distance calculated through trip distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creation of a MobilitySimulator object.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span> <span class="o">=</span> <span class="n">vehicle_fleet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_allocation_params</span> <span class="o">=</span> <span class="n">vehicle_allocation_params</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span> <span class="o">=</span> <span class="n">trip_distribution_params</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Successful initialization of input parameters.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># To store flows between traffic zones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># To store aggregated metrics for each zone (like vehicle-km or average distance travelled)</span>
+
+    <span class="c1"># Results properties (read-only)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">flows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: The flows of the trip distribution model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">aggregated_zone_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: The aggregated_zone_metrics of the trip distribution model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span>
+
+    <span class="c1"># Properties and Setters </span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vehicle_fleet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleFleet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;VehicleFleet: The vehicle fleet used in the simulation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vehicle_fleet</span>
+
+    <span class="nd">@vehicle_fleet</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">vehicle_fleet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">VehicleFleet</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VehicleFleet</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;vehicle_fleet must be an instance of the VehicleFleet class.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vehicle_fleet</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Region</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Region: The region used in the simulation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span>
+
+    <span class="nd">@region</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Region</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;region must be an instance of the Region class.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vehicle_allocation_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The method used for trip generation (e.g., &#39;population&#39;).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vehicle_allocation_params</span>
+
+    <span class="nd">@vehicle_allocation_params</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">vehicle_allocation_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># Check if `value` is a dictionary</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trip generation method must be a dictionary.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate required keys</span>
+        <span class="k">if</span> <span class="s1">&#39;method&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing required trip generation parameter: &#39;method&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;randomness&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing required trip generation parameter: &#39;randomness&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate types</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trip generation method must be a non-empty string.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;randomness&#39;</span><span class="p">],</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;randomness&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Randomness must be a float between 0 and 1.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If all checks pass, set the parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vehicle_allocation_params</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trip_distribution_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;dict: Parameters used for trip distribution.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trip_distribution_params</span>
+
+    <span class="nd">@trip_distribution_params</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">trip_distribution_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># Define required keys and expected types for each key</span>
+        <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;road_to_euclidian_ratio&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>  <span class="c1"># ratio should be numeric</span>
+            <span class="s1">&#39;ors_key&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)),</span>             <span class="c1"># optional API key, string or None</span>
+            <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>                        <span class="c1"># model type as a string</span>
+            <span class="s1">&#39;attraction_feature&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>                <span class="c1"># feature name as a string</span>
+            <span class="s1">&#39;cost_feature&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>                      <span class="c1"># feature name as a string</span>
+            <span class="s1">&#39;distance_offset_km&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Check if `value` is a dictionary</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trip distribution parameters must be a dictionary.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate each required key is present with the correct type</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">expected_type</span> <span class="ow">in</span> <span class="n">required_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required trip distribution parameter: &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">expected_type</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; must be of type </span><span class="si">{</span><span class="n">expected_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Additional checks for specific parameter values</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;road_to_euclidian_ratio&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;road_to_euclidian_ratio must be a positive number.&quot;</span><span class="p">)</span>
+        <span class="c1"># Check the connection with ORS</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;ors_key&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_ors_connection</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;ors_key&#39;</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Impossible to connect to ORS. Check the online status of the service (https://status.openrouteservice.org/) and the validity of your ORS key.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If all checks pass, set the parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trip_distribution_params</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Helpers</span>
+
+<div class="viewcode-block" id="MobilitySimulator.is_valid_ors_connection">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.is_valid_ors_connection">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid_ors_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ors_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the ORS key is valid by creating a client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ors_key (str): The ORS API key to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the key is valid, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Attempt to create an ORS client with the provided key</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">openrouteservice</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">ors_key</span><span class="p">)</span>
+            <span class="c1"># Perform a simple request to check validity</span>
+            <span class="n">routes</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">directions</span><span class="p">(((</span><span class="mf">8.34234</span><span class="p">,</span><span class="mf">48.23424</span><span class="p">),(</span><span class="mf">8.34423</span><span class="p">,</span><span class="mf">48.26424</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># If no exceptions, the key is valid</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while trying to establish a connection with ORS: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># Vehicle allocation methods</span>
+
+<div class="viewcode-block" id="MobilitySimulator.vehicle_allocation">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.vehicle_allocation">[docs]</a>
+    <span class="k">def</span> <span class="nf">vehicle_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allocates vehicle (number of outflows) to traffic zones.</span>
+<span class="sd">        </span>
+<span class="sd">        This method returns a new DataFrame containing the `id` of each zone and </span>
+<span class="sd">        the allocated number of outflows (`n_outflows`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame with zone metrics, including `id` and `n_outflows`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Allocating vehicles to traffic zones...&quot;</span><span class="p">)</span>
+
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_allocation_params</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span>
+        <span class="n">randomness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_allocation_params</span><span class="p">[</span><span class="s1">&#39;randomness&#39;</span><span class="p">]</span>
+        <span class="n">zones</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Make a copy to avoid direct modification</span>
+        <span class="n">n_outflows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">total_vehicles</span>
+
+        <span class="n">method_vehicle_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_outflows</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">randomness</span><span class="p">))</span>
+        <span class="n">random_vehicle_count</span> <span class="o">=</span> <span class="n">n_outflows</span> <span class="o">-</span> <span class="n">method_vehicle_count</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Method-based allocation of </span><span class="si">{</span><span class="n">method_vehicle_count</span><span class="si">}</span><span class="s2"> vehicles...&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Initial vehicle allocation based on specified method</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span>
+            <span class="n">total_population</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_people&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_people&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">method_vehicle_count</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">total_population</span><span class="p">))</span> <span class="k">if</span> <span class="n">total_population</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> The vehicle allocation method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is unknown.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Random allocation for remaining vehicles</span>
+        <span class="k">if</span> <span class="n">randomness</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Random allocation of </span><span class="si">{</span><span class="n">random_vehicle_count</span><span class="si">}</span><span class="s2"> vehicles...&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">random_vehicle_count</span><span class="p">):</span>
+                <span class="n">selected_zone</span> <span class="o">=</span> <span class="n">zones</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">zones</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">selected_zone</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Correct the allocation to match total outflow count</span>
+        <span class="n">difference</span> <span class="o">=</span> <span class="n">n_outflows</span> <span class="o">-</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">difference</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Adjusting difference of </span><span class="si">{</span><span class="n">difference</span><span class="si">}</span><span class="s2"> vehicles due to rounding...&quot;</span><span class="p">)</span>
+            <span class="n">zones</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_vehicle_allocation</span><span class="p">(</span><span class="n">difference</span><span class="p">,</span> <span class="n">zones</span><span class="p">)</span>
+
+        <span class="c1"># Update the traffic zones with the new data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]]</span>
+
+        <span class="c1"># Print </span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Total vehicles: </span><span class="si">{</span><span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Vehicles per zone: </span><span class="si">{</span><span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ASCII Histogram of vehicle distribution</span>
+        <span class="c1"># Should be a close to a normal distribution when randomness is 100%</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram_bin_edges</span><span class="p">(</span><span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+        <span class="n">hist</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Distribution of zones per vehicle count:&quot;</span><span class="p">)</span> 
+        <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">bar</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">count</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Scale the bar for better visibility</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edge</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">bin_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">bar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_adjust_vehicle_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">difference</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">zones</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjusts vehicle allocation to match the total count.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            difference (int): The difference between allocated and target outflow counts.</span>
+<span class="sd">            zones (pd.DataFrame): DataFrame with current outflows per zone.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: Adjusted zones DataFrame with corrected outflows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">difference</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Add outflows based on current distribution</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">difference</span><span class="p">):</span>
+                <span class="n">total_current_outflows</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">probabilities</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_current_outflows</span>
+                <span class="n">selected_zone</span> <span class="o">=</span> <span class="n">zones</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">probabilities</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">zones</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">selected_zone</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">difference</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Remove outflows based on current distribution</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">difference</span><span class="p">):</span>
+                <span class="n">total_current_outflows</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">probabilities</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_current_outflows</span>
+                <span class="c1"># Prevent negative number of vehicles</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">selected_zone</span> <span class="o">=</span> <span class="n">zones</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">probabilities</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">zones</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">selected_zone</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">zones</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">selected_zone</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+        <span class="k">return</span> <span class="n">zones</span>
+
+    <span class="c1"># Trip distribution methods</span>
+
+<div class="viewcode-block" id="MobilitySimulator.trip_distribution">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.trip_distribution">[docs]</a>
+    <span class="k">def</span> <span class="nf">trip_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">49</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Distributes trips between traffic zones based on a spatial interaction model. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Trip distribution...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get relevant parameters</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span>
+        <span class="n">ors_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;ors_key&#39;</span><span class="p">]</span>
+        <span class="n">road_to_euclidian_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;road_to_euclidian_ratio&#39;</span><span class="p">]</span>
+        <span class="n">attraction_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;attraction_feature&#39;</span><span class="p">]</span>
+        <span class="n">cost_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;cost_feature&#39;</span><span class="p">]</span>
+        <span class="n">vkt_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;distance_offset_km&#39;</span><span class="p">]</span>        
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># Check if the Region contains the number of vehicles</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Please perfom vehicle allocation before trip distribution.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create a dataframe with region attributes and vehicle outflows for convenience</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>        
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="c1"># Add the new column &#39;n_outflows&#39; to the copied dataframe</span>
+
+        <span class="c1"># Calculate the distances and travel times between traffic zones using ORS or road_to_euclidian_ratio</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Calculating distance/time between traffic zones...&quot;</span><span class="p">)</span>
+
+        <span class="n">flows_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_travel_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ors_key</span><span class="p">,</span> <span class="n">road_to_euclidian_ratio</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+        <span class="c1"># Apply the spatial interaction model</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Applying the &#39;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&#39; spatial interaction model...&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">origin</span> <span class="ow">in</span> <span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="c1"># Filter rows for the current origin</span>
+            <span class="n">origin_rows</span> <span class="o">=</span> <span class="n">flows_df</span><span class="p">[</span><span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin</span><span class="p">]</span>
+            <span class="n">origin_id</span> <span class="o">=</span> <span class="n">origin_rows</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span>
+
+            <span class="c1"># SIM input: outgoing trips</span>
+            <span class="n">n_outflows</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_id</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Get attraction and cost features</span>
+            <span class="n">att_origin</span><span class="p">,</span> <span class="n">dest_att_list</span><span class="p">,</span> <span class="n">cost_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attraction_cost_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">origin_id</span><span class="p">,</span> <span class="n">origin_rows</span><span class="p">,</span> <span class="n">attraction_feature</span><span class="p">,</span> <span class="n">cost_feature</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the flows based on the model</span>
+            <span class="n">flows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_spatial_interaction_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_outflows</span><span class="p">,</span> <span class="n">att_origin</span><span class="p">,</span> <span class="n">dest_att_list</span><span class="p">,</span> <span class="n">cost_list</span><span class="p">)</span>
+      
+            <span class="c1"># Update the flows column where row_id equals 1</span>
+            <span class="n">flows_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_id</span><span class="p">,</span> <span class="s1">&#39;Flow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flows</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">flows_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_id</span><span class="p">])]</span>
+
+        <span class="c1"># Append flow data </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span> <span class="o">=</span> <span class="n">flows_df</span>
+
+        <span class="c1"># Add aggregated data to the region object</span>
+
+        <span class="n">n_outflows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">n_inflows</span> <span class="o">=</span> <span class="p">[]</span> 
+        <span class="n">fkt_outflows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fkt_inflows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vkt_outflows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vkt_inflows</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Iterate over the TAZ and append data</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+            <span class="c1"># Append values related to the origin (outflows)            </span>
+            <span class="n">out_df</span> <span class="o">=</span> <span class="n">flows_df</span><span class="p">[</span><span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">out_df</span><span class="p">[</span><span class="s1">&#39;Distance_Flow_Product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_df</span><span class="p">[</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">vkt_offset</span><span class="p">)</span> <span class="o">*</span> <span class="n">out_df</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
+
+            <span class="n">outflow_sum</span> <span class="o">=</span> <span class="n">out_df</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">distance_flow_product_sum_out</span> <span class="o">=</span> <span class="n">out_df</span><span class="p">[</span><span class="s1">&#39;Distance_Flow_Product&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="n">n_outflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outflow_sum</span><span class="p">)</span>
+            <span class="n">fkt_outflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance_flow_product_sum_out</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">outflow_sum</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">vkt_outflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance_flow_product_sum_out</span> <span class="o">/</span> <span class="n">outflow_sum</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vkt_outflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Append values related to the destination (inflows)            </span>
+            <span class="n">in_df</span> <span class="o">=</span> <span class="n">flows_df</span><span class="p">[</span><span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">in_df</span><span class="p">[</span><span class="s1">&#39;Distance_Flow_Product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">in_df</span><span class="p">[</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">vkt_offset</span><span class="p">)</span> <span class="o">*</span> <span class="n">in_df</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
+
+            <span class="n">inflow_sum</span> <span class="o">=</span> <span class="n">in_df</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">distance_flow_product_sum_in</span> <span class="o">=</span> <span class="n">in_df</span><span class="p">[</span><span class="s1">&#39;Distance_Flow_Product&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="n">n_inflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inflow_sum</span><span class="p">)</span>
+            <span class="n">fkt_inflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance_flow_product_sum_in</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">inflow_sum</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">vkt_inflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance_flow_product_sum_in</span> <span class="o">/</span> <span class="n">inflow_sum</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vkt_inflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Add a new column with values from the list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;n_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_inflows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fkt_outflows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fkt_inflows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;vkt_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vkt_outflows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;vkt_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vkt_inflows</span>
+
+        <span class="c1"># Print</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Total vehicle-km (by road): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Average distance travelled per vehicle (by road): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> km&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_travel_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">ors_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">road_to_euclidian_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get road distances and travel times between traffic zones using ORS or road_to_euclidian_ratio.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            df (pd.DataFrame): DataFrame containing traffic zones with their geometric centers and IDs.</span>
+<span class="sd">            ors_key (str): OpenRouteService API key for distance calculations.</span>
+<span class="sd">            road_to_euclidian_ratio (float): Ratio to convert Euclidean distance to road distance if necessary.</span>
+<span class="sd">            batch_size (int): Number of origins/destinations per ORS request.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: DataFrame containing the flow data with &#39;Origin&#39;, &#39;Destination&#39;, &#39;Flow&#39;, &#39;Travel Time (min)&#39;, </span>
+<span class="sd">                          &#39;Travel Distance (km)&#39;, and &#39;Centroid Distance (km)&#39;, with rows where &#39;Origin&#39; equals &#39;Destination&#39; removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>       
+        <span class="c1"># Extract coordinates of the centroid</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;geometric_center&#39;</span><span class="p">]]</span>
+        <span class="n">num_coordinates</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+
+        <span class="c1"># Initialize the full matrices</span>
+        <span class="n">durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_coordinates</span><span class="p">,</span> <span class="n">num_coordinates</span><span class="p">))</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_coordinates</span><span class="p">,</span> <span class="n">num_coordinates</span><span class="p">))</span>
+
+        <span class="c1"># If the user provides an ORS key</span>
+        <span class="k">if</span> <span class="n">ors_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Routing using ORS matrix request&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check if the number of coordinates exceeds the batch size</span>
+            <span class="k">if</span> <span class="n">num_coordinates</span> <span class="o">&gt;</span> <span class="n">batch_size</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">num_coordinates</span><span class="si">}</span><span class="s2"> origins/destinations: this number is greater than the batch size set at </span><span class="si">{</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">. Multiple ORS requests are needed.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Initialize ORS client</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">openrouteservice</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">ors_key</span><span class="p">)</span>  <span class="c1"># Replace with your ORS API key</span>
+
+            <span class="c1"># Split the coordinates into manageable batches</span>
+            <span class="n">coordinate_batches</span> <span class="o">=</span> <span class="p">[</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)]</span>
+
+            <span class="c1"># Make multiple requests to the ORS API for each batch</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coordinate_batches</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Sending ORS request for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span><span class="si">}</span><span class="s2"> origins/destinations.&quot;</span><span class="p">)</span>
+
+                <span class="n">batch_matrix</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
+                    <span class="n">locations</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
+                    <span class="n">profile</span><span class="o">=</span><span class="s1">&#39;driving-car&#39;</span><span class="p">,</span>
+                    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="s1">&#39;distance&#39;</span><span class="p">],</span>
+                    <span class="n">resolve_locations</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Extract travel times and distances from the response</span>
+                <span class="n">batch_durations</span> <span class="o">=</span> <span class="n">batch_matrix</span><span class="p">[</span><span class="s1">&#39;durations&#39;</span><span class="p">]</span>
+                <span class="n">batch_distances</span> <span class="o">=</span> <span class="n">batch_matrix</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">]</span>
+
+                <span class="c1"># Determine the range of indices for this batch</span>
+                <span class="n">batch_start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span>
+                <span class="n">batch_end</span> <span class="o">=</span> <span class="n">batch_start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+
+                <span class="c1"># Populate the corresponding section of the full matrices</span>
+                <span class="n">durations</span><span class="p">[</span><span class="n">batch_start</span><span class="p">:</span><span class="n">batch_end</span><span class="p">,</span> <span class="n">batch_start</span><span class="p">:</span><span class="n">batch_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_durations</span>
+                <span class="n">distances</span><span class="p">[</span><span class="n">batch_start</span><span class="p">:</span><span class="n">batch_end</span><span class="p">,</span> <span class="n">batch_start</span><span class="p">:</span><span class="n">batch_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_distances</span>
+                
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Introduce a delay between requests to avoid rate limiting</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Distance by road calculated using empirical road-to-euclidian ratio equal to </span><span class="si">{</span><span class="n">road_to_euclidian_ratio</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Prepare lists to hold the data</span>
+        <span class="n">origin_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">destination_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">travel_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">travel_distances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">travel_distances_euclidian</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Populate the data based on the matrix response or on the road/euclidian distance ratio</span>
+        <span class="n">ors_errors</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">origin_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">destination_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]):</span>
+                <span class="n">origin_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">origin_id</span><span class="p">)</span>
+                <span class="n">destination_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">destination_id</span><span class="p">)</span>
+
+                <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># Placeholder for the flow for all origin-destination pairs                </span>
+
+                <span class="c1"># Calculate euclidean travel distance and append data</span>
+                <span class="n">point1</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_id</span><span class="p">,</span> <span class="s1">&#39;geometric_center&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">point2</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">destination_id</span><span class="p">,</span> <span class="s1">&#39;geometric_center&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">euclidian_distance</span> <span class="o">=</span> <span class="n">geodesic</span><span class="p">(</span><span class="n">point1</span><span class="p">,</span> <span class="n">point2</span><span class="p">)</span><span class="o">.</span><span class="n">kilometers</span>
+                <span class="n">travel_distances_euclidian</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">euclidian_distance</span><span class="p">)</span>
+
+                <span class="c1"># For all zero distances (the case for all combinations if ORS calculation has not been performed)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span> <span class="ow">or</span> <span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mf">.0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">origin_id</span> <span class="o">!=</span> <span class="n">destination_id</span><span class="p">):</span>
+                    <span class="n">distance</span> <span class="o">=</span> <span class="n">euclidian_distance</span> <span class="o">*</span> <span class="n">road_to_euclidian_ratio</span>
+                    <span class="n">travel_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+                    <span class="n">travel_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span> <span class="o">/</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># Convert to time</span>
+
+                    <span class="c1"># If ORS calculation was done, calculate the number of unresolved locations</span>
+                    <span class="k">if</span> <span class="n">ors_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">ors_errors</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">travel_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># Convert meters to kilometers</span>
+                    <span class="n">travel_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">durations</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># Convert seconds to minutes</span>
+
+        <span class="k">if</span> <span class="n">ors_errors</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> ORS was unable to calculate distance or resolve </span><span class="si">{</span><span class="n">ors_errors</span><span class="si">}</span><span class="s2"> routes. Road to euclidian distance ratio used instead with a travel speed of 30 km/h. This could affect the model reliability!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create the resulting DataFrame</span>
+        <span class="n">flow_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Origin&#39;</span><span class="p">:</span> <span class="n">origin_ids</span><span class="p">,</span>
+            <span class="s1">&#39;Destination&#39;</span><span class="p">:</span> <span class="n">destination_ids</span><span class="p">,</span>
+            <span class="s1">&#39;Flow&#39;</span><span class="p">:</span> <span class="n">flows</span><span class="p">,</span>
+            <span class="s1">&#39;Travel Time (min)&#39;</span><span class="p">:</span> <span class="n">travel_times</span><span class="p">,</span>
+            <span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">:</span> <span class="n">travel_distances</span><span class="p">,</span> 
+            <span class="s1">&#39;Centroid Distance (km)&#39;</span><span class="p">:</span> <span class="n">travel_distances_euclidian</span>
+        <span class="p">}</span>
+
+        <span class="n">flows_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">flow_data</span><span class="p">)</span>
+
+        <span class="c1"># Remove rows where &#39;Origin&#39; is equal to &#39;Destination&#39;</span>
+        <span class="n">flows_df</span> <span class="o">=</span> <span class="n">flows_df</span><span class="p">[</span><span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">flows_df</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]]</span>
+        
+        <span class="k">return</span> <span class="n">flows_df</span>
+
+    <span class="k">def</span> <span class="nf">_get_attraction_cost_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">origin_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">origin_rows</span><span class="p">:</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">attraction_feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cost_feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the attraction and cost data for the given origin.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (pd.DataFrame): The DataFrame containing traffic zone data.</span>
+<span class="sd">            origin_id (str): The ID of the origin zone.</span>
+<span class="sd">            origin_rows (DataFrame): DataFrame rows for the current origin.</span>
+<span class="sd">            attraction_feature (str): The feature used for attraction (e.g., &#39;population&#39;, &#39;workplaces&#39;).</span>
+<span class="sd">            cost_feature (str): The feature used for cost (e.g., &#39;distance_road&#39;, &#39;time_road&#39;).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: Attraction value for origin, list of destination attractions, list of costs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">attraction_feature</span> <span class="o">==</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span>
+            <span class="n">att_origin</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_id</span><span class="p">,</span> <span class="s1">&#39;n_people&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dest_att_list</span> <span class="o">=</span> <span class="n">origin_rows</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;n_people&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>          
+        <span class="k">elif</span> <span class="n">attraction_feature</span> <span class="o">==</span> <span class="s1">&#39;workplaces&#39;</span><span class="p">:</span>
+            <span class="n">att_origin</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_id</span><span class="p">,</span> <span class="s1">&#39;n_workplaces&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dest_att_list</span> <span class="o">=</span> <span class="n">origin_rows</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;n_workplaces&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Attraction feature is unknown.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cost_feature</span> <span class="o">==</span> <span class="s1">&#39;distance_road&#39;</span><span class="p">:</span>
+            <span class="n">cost_list</span> <span class="o">=</span> <span class="n">origin_rows</span><span class="p">[</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">cost_feature</span> <span class="o">==</span> <span class="s1">&#39;time_road&#39;</span><span class="p">:</span>
+            <span class="n">cost_list</span> <span class="o">=</span> <span class="n">origin_rows</span><span class="p">[</span><span class="s1">&#39;Travel Time (min)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">cost_feature</span> <span class="o">==</span> <span class="s1">&#39;distance_centroid&#39;</span><span class="p">:</span>
+            <span class="n">cost_list</span> <span class="o">=</span> <span class="n">origin_rows</span><span class="p">[</span><span class="s1">&#39;Centroid Distance (km)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Cost feature is unknown.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">att_origin</span><span class="p">,</span> <span class="n">dest_att_list</span><span class="p">,</span> <span class="n">cost_list</span>
+
+    <span class="k">def</span> <span class="nf">_apply_spatial_interaction_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_outflows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">att_origin</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dest_att_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the spatial interaction model to calculate flows.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (str): The spatial interaction model to use.</span>
+<span class="sd">            n_outflows (int): The number of outgoing trips.</span>
+<span class="sd">            att_origin (float): The attraction value for the origin.</span>
+<span class="sd">            dest_att_list (list): The list of attractions for each destination.</span>
+<span class="sd">            cost_list (list): The list of costs associated with each destination.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Calculated flows based on the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use a dictionary on the instance to store persistent flags</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_apply_spatial_interaction_model_flags&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_spatial_interaction_model_flags</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;beta_info&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;unit_surface_alert&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+
+        <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_spatial_interaction_model_flags</span>  <span class="c1"># Shorten access to the flags</span>
+
+
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_power_1&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_constrained_gravity_power</span><span class="p">(</span>
+                <span class="n">origin_n_trips</span><span class="o">=</span><span class="n">n_outflows</span><span class="p">,</span>
+                <span class="n">dest_attractivity_list</span><span class="o">=</span><span class="n">dest_att_list</span><span class="p">,</span>
+                <span class="n">cost_list</span><span class="o">=</span><span class="n">cost_list</span><span class="p">,</span>
+                <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_exp_1&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_constrained_gravity_exp</span><span class="p">(</span>
+                <span class="n">origin_n_trips</span><span class="o">=</span><span class="n">n_outflows</span><span class="p">,</span>
+                <span class="n">dest_attractivity_list</span><span class="o">=</span><span class="n">dest_att_list</span><span class="p">,</span>
+                <span class="n">cost_list</span><span class="o">=</span><span class="n">cost_list</span><span class="p">,</span>
+                <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_exp_01&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_constrained_gravity_exp</span><span class="p">(</span>
+                <span class="n">origin_n_trips</span><span class="o">=</span><span class="n">n_outflows</span><span class="p">,</span>
+                <span class="n">dest_attractivity_list</span><span class="o">=</span><span class="n">dest_att_list</span><span class="p">,</span>
+                <span class="n">cost_list</span><span class="o">=</span><span class="n">cost_list</span><span class="p">,</span>
+                <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;gravity_exp_scaled&#39;</span><span class="p">:</span>
+            <span class="n">unit_surface_km2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">average_zone_area_km2</span><span class="p">()</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">unit_surface_km2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.18</span><span class="p">)</span> <span class="c1"># c.f. Lenormand et al 2016            </span>
+
+            <span class="c1"># Display the beta info once</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;beta_info&#39;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Auto-scaled free parameter based on an average zone area of </span><span class="si">{</span><span class="n">unit_surface_km2</span><span class="si">}</span><span class="s2"> km²: Beta = </span><span class="si">{</span><span class="n">beta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;beta_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># Display the unit surface area alert once</span>
+            <span class="k">if</span> <span class="n">unit_surface_km2</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;unit_surface_alert&#39;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> The average unit surface area is less than 5 km2, which may cause the scaling law of the gravity model to be invalid.&quot;</span><span class="p">)</span>
+                <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;unit_surface_alert&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_constrained_gravity_exp</span><span class="p">(</span>
+                <span class="n">origin_n_trips</span><span class="o">=</span><span class="n">n_outflows</span><span class="p">,</span>
+                <span class="n">dest_attractivity_list</span><span class="o">=</span><span class="n">dest_att_list</span><span class="p">,</span>
+                <span class="n">cost_list</span><span class="o">=</span><span class="n">cost_list</span><span class="p">,</span>
+                <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;radiation&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_constrained_radiation</span><span class="p">(</span>
+                <span class="n">origin_n_trips</span><span class="o">=</span><span class="n">n_outflows</span><span class="p">,</span>
+                <span class="n">origin_attractivity</span><span class="o">=</span><span class="n">att_origin</span><span class="p">,</span>
+                <span class="n">dest_attractivity_list</span><span class="o">=</span><span class="n">dest_att_list</span><span class="p">,</span>
+                <span class="n">cost_list</span><span class="o">=</span><span class="n">cost_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Spatial interaction model &#39;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&#39; is unknown.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Spatial interaction models</span>
+
+<div class="viewcode-block" id="MobilitySimulator.prod_constrained_gravity_exp">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.prod_constrained_gravity_exp">[docs]</a>
+    <span class="k">def</span> <span class="nf">prod_constrained_gravity_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                                  <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                  <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                  <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained gravity model with exponential cost.</span>
+
+<span class="sd">        This is a special case of a spatial interaction model, where the cost function$f(d_{ij})$ follows an exponential </span>
+<span class="sd">        law.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            f(d_{ij})=e^{-d_{ij} \beta}</span>
+
+<span class="sd">        See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">            dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">            cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+<span class="sd">            beta (float, optional): The exponent applied to the cost in the calculation. </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+        <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+
+        <span class="c1"># Calculating raw flows and normalization constant</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flows</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Cost function is NULL for some fluxes, setting the corresponding flux to zero&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+            <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="c1"># Normalization</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+        <span class="k">return</span> <span class="n">flows</span></div>
+
+
+<div class="viewcode-block" id="MobilitySimulator.prod_constrained_radius">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.prod_constrained_radius">[docs]</a>
+    <span class="k">def</span> <span class="nf">prod_constrained_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                                <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained model based on distance radius.</span>
+
+<span class="sd">        This is a simplified example of a spatial interaction model. In this case, the product of attractiveness </span>
+<span class="sd">        and cost is set to 1 if the destination falls within a specified radius, and 0 otherwise. This function </span>
+<span class="sd">        is purely hypothetical and has no practical application justification. It can serve as a test function </span>
+<span class="sd">        since it directs all flows to destinations within the given radius.</span>
+
+<span class="sd">        See prod_constrained_gravity_power() for more details on spatial interaction models for trip distribution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">            dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">            cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+<span class="sd">            radius (float, optional): The maximum distance for attractivity. </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+        <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+
+        <span class="c1"># Calculating raw flows and normalization constant</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flows</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Cost function is NULL for some fluxes, setting the corresponding flux to zero&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cost_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">radius</span><span class="p">:</span>
+                    <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+            <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+        <span class="c1"># Normalization</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+        <span class="k">return</span> <span class="n">flows</span></div>
+
+
+<div class="viewcode-block" id="MobilitySimulator.prod_constrained_radiation">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.prod_constrained_radiation">[docs]</a>
+    <span class="k">def</span> <span class="nf">prod_constrained_radiation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin_n_trips</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                                   <span class="n">origin_attractivity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                                   <span class="n">dest_attractivity_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                                   <span class="n">cost_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimates flows from origin to destinations using a production-constrained radiation model.</span>
+
+<span class="sd">        This is a special case of an intervening opportunity spatial interaction model. In this case, the algorithm is more</span>
+<span class="sd">        complex than gravity laws, as the cost function $f(d_{ij})$ includes the intervening opportunities located at a distance </span>
+<span class="sd">        smaller than $d_{ij}$ </span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            f(d_{ij}) = ((A_i+s_{ij}).(A_i+A_j+s_{ij}))^{-1}</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            s_{ij} = \sum_{k \neq i,j} A_k, ~ if ~ d_{ik}&lt;d_{ij} </span>
+
+<span class="sd">        with $s_{ij}$ being the intervening opportunities. Refer to prod_constrained_gravity_power() for other symbols.</span>
+
+<span class="sd">        To our knowledge, this model has been initially described in the following publication:</span>
+<span class="sd">        Simini, F., González, M., Maritan, A. et al. A universal model for mobility and migration patterns. Nature </span>
+<span class="sd">        484, 96–100 (2012). https://doi.org/10.1038/nature10856.</span>
+
+<span class="sd">        While this model has the advantage of being parameter-free, it seems to not perform well at smaller scales.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin_n_trips (float): The total number of trips originating from the origin.</span>
+<span class="sd">            origin_attractivity (float): The attractivity of the origin.</span>
+<span class="sd">            dest_attractivity_list (list[float]): A list of attractivity values for each destination.</span>
+<span class="sd">            cost_list (list[float]): A list of cost values corresponding to each destination.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: An array of estimated flows to each destination.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Step 1: Initialize variables</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dest_attractivity_list</span><span class="p">))</span>
+        <span class="n">norm_constant</span> <span class="o">=</span> <span class="mf">.0</span>
+        <span class="n">intervening_opportunity</span> <span class="o">=</span> <span class="mf">.0</span>
+
+        <span class="c1"># Step 2: Create list of tuples to store initial order of cost_list and order them by distance</span>
+        <span class="n">indexed_cost_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">cost_list</span><span class="p">))</span>
+
+        <span class="c1"># Sort the list of tuples based on the values</span>
+        <span class="n">sorted_indexed_cost_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">indexed_cost_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Prepare a list to store flows with their original indices</span>
+        <span class="n">calculated_indexed_flows</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Step 3: Calculate raw flows and normalization constant</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">original_index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sorted_indexed_cost_list</span><span class="p">:</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">original_index</span>  <span class="c1"># Use the original index from the sorted list</span>
+
+            <span class="n">num</span> <span class="o">=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>  <span class="c1"># Origin attractivity cancels out when normalizing.</span>
+            <span class="n">den</span> <span class="o">=</span> <span class="p">(</span><span class="n">origin_attractivity</span> <span class="o">+</span> <span class="n">intervening_opportunity</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">origin_attractivity</span> <span class="o">+</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">intervening_opportunity</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">den</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Denominator of radiation model is NULL. Flow is set to zero.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">calculated_flow</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attractivity_over_cost</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
+                <span class="n">calculated_flow</span> <span class="o">=</span> <span class="n">origin_n_trips</span> <span class="o">*</span> <span class="n">attractivity_over_cost</span>
+
+            <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculated_flow</span>
+
+            <span class="c1"># Add intervening opportunity only if the next destination is farther away than the current one</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sorted_indexed_cost_list</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">sorted_indexed_cost_list</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">intervening_opportunity</span> <span class="o">+=</span> <span class="n">dest_attractivity_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+            <span class="n">norm_constant</span> <span class="o">+=</span> <span class="n">attractivity_over_cost</span>
+
+            <span class="c1"># Append the calculated flow with its original index to the list</span>
+            <span class="n">calculated_indexed_flows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">original_index</span><span class="p">,</span> <span class="n">flows</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Step 4: Sort back to the original order using the original indices</span>
+        <span class="n">original_order_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">calculated_indexed_flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Extract the values from the tuples to get the final list</span>
+        <span class="n">final_flows</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">original_order_flows</span><span class="p">]</span>
+
+        <span class="c1"># Step 5: Normalize the flows</span>
+        <span class="n">final_flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">final_flows</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm_constant</span>
+
+        <span class="k">return</span> <span class="n">final_flows</span></div>
+
+
+    <span class="c1"># Overloading sum </span>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;***********************************************&quot;</span><span class="p">)</span>        
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Summing two MobilitySimulator objects&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Warning: This method implementation is not fully mature and may not handle all edge cases. Note that summing only concerns the results, input properties might make no sense anymore.&quot;</span><span class="p">)</span>        
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">MobilitySimulator</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;distance_offset_km&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">.0</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">trip_distribution_params</span><span class="p">[</span><span class="s1">&#39;distance_offset_km&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">.0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Cannot handle the case where &#39;distance_offset_km&#39; is not zero.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        
+        <span class="c1"># Sum flows</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">_flows</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Concatenate the flows</span>
+            <span class="n">combined_flows</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_flows</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="c1"># Group by Origin and Destination and sum the Flow column</span>
+            <span class="n">combined_flows</span> <span class="o">=</span> <span class="n">combined_flows</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;Origin&#39;</span><span class="p">,</span> <span class="s1">&#39;Destination&#39;</span><span class="p">],</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span>
+                <span class="s1">&#39;Flow&#39;</span><span class="p">:</span> <span class="s1">&#39;sum&#39;</span><span class="p">,</span>  <span class="c1"># Sum the Flow column</span>
+                <span class="s1">&#39;Travel Time (min)&#39;</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span>  <span class="c1"># Keep first or customize as needed</span>
+                <span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span>  <span class="c1"># Keep first or customize as needed</span>
+                <span class="s1">&#39;Centroid Distance (km)&#39;</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span>  <span class="c1"># Keep first or customize as needed</span>
+            <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Run the two simulations before adding two objects.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create a new MobilitySimulator instance for the result</span>
+        <span class="n">new_simulator</span> <span class="o">=</span> <span class="n">MobilitySimulator</span><span class="p">(</span>
+            <span class="n">vehicle_fleet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="p">,</span>
+            <span class="n">region</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+            <span class="n">vehicle_allocation_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle_allocation_params</span><span class="p">,</span>
+            <span class="n">trip_distribution_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trip_distribution_params</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Assign the combined flows</span>
+        <span class="n">new_simulator</span><span class="o">.</span><span class="n">_flows</span> <span class="o">=</span> <span class="n">combined_flows</span>
+
+        <span class="c1"># Sum total vehicles from the vehicle_fleet of both instances</span>
+        <span class="n">total_vehicles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">total_vehicles</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">total_vehicles</span>
+        <span class="n">new_simulator</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">total_vehicles</span> <span class="o">=</span> <span class="n">total_vehicles</span>  <span class="c1"># Update the total vehicles in the new instance</span>
+        
+        <span class="c1"># Initialize the aggregated metrics and update</span>
+        <span class="n">new_simulator</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span>
+        <span class="n">new_simulator</span><span class="o">.</span><span class="n">update_aggregated_metrics</span><span class="p">()</span>
+
+        <span class="c1"># Print</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Total vehicle-km (by road): </span><span class="si">{</span><span class="n">new_simulator</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Average distance travelled per vehicle (by road): </span><span class="si">{</span><span class="n">new_simulator</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">new_simulator</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;***********************************************&quot;</span><span class="p">)</span>  
+        <span class="k">return</span> <span class="n">new_simulator</span>
+
+<div class="viewcode-block" id="MobilitySimulator.update_aggregated_metrics">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.update_aggregated_metrics">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_aggregated_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the aggregated zone metrics based on flows data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Flows or aggregated metrics are not initialized.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Loop through each zone ID in the aggregated metrics</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">zone_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+            <span class="c1"># Calculate inflows (flows into the zone)</span>
+            <span class="n">inflows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">][</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Calculate outflows (flows out of the zone)</span>
+            <span class="n">outflows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">][</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Update inflows and outflows counts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;n_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inflows</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">outflows</span><span class="p">)</span>
+
+            <span class="c1"># Calculate total kilometers (fkt)</span>
+            <span class="n">total_km_outflows</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">][</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span> <span class="o">*</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">][</span><span class="s1">&#39;Flow&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">total_km_inflows</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">][</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span> <span class="o">*</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="p">[</span><span class="s1">&#39;Destination&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">][</span><span class="s1">&#39;Flow&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Update total kilometers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_km_outflows</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;fkt_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_km_inflows</span>
+
+            <span class="c1"># Calculate average distance (vkt)</span>
+            <span class="k">if</span> <span class="n">outflows</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;vkt_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_km_outflows</span> <span class="o">/</span> <span class="n">outflows</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;vkt_outflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="n">inflows</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;vkt_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_km_inflows</span> <span class="o">/</span> <span class="n">inflows</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;vkt_inflows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+    <span class="c1"># Export and visualization</span>
+
+<div class="viewcode-block" id="MobilitySimulator.to_csv">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.to_csv">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves two CSV files with the main output data for flows and aggregated zone metrics.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str): Base path for the output files. Automatically appends suffixes</span>
+<span class="sd">                            &quot;_flows&quot; and &quot;_aggregated_zone_metrics&quot; before &quot;.csv&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove any existing file extension</span>
+        <span class="n">filepath_without_ext</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="c1"># Save each dataframe with the respective suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flows</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath_without_ext</span><span class="si">}</span><span class="s2">_flows.csv&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_zone_metrics</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath_without_ext</span><span class="si">}</span><span class="s2">_aggregated_zone_metrics.csv&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MobilitySimulator.vehicle_allocation_to_map">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.vehicle_allocation_to_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">vehicle_allocation_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span>
+
+        <span class="c1"># Create the base map with admin boundaries</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">create_base_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="c1"># Add TAZ boundaries</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_taz_boundaries</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">)</span>
+
+        <span class="c1"># Add number of outflows</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;n_outflows&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of trips&#39;</span><span class="p">,</span> <span class="s1">&#39;Trips&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Add Layer Control and Save</span>
+        <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">()</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MobilitySimulator.trip_distribution_to_map">
+<a class="viewcode-back" href="../../evpv.html#evpv.mobilitysimulator.MobilitySimulator.trip_distribution_to_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">trip_distribution_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">trip_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># Create the base map with admin boundaries</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">create_base_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="c1"># Add TAZ boundaries</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_taz_boundaries</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">)</span>
+
+        <span class="c1"># Add trip distribution flows</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">flows</span><span class="p">[</span><span class="s1">&#39;Origin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">trip_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">group</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Number of trips from </span><span class="si">{</span><span class="n">trip_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;Flows&#39;</span><span class="p">,</span> <span class="n">zone_id_col</span><span class="o">=</span><span class="s1">&#39;Destination&#39;</span><span class="p">)</span>
+
+        <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">()</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Jeremy Dumoulin.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

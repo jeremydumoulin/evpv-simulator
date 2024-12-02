@@ -1,0 +1,746 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evpv.pvsimulator &#8212; EV-PV 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/evpv/pvsimulator';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">EV-PV 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">evpv.pvsimulator</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for evpv.pvsimulator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">pvlib</span>
+<span class="kn">from</span> <span class="nn">pvlib</span> <span class="kn">import</span> <span class="n">location</span><span class="p">,</span> <span class="n">pvsystem</span><span class="p">,</span> <span class="n">modelchain</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">timezonefinder</span> <span class="kn">import</span> <span class="n">TimezoneFinder</span>
+<span class="kn">import</span> <span class="nn">pytz</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<div class="viewcode-block" id="PVSimulator">
+<a class="viewcode-back" href="../../evpv.html#evpv.pvsimulator.PVSimulator">[docs]</a>
+<span class="k">class</span> <span class="nc">PVSimulator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pv_module</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">installation</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the PVSimulator with validated environmental data, PV module parameters, and installation settings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            environment (dict): A dictionary containing environmental parameters with the following keys:</span>
+<span class="sd">                - latitude (float): Latitude of the location (must be between -90 and 90).</span>
+<span class="sd">                - longitude (float): Longitude of the location (must be between -180 and 180).</span>
+<span class="sd">                - year (int): Year for the simulation.</span>
+<span class="sd">            pv_module (dict): A dictionary containing PV module parameters with the following keys:</span>
+<span class="sd">                - efficiency (float): Efficiency of the PV module (must be a positive decimal less than or equal to 1).</span>
+<span class="sd">                - temperature_coefficient (float): Temperature coefficient of the module.</span>
+<span class="sd">            installation (dict): A dictionary containing installation parameters with the following keys:</span>
+<span class="sd">                - type (str): Type of installation (e.g., &#39;groundmounted_fixed&#39;).</span>
+<span class="sd">                - system_losses (float): System losses as a decimal (must be between 0 and 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creation of a PVSimulator object.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize and validate environment attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="n">environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">installation</span> <span class="o">=</span> <span class="n">installation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span> <span class="o">=</span> <span class="n">pv_module</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Successful initialization of input parameters.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Modeling results</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="c1"># Create location, weather data and PV system objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_location</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weather_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_weather_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pv_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_pv_system</span><span class="p">()</span>
+
+    <span class="c1"># Properties and Setters with validation</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span>
+
+    <span class="nd">@environment</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment must be a dictionary&quot;</span><span class="p">)</span>
+
+        <span class="n">latitude</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;latitude&#39;</span><span class="p">)</span>
+        <span class="n">longitude</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;longitude&#39;</span><span class="p">)</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="mi">90</span> <span class="o">&lt;=</span> <span class="n">latitude</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Latitude must be between -90 and 90&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="mi">180</span> <span class="o">&lt;=</span> <span class="n">longitude</span> <span class="o">&lt;=</span> <span class="mi">180</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Longitude must be between -180 and 180&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Year must be an integer&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">installation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_installation</span>
+
+    <span class="nd">@installation</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">installation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Installation must be a dictionary&quot;</span><span class="p">)</span>
+
+        <span class="n">install_type</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+        <span class="n">system_losses</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;system_losses&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">install_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;groundmounted_fixed&#39;</span><span class="p">,</span> <span class="s1">&#39;rooftop&#39;</span><span class="p">,</span> <span class="s1">&#39;groundmounted_dualaxis&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;groundmounted_singleaxis_horizontal&#39;</span><span class="p">,</span> <span class="s1">&#39;groundmounted_singleaxis_vertical&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid installation type specified&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">system_losses</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;System losses must be between 0 and 1&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_installation</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pv_module</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_module</span>
+
+    <span class="nd">@pv_module</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pv_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PV module must be a dictionary&quot;</span><span class="p">)</span>
+
+        <span class="n">efficiency</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;efficiency&#39;</span><span class="p">)</span>
+        <span class="n">temperature_coefficient</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;temperature_coefficient&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">efficiency</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Efficiency must be a positive decimal not exceeding 1&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">temperature_coefficient</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Temperature coefficient must be a float&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pv_module</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Results</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span>
+
+    <span class="nd">@results</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="o">=</span> <span class="n">results_df</span>
+
+    <span class="c1"># Location, Weather, PV System </span>
+
+    <span class="k">def</span> <span class="nf">_create_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a location object based on the environment settings.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            location.Location: A location object containing latitude, longitude, and timezone information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creating location object...&quot;</span><span class="p">)</span>
+
+        <span class="n">timezone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;latitude&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;longitude&#39;</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Lat.: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Lon.: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Timezone: </span><span class="si">{</span><span class="n">timezone</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>        
+
+        <span class="k">return</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span>
+            <span class="n">latitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">],</span>
+            <span class="n">longitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">],</span>
+            <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fetch_weather_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetches hourly weather data with POA irradiance from PVGIS for the specified year.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing the weather data with POA irradiance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Fetching hourly weather data with POA irradiance from PV GIS for the year </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (Installation type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize tilt and azimuth</span>
+        <span class="n">tilt</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Default value</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="mi">180</span>  <span class="c1"># Default value </span>
+        <span class="n">optimize_tilt</span> <span class="o">=</span> <span class="n">optimize_azimuth</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Set the tracking and tilt/azimuth options</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;groundmounted_fixed&#39;</span><span class="p">:</span>
+            <span class="n">trackingtype</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;groundmounted_singleaxis_horizontal&#39;</span><span class="p">:</span>
+            <span class="n">trackingtype</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;groundmounted_singleaxis_vertical&#39;</span><span class="p">:</span>
+            <span class="n">trackingtype</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;groundmounted_dualaxis&#39;</span><span class="p">:</span>
+            <span class="n">trackingtype</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;rooftop&#39;</span><span class="p">:</span>
+            <span class="n">trackingtype</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">optimize_tilt</span> <span class="o">=</span> <span class="n">optimize_azimuth</span> <span class="o">=</span> <span class="kc">False</span>                 
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="mi">180</span>
+            <span class="n">tilt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> PV installation type is unknown.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get data from PVGIS</span>
+        <span class="n">weather_data_poa</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">inputs</span> <span class="o">=</span> <span class="n">pvlib</span><span class="o">.</span><span class="n">iotools</span><span class="o">.</span><span class="n">get_pvgis_hourly</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span>
+            <span class="n">end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span>
+            <span class="n">raddatabase</span><span class="o">=</span><span class="s1">&#39;PVGIS-SARAH3&#39;</span><span class="p">,</span>
+            <span class="n">components</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">surface_tilt</span><span class="o">=</span><span class="n">tilt</span><span class="p">,</span>
+            <span class="n">surface_azimuth</span><span class="o">=</span><span class="n">azimuth</span><span class="p">,</span>
+            <span class="n">outputformat</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span>
+            <span class="n">usehorizon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">userhorizon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">pvcalculation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">peakpower</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">pvtechchoice</span><span class="o">=</span><span class="s1">&#39;crystSi&#39;</span><span class="p">,</span>
+            <span class="n">mountingplace</span><span class="o">=</span><span class="s1">&#39;free&#39;</span><span class="p">,</span>
+            <span class="n">loss</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">trackingtype</span><span class="o">=</span><span class="n">trackingtype</span><span class="p">,</span>
+            <span class="n">optimal_surface_tilt</span><span class="o">=</span><span class="n">optimize_tilt</span><span class="p">,</span>
+            <span class="n">optimalangles</span><span class="o">=</span><span class="n">optimize_azimuth</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://re.jrc.ec.europa.eu/api/v5_3/&#39;</span><span class="p">,</span>
+            <span class="n">map_variables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Get Diffuse and Global Irradiance in POA</span>
+        <span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_diffuse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_sky_diffuse&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_ground_diffuse&#39;</span><span class="p">]</span>
+        <span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_global&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_direct&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_diffuse&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Convert the index to datetime</span>
+        <span class="n">weather_data_poa</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">weather_data_poa</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">weather_data_poa</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">weather_data_poa</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="c1"># Convert the to local timezone</span>
+        <span class="n">weather_data_poa</span> <span class="o">=</span> <span class="n">weather_data_poa</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">tz</span><span class="p">)</span>
+
+        <span class="c1"># Because of the converting of the time zone, the last rows could be those of the next year</span>
+        <span class="c1"># Here, we detect how many rows we have and shift them to the beginning of the data</span>
+        <span class="n">tz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">tz</span><span class="p">)</span> 
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span>  <span class="c1"># Get the number of hours from UTC</span>
+
+        <span class="n">last_n_rows</span> <span class="o">=</span> <span class="n">weather_data_poa</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">remaining_rows</span> <span class="o">=</span> <span class="n">weather_data_poa</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weather_data_poa</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">weather_data_poa</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">last_n_rows</span><span class="p">,</span> <span class="n">remaining_rows</span><span class="p">])</span>
+
+        <span class="c1"># Reattach the year information to the DataFrame</span>
+        <span class="n">weather_data_poa</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">-01-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">weather_data_poa</span><span class="p">),</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Print some information</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Elevation: </span><span class="si">{</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;elevation&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> m &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Mounting: </span><span class="si">{</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;mounting_system&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Global POA irradiance: </span><span class="si">{</span><span class="p">(</span><span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_global&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="si">}</span><span class="s2"> kWh/m2/yr &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Diffuse POA irradiance: </span><span class="si">{</span><span class="p">(</span><span class="n">weather_data_poa</span><span class="p">[</span><span class="s1">&#39;poa_diffuse&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="si">}</span><span class="s2"> kWh/m2/yr &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Update the angles (useful only for fixed mounting to calculate AOI losses)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;groundmounted_fixed&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_installation</span><span class="p">[</span><span class="s1">&#39;tilt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;mounting_system&#39;</span><span class="p">][</span><span class="s1">&#39;fixed&#39;</span><span class="p">][</span><span class="s1">&#39;slope&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_installation</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;mounting_system&#39;</span><span class="p">][</span><span class="s1">&#39;fixed&#39;</span><span class="p">][</span><span class="s1">&#39;azimuth&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_installation</span><span class="p">[</span><span class="s1">&#39;tilt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_installation</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">azimuth</span>
+
+        <span class="k">return</span> <span class="n">weather_data_poa</span>
+
+    <span class="k">def</span> <span class="nf">_create_pv_system</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pvsystem</span><span class="o">.</span><span class="n">PVSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a PV System with parameters compatible with the PVWatts model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pvsystem.PVSystem: A PVSystem object configured with module and inverter parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creating a pvlib PVSystem object...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Set mounting conditions for the thermal model</span>
+        <span class="n">mounting</span> <span class="o">=</span> <span class="s1">&#39;freestanding&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;rooftop&#39;</span><span class="p">:</span>
+            <span class="n">mounting</span> <span class="o">=</span> <span class="s1">&#39;insulated&#39;</span>
+
+        <span class="n">system</span> <span class="o">=</span> <span class="n">pvsystem</span><span class="o">.</span><span class="n">PVSystem</span><span class="p">(</span>
+            <span class="n">module_parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;pdc0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># Nominal DC power of 1 m2 of PV panel</span>
+                <span class="s1">&#39;gamma_pdc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;temperature_coefficient&#39;</span><span class="p">]</span>  <span class="c1"># Temperature coefficient (negative value)</span>
+            <span class="p">},</span>
+            <span class="n">inverter_parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;pdc0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># Nominal DC power</span>
+                <span class="s1">&#39;eta_inv_nom&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># Inverter efficiency of 100% (system losses are computed ex-post)</span>
+                <span class="s1">&#39;ac_0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># AC power rating assumed equal to DC power rating</span>
+            <span class="p">},</span>
+            <span class="n">temperature_model_parameters</span><span class="o">=</span><span class="n">pvlib</span><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">TEMPERATURE_MODEL_PARAMETERS</span><span class="p">[</span><span class="s1">&#39;pvsyst&#39;</span><span class="p">][</span><span class="n">mounting</span><span class="p">],</span>  <span class="c1"># PVSyst temperature model    </span>
+            <span class="n">surface_tilt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;tilt&#39;</span><span class="p">],</span>  <span class="c1"># Used for AOI losses</span>
+            <span class="n">surface_azimuth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span>  <span class="c1"># Used for AOI losses       </span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">system</span>
+
+    <span class="c1"># Compute PV Production </span>
+
+<div class="viewcode-block" id="PVSimulator.compute_pv_production">
+<a class="viewcode-back" href="../../evpv.html#evpv.pvsimulator.PVSimulator.compute_pv_production">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_pv_production</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the PV production and main KPIs using POA weather data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing PV production, performance ratio, capacity factor, </span>
+<span class="sd">                          operating temperature, and POA irradiance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Computing the hourly PV production...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize the model chain and run from POA</span>
+        <span class="n">mc</span> <span class="o">=</span> <span class="n">modelchain</span><span class="o">.</span><span class="n">ModelChain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_system</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">aoi_model</span><span class="o">=</span><span class="s2">&quot;no_loss&quot;</span><span class="p">,</span> <span class="n">spectral_model</span><span class="o">=</span><span class="s2">&quot;no_loss&quot;</span><span class="p">)</span>
+        <span class="n">mc</span><span class="o">.</span><span class="n">run_model_from_poa</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weather_data</span><span class="p">)</span>
+
+        <span class="c1"># Correct to account for angle of incidence loss (problem when using the run_model_from_poa here)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;groundmounted_fixed&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;rooftop&#39;</span><span class="p">:</span>
+            <span class="n">pv_production</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">dc</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_angular_losses</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;tilt&#39;</span><span class="p">])</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="c1"># Correct the DC power for system losses to get AC production</span>
+        <span class="n">pv_production</span> <span class="o">=</span> <span class="n">pv_production</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">installation</span><span class="p">[</span><span class="s1">&#39;system_losses&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Compute KPIs</span>
+        <span class="n">performance_ratio</span> <span class="o">=</span> <span class="n">pv_production</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weather_data</span><span class="p">[</span><span class="s1">&#39;poa_global&#39;</span><span class="p">])</span>
+        <span class="n">capacity_factor</span> <span class="o">=</span> <span class="n">pv_production</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="n">operating_temperature</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cell_temperature</span>
+
+        <span class="c1"># Create a DataFrame with the results</span>
+        <span class="n">results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s1">&#39;PV Production (W/m2)&#39;</span><span class="p">:</span> <span class="n">pv_production</span><span class="p">,</span>
+            <span class="s1">&#39;Performance Ratio&#39;</span><span class="p">:</span> <span class="n">performance_ratio</span><span class="p">,</span>
+            <span class="s1">&#39;Capacity Factor&#39;</span><span class="p">:</span> <span class="n">capacity_factor</span><span class="p">,</span>
+            <span class="s1">&#39;Temperature (C)&#39;</span><span class="p">:</span> <span class="n">operating_temperature</span><span class="p">,</span>
+            <span class="s1">&#39;POA Irradiance (W/m2)&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weather_data</span><span class="p">[</span><span class="s1">&#39;poa_global&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Energy yield: </span><span class="si">{</span><span class="p">(</span><span class="n">pv_production</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">}</span><span class="s2"> kWh/m2/yr&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Specific yield: </span><span class="si">{</span><span class="p">(</span><span class="n">pv_production</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2"> kWh/kWp/yr&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Performance ratio: </span><span class="si">{</span><span class="p">(</span><span class="n">pv_production</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_module</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">weather_data</span><span class="p">[</span><span class="s1">&#39;poa_global&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Average capacity factor: </span><span class="si">{</span><span class="n">capacity_factor</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="o">=</span> <span class="n">results_df</span></div>
+
+
+    <span class="c1"># Helpers</span>
+
+<div class="viewcode-block" id="PVSimulator.get_timezone">
+<a class="viewcode-back" href="../../evpv.html#evpv.pvsimulator.PVSimulator.get_timezone">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_timezone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get timezone string based on latitude and longitude.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lat (float): Latitude of the location.</span>
+<span class="sd">            lon (float): Longitude of the location.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The timezone string if found, otherwise None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tf</span> <span class="o">=</span> <span class="n">TimezoneFinder</span><span class="p">()</span>  <span class="c1"># Initialize TimezoneFinder</span>
+
+        <span class="k">if</span> <span class="n">lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">lon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tz_string</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">timezone_at</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span> <span class="n">lng</span><span class="o">=</span><span class="n">lon</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tz_string</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tz_string</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="PVSimulator.calculate_angular_losses">
+<a class="viewcode-back" href="../../evpv.html#evpv.pvsimulator.PVSimulator.calculate_angular_losses">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_angular_losses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat_tilt_diff</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the angular losses for a standard m-Si module based on the difference</span>
+<span class="sd">        between latitude and tilt angle.</span>
+
+<span class="sd">        Martin, J.M. Ruiz,</span>
+<span class="sd">        Calculation of the PV modules angular losses under field conditions by means of an analytical model,</span>
+<span class="sd">        Solar Energy Materials and Solar Cells,</span>
+<span class="sd">        Volume 70, Issue 1,</span>
+<span class="sd">        2001,</span>
+<span class="sd">        Pages 25-38,</span>
+<span class="sd">        ISSN 0927-0248,</span>
+<span class="sd">        https://doi.org/10.1016/S0927-0248(00)00408-6.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - lat_tilt_diff (float): The difference between latitude and tilt angle in degrees.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - float: Angular losses as a percentage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Coefficients for the weighted quadratic fit model</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mf">11.3e-4</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="mf">11.9e-3</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mf">2.87</span>
+
+        <span class="c1"># Calculate angular losses</span>
+        <span class="n">angular_losses</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">lat_tilt_diff</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">lat_tilt_diff</span> <span class="o">+</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="n">angular_losses</span>   </div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Jeremy Dumoulin.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

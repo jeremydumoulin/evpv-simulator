@@ -1,0 +1,5 @@
+To udpate the doc: 
+1. Make sure the existing modules are in line with the evpv.rst file
+2. Open anaconda prompt and go to docs
+3. run: make html
+4. Check for errors and correct (generally formatting errors of the docstrings in the class documentation)

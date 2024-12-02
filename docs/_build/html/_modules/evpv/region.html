@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evpv.region &#8212; EV-PV 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/evpv/region';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">EV-PV 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">evpv.region</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for evpv.region</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="kn">from</span> <span class="nn">rasterio.mask</span> <span class="kn">import</span> <span class="n">mask</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">shape</span><span class="p">,</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">MultiPoint</span>
+<span class="kn">from</span> <span class="nn">shapely.ops</span> <span class="kn">import</span> <span class="n">transform</span><span class="p">,</span> <span class="n">nearest_points</span><span class="p">,</span> <span class="n">snap</span>
+<span class="kn">from</span> <span class="nn">geopy.distance</span> <span class="kn">import</span> <span class="n">geodesic</span><span class="p">,</span> <span class="n">distance</span>
+<span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Geod</span><span class="p">,</span> <span class="n">Proj</span><span class="p">,</span> <span class="n">Transformer</span>
+<span class="kn">import</span> <span class="nn">folium</span>
+<span class="kn">import</span> <span class="nn">branca.colormap</span> <span class="k">as</span> <span class="nn">cm</span>
+
+<span class="kn">from</span> <span class="nn">evpv</span> <span class="kn">import</span> <span class="n">helpers</span> <span class="k">as</span> <span class="n">hlp</span>
+
+<div class="viewcode-block" id="Region">
+<a class="viewcode-back" href="../../evpv.html#evpv.region.Region">[docs]</a>
+<span class="k">class</span> <span class="nc">Region</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to represent the region of interest, subdivided into traffic zones populated with aggregated geospatial data.</span>
+
+<span class="sd">    This class enables geospatial data input validation, subdivision into traffic zones, and the aggregation of data </span>
+<span class="sd">    across these zones. Specifically, it facilitates the processing of population data from raster files, workplace and POI data </span>
+<span class="sd">    from CSVs, and the generation of traffic zones based on configurable properties. The class also supports the export of traffic </span>
+<span class="sd">    zone data for further analysis and visualization through CSV files and Folium maps.</span>
+
+<span class="sd">    Key Features:</span>
+<span class="sd">    </span>
+<span class="sd">    - Input Data Validation: Validates input data and recalculates/repopulates traffic zones on-the-fly when key properties are modified.</span>
+<span class="sd">    - Traffic Zone Creation: Defines the traffic zones based of zone target size and shape, and provides the option to crop zones to the boundaries of the defined region.</span>
+<span class="sd">    - Data Aggregation: Aggregates population, workplace, and POI data within each traffic zone.</span>
+<span class="sd">    - Export and Visualizatio: Offers traffic zone export to CSV and visualization via Folium maps</span>
+
+<span class="sd">    Note: The region of interest is converted to a bounding box for zoning purposes. Set the `crop_to_region` parameter to `True` to retain only </span>
+<span class="sd">    zones within the region&#39;s boundaries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_geojson</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">population_raster</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">workplaces_csv</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pois_csv</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">traffic_zone_properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the Region class with region data and properties for traffic zoning.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            region_geojson (str): Path to the region geojson file.</span>
+<span class="sd">            population_raster (str): Path to the population density raster file.</span>
+<span class="sd">            workplaces_csv (str): Path to the CSV file containing workplace locations.            </span>
+<span class="sd">            pois_csv (str): Path to the CSV file containing points of interest (POI) locations.</span>
+<span class="sd">            traffic_zone_properties (dict): A dictionary of traffic zone properties with keys:</span>
+<span class="sd">                &#39;target_size_km&#39; (float): Desired zone size in kilometers.</span>
+<span class="sd">                &#39;shape&#39; (str): Shape of zones (e.g., &quot;rectangle&quot;, &quot;triangle&quot;).</span>
+<span class="sd">                &#39;crop_to_region&#39; (bool): Whether to crop zones to the region of interest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creation of a Region object.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Initialization flag</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span> <span class="o">=</span> <span class="n">region_geojson</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population_density</span> <span class="o">=</span> <span class="n">population_raster</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workplaces</span> <span class="o">=</span> <span class="n">workplaces_csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pois</span> <span class="o">=</span> <span class="n">pois_csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zone_properties</span> <span class="o">=</span> <span class="n">traffic_zone_properties</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Successful initialization of input parameters.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Region area: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_area_km2</span><span class="p">()</span><span class="si">}</span><span class="s2"> km²&quot;</span><span class="p">)</span>        
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># To store resulting traffic zones as a DataFrame</span>
+
+        <span class="c1"># Initialize traffic zones immediately</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_traffic_zones</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_traffic_zones</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Initialization flag</span>
+
+    <span class="c1"># Traffic zones property (read-only)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">traffic_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: Data representing the traffic zones in the region.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span>
+
+    <span class="c1"># Properties and Setters with automatic re-population of traffic zones on change</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">region_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Polygon: The shapely polygon representing the region of interest.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_geometry</span>
+
+    <span class="nd">@region_geometry</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">region_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The geojson at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">geojson_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="c1"># Convert the GEOJSON data to a shapely object</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">geojson_data</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
+        <span class="n">shapely_shape</span> <span class="o">=</span> <span class="n">shape</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region_geometry</span> <span class="o">=</span> <span class="n">shapely_shape</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_populate_traffic_zones</span><span class="p">()</span>  <span class="c1"># Re-populate zones if data has changed and initialized    </span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">population_density</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The population density data from the raster file.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population_density</span>
+
+    <span class="nd">@population_density</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">population_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The population density raster at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Read the raster data using rasterio</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+            <span class="c1"># Get the bounds of the raster</span>
+            <span class="n">raster_bounds</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">bounds</span>
+            
+            <span class="c1"># Get the bounds of the region of interest</span>
+            <span class="n">region_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="o">.</span><span class="n">bounds</span>  <span class="c1"># Assuming _region is a shapely Polygon</span>
+            
+            <span class="c1"># Check if the raster covers the region of interest</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raster_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">region_bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span>  <span class="c1"># raster left &lt;= region right</span>
+                    <span class="n">raster_bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">region_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span>  <span class="c1"># raster right &gt;= region left</span>
+                    <span class="n">raster_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">region_bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">and</span>  <span class="c1"># raster bottom &lt;= region top</span>
+                    <span class="n">raster_bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">region_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>     <span class="c1"># raster top &gt;= region bottom</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The population density raster does not cover the entire region of interest.&quot;</span><span class="p">)</span>
+                    
+            <span class="c1"># If the check passes, assign the path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_population_density</span> <span class="o">=</span> <span class="n">path</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_populate_traffic_zones</span><span class="p">()</span>  <span class="c1"># Re-populate zones if data has changed and initialized   </span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">workplaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;list: A list of tuples representing workplaces (longitude, latitude)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workplaces</span>
+
+    <span class="nd">@workplaces</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">workplaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> The CSV for workplaces at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        
+        <span class="n">workplaces_center_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_weighted_locations</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_workplaces</span> <span class="o">=</span> <span class="n">workplaces_center_points</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_populate_traffic_zones</span><span class="p">()</span>  <span class="c1"># Re-populate zones if data has changed and initialized </span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pois</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;list: A list of tuples representing points of interest (longitude, latitude)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pois</span>
+
+    <span class="nd">@pois</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pois</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> The CSV for POIs at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        
+        <span class="n">pois_center_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_weighted_locations</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pois</span> <span class="o">=</span> <span class="n">pois_center_points</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_populate_traffic_zones</span><span class="p">()</span>  <span class="c1"># Re-populate zones if data has changed and initialized </span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">traffic_zone_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;dict: A dictionary of traffic zone properties.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zone_properties</span>
+
+    <span class="nd">@traffic_zone_properties</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">traffic_zone_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Traffic zone properties must be a dictionary.&quot;</span><span class="p">)</span>
+        
+        <span class="n">required_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;target_size_km&#39;</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="s1">&#39;crop_to_region&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required traffic zone property: &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;target_size_km&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Target size must be a positive value.&quot;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zone_properties</span> <span class="o">=</span> <span class="n">properties</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_define_traffic_zones</span><span class="p">()</span> <span class="c1"># Re-define traffic zones</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_populate_traffic_zones</span><span class="p">()</span>  <span class="c1"># Re-populate zones if data has changed and initialized</span>
+
+    <span class="c1"># Helpers</span>
+
+    <span class="k">def</span> <span class="nf">_load_weighted_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads weighted locations from a CSV file and returns a list of tuples representing (longitude, latitude) points.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to the CSV file containing locations.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of tuples with repeated locations based on their weight.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The CSV at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="n">center_points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">latitude</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">])</span>
+                <span class="n">longitude</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">])</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">weight</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Skipping </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> row in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> due to zero weight: </span><span class="si">{</span><span class="n">weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">weight</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> row in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains negative weight&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Duplicate the locations according to the weight</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">weight</span><span class="p">):</span>
+                    <span class="n">center_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">longitude</span><span class="p">,</span> <span class="n">latitude</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">center_points</span>
+
+    <span class="c1"># Zoning methods</span>
+
+    <span class="k">def</span> <span class="nf">_define_traffic_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines traffic zones based on the specified properties in traffic_zone_properties.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Defining traffic zones...&quot;</span><span class="p">)</span>
+
+        <span class="n">shape_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zone_properties</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span>
+        <span class="n">target_size_km</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zone_properties</span><span class="p">[</span><span class="s2">&quot;target_size_km&quot;</span><span class="p">]</span>
+        <span class="n">crop_to_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zone_properties</span><span class="p">[</span><span class="s2">&quot;crop_to_region&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Create a bbox and zones zoning according to the shape type</span>
+        <span class="k">if</span> <span class="n">shape_type</span> <span class="o">==</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_rectangular_zones</span><span class="p">(</span><span class="n">target_size_km</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape type &#39;</span><span class="si">{</span><span class="n">shape_type</span><span class="si">}</span><span class="s2">&#39; is not implemented.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Delete zones outside the boundaries of the shapefile</span>
+        <span class="k">if</span> <span class="n">crop_to_region</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Removing zones outside region of interest (crop to region)...&quot;</span><span class="p">)</span>
+            <span class="c1"># Identify the rows to remove</span>
+            <span class="n">rows_to_remove</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span><span class="p">[</span><span class="s1">&#39;centroid_is_inside_region&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
+
+            <span class="c1"># Drop these rows from the original DataFrame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">rows_to_remove</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Remaining zones: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_create_rectangular_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_size_km</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a bounding box around the region of interest and splits it into rectangles based on the target size.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Rectangular zoning...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Define UTM projection based on the region centroid</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="o">.</span><span class="n">centroid</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="o">.</span><span class="n">centroid</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">utm_proj</span> <span class="o">=</span> <span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;utm&quot;</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mi">180</span><span class="p">)</span> <span class="o">//</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ellps</span><span class="o">=</span><span class="s2">&quot;WGS84&quot;</span><span class="p">,</span> <span class="n">preserve_units</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">transformer_to_utm</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_proj</span><span class="p">(</span><span class="s2">&quot;epsg:4326&quot;</span><span class="p">,</span> <span class="n">utm_proj</span><span class="p">,</span> <span class="n">always_xy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">transformer_to_latlon</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_proj</span><span class="p">(</span><span class="n">utm_proj</span><span class="p">,</span> <span class="s2">&quot;epsg:4326&quot;</span><span class="p">,</span> <span class="n">always_xy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Transform the region geometry to UTM projection</span>
+        <span class="n">region_geom_projected</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">transformer_to_utm</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="p">)</span>
+        <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="n">region_geom_projected</span><span class="o">.</span><span class="n">bounds</span>
+
+        <span class="c1"># Compute the number of segments based on the target size in meters</span>
+        <span class="n">target_size_m</span> <span class="o">=</span> <span class="n">target_size_km</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="n">n_rectangles_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">maxx</span> <span class="o">-</span> <span class="n">minx</span><span class="p">)</span> <span class="o">/</span> <span class="n">target_size_m</span><span class="p">)</span>
+        <span class="n">n_rectangles_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">maxy</span> <span class="o">-</span> <span class="n">miny</span><span class="p">)</span> <span class="o">/</span> <span class="n">target_size_m</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the width and height of each rectangle in the bounding box</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxx</span> <span class="o">-</span> <span class="n">minx</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_rectangles_x</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxy</span> <span class="o">-</span> <span class="n">miny</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_rectangles_y</span>
+        <span class="n">rectangle_area_km2</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span> <span class="o">*</span> <span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000000</span>  <span class="c1"># Convert m² to km²</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Bounding box split into </span><span class="si">{</span><span class="n">n_rectangles_x</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">n_rectangles_y</span><span class="si">}</span><span class="s2"> zones&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Width: </span><span class="si">{</span><span class="n">width</span><span class="o">/</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> km - Height: </span><span class="si">{</span><span class="n">height</span><span class="o">/</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> km: - Area: </span><span class="si">{</span><span class="n">rectangle_area_km2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> km²&quot;</span><span class="p">)</span>
+
+        <span class="n">grid_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rectangles_x</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rectangles_y</span><span class="p">):</span>
+                <span class="c1"># Define each rectangle in the UTM projection</span>
+                <span class="n">lower_left_x</span> <span class="o">=</span> <span class="n">minx</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">width</span>
+                <span class="n">lower_left_y</span> <span class="o">=</span> <span class="n">miny</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="n">height</span>
+                <span class="n">upper_right_x</span> <span class="o">=</span> <span class="n">lower_left_x</span> <span class="o">+</span> <span class="n">width</span>
+                <span class="n">upper_right_y</span> <span class="o">=</span> <span class="n">lower_left_y</span> <span class="o">+</span> <span class="n">height</span>
+
+                <span class="n">bbox_geom</span> <span class="o">=</span> <span class="n">box</span><span class="p">(</span><span class="n">lower_left_x</span><span class="p">,</span> <span class="n">lower_left_y</span><span class="p">,</span> <span class="n">upper_right_x</span><span class="p">,</span> <span class="n">upper_right_y</span><span class="p">)</span>
+
+                <span class="c1"># Transform the centroid back to latitude and longitude</span>
+                <span class="n">center_point_proj</span> <span class="o">=</span> <span class="n">bbox_geom</span><span class="o">.</span><span class="n">centroid</span>
+                <span class="n">center_lon</span><span class="p">,</span> <span class="n">center_lat</span> <span class="o">=</span> <span class="n">transformer_to_latlon</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">center_point_proj</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">center_point_proj</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+                <span class="c1"># Check if the centroid is within the region geometry (using original lat/lon coordinates)</span>
+                <span class="n">center_point_latlon</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">transformer_to_latlon</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">center_point_proj</span><span class="p">)</span>
+                <span class="n">is_inside</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">center_point_latlon</span><span class="p">)</span>
+
+                <span class="c1"># Transform the bounding box to lat/lon and store it in &quot;geometry&quot;</span>
+                <span class="n">bbox_geom_latlon</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">transformer_to_latlon</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">bbox_geom</span><span class="p">)</span>
+
+                <span class="n">grid_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> 
+                    <span class="s1">&#39;centroid&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">center_lat</span><span class="p">,</span> <span class="n">center_lon</span><span class="p">),</span> 
+                    <span class="s1">&#39;geometry&#39;</span><span class="p">:</span> <span class="n">bbox_geom_latlon</span><span class="p">,</span> 
+                    <span class="s1">&#39;area_km2&#39;</span><span class="p">:</span> <span class="n">rectangle_area_km2</span><span class="p">,</span>
+                    <span class="s1">&#39;centroid_is_inside_region&#39;</span><span class="p">:</span> <span class="n">is_inside</span>
+                <span class="p">})</span>
+
+        <span class="c1"># Convert to DataFrame</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
+
+    <span class="c1"># Aggregation Methods</span>
+
+    <span class="k">def</span> <span class="nf">_populate_traffic_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populates traffic zones with aggregated data on population, workplaces, and POIs.&quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Aggregation of geodata into traffic zones...&quot;</span><span class="p">)</span> 
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Traffic zones must be defined before populating them.&quot;</span><span class="p">)</span>
+
+        <span class="n">traffic_zone_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">zone</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">zone_geom</span> <span class="o">=</span> <span class="n">zone</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+
+            <span class="c1"># Population </span>
+            <span class="n">bbox_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">({</span><span class="s1">&#39;geometry&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">zone_geom</span><span class="p">]},</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">)</span>
+            
+            <span class="n">population_raster_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_density</span> <span class="c1"># Path to the population raster file</span>
+            
+            <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">population_raster_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span> <span class="c1"># Read the population raster</span>
+                <span class="c1"># Clip the raster using the bounding box</span>
+                <span class="n">out_image</span><span class="p">,</span> <span class="n">out_transform</span> <span class="o">=</span> <span class="n">mask</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="p">[</span><span class="n">bbox_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">out_meta</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">meta</span>
+
+            <span class="n">n_people</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">out_image</span><span class="p">[</span><span class="n">out_image</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># assuming no data values are &lt;= 0  </span>
+
+            <span class="c1"># Workplaces</span>
+            <span class="c1"># Convert the list of center points to shapely Point objects</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span> <span class="k">for</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workplaces</span><span class="p">]</span>
+
+            <span class="c1"># Count how many points are within the bounding box</span>
+            <span class="n">points_within_bbox</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span> <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">zone_geom</span><span class="p">)]</span>
+            <span class="n">n_workplaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points_within_bbox</span><span class="p">)</span>
+
+            <span class="c1"># POIs (same logic as for workplaces)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span> <span class="k">for</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pois</span><span class="p">]</span>
+            <span class="n">points_within_bbox</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span> <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">zone_geom</span><span class="p">)]</span>
+            <span class="n">n_pois</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points_within_bbox</span><span class="p">)</span>
+
+            <span class="n">traffic_zone_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">zone</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;geometric_center&quot;</span><span class="p">:</span> <span class="n">zone</span><span class="p">[</span><span class="s2">&quot;centroid&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">zone</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">],</span>
+                <span class="s1">&#39;area_km2&#39;</span><span class="p">:</span> <span class="n">zone</span><span class="p">[</span><span class="s2">&quot;area_km2&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;n_people&quot;</span><span class="p">:</span> <span class="n">n_people</span><span class="p">,</span>
+                <span class="s2">&quot;n_workplaces&quot;</span><span class="p">:</span> <span class="n">n_workplaces</span><span class="p">,</span>
+                <span class="s2">&quot;n_pois&quot;</span><span class="p">:</span> <span class="n">n_pois</span>
+            <span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">traffic_zone_data</span><span class="p">)</span> <span class="c1"># Update traffic zones</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Population: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s2">&quot;n_people&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Workplaces: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s2">&quot;n_workplaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; POIs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s2">&quot;n_pois&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Region metrics</span>
+
+<div class="viewcode-block" id="Region.centroid_coords">
+<a class="viewcode-back" href="../../evpv.html#evpv.region.Region.centroid_coords">[docs]</a>
+    <span class="k">def</span> <span class="nf">centroid_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the coordinates of the centroid of the target area.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: The (latitude, longitude) coordinates of the centroid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">centroid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="o">.</span><span class="n">centroid</span>
+        <span class="k">return</span> <span class="n">centroid</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">centroid</span><span class="o">.</span><span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="Region.average_zone_area_km2">
+<a class="viewcode-back" href="../../evpv.html#evpv.region.Region.average_zone_area_km2">[docs]</a>
+    <span class="k">def</span> <span class="nf">average_zone_area_km2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the average area of the traffic zones in square kilometers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The area in square kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Calculate the average area</span>
+        <span class="n">average_area_km2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traffic_zones</span><span class="p">[</span><span class="s1">&#39;area_km2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">average_area_km2</span></div>
+
+
+<div class="viewcode-block" id="Region.calculate_area_km2">
+<a class="viewcode-back" href="../../evpv.html#evpv.region.Region.calculate_area_km2">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_area_km2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the area of the region in square kilometers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The area in square kilometers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the centroid to determine the UTM zone</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_geometry</span><span class="o">.</span><span class="n">centroid</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_geometry</span><span class="o">.</span><span class="n">centroid</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="c1"># Define UTM projection based on centroid</span>
+        <span class="n">utm_proj</span> <span class="o">=</span> <span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;utm&quot;</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mi">180</span><span class="p">)</span> <span class="o">//</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ellps</span><span class="o">=</span><span class="s2">&quot;WGS84&quot;</span><span class="p">,</span> <span class="n">preserve_units</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">transformer</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_proj</span><span class="p">(</span><span class="s2">&quot;epsg:4326&quot;</span><span class="p">,</span> <span class="n">utm_proj</span><span class="p">,</span> <span class="n">always_xy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Transform the polygon to UTM</span>
+        <span class="n">utm_polygon</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_geometry</span><span class="p">)</span>
+
+        <span class="c1"># Calculate area in km2 (area in meters / 1,000,000)</span>
+        <span class="n">area_km2</span> <span class="o">=</span> <span class="n">utm_polygon</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="mi">1_000_000</span>
+        <span class="k">return</span> <span class="n">area_km2</span></div>
+
+
+    <span class="c1"># Export and visualization</span>
+
+<div class="viewcode-block" id="Region.to_map">
+<a class="viewcode-back" href="../../evpv.html#evpv.region.Region.to_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves a folium map with simulation setup properties, including region geometry, </span>
+<span class="sd">        zone geometry, population, workplaces, and POIs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span>
+
+        <span class="c1"># 1. Create the base map with administrative boundaries</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">create_base_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># 2. Add Simulation bounding box</span>
+        <span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_geometry</span><span class="o">.</span><span class="n">bounds</span>
+        <span class="n">folium</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="n">miny</span><span class="p">,</span> <span class="n">minx</span><span class="p">],</span> <span class="p">[</span><span class="n">maxy</span><span class="p">,</span> <span class="n">maxx</span><span class="p">]],</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_opacity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+
+        <span class="c1"># 3. Add TAZ boundaries</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_taz_boundaries</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+
+        <span class="c1"># 4. Add Feature Groups for &#39;n_workplaces&#39;, &#39;n_people&#39;, and &#39;n_pois&#39;</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;n_workplaces&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of workplaces&#39;</span><span class="p">,</span> <span class="s1">&#39;Workplaces&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;n_people&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of people&#39;</span><span class="p">,</span> <span class="s1">&#39;Population&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;n_pois&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of POIs&#39;</span><span class="p">,</span> <span class="s1">&#39;POIs&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 5. Add Layer Control and save the map</span>
+        <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">()</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+        <span class="n">m1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Region.to_csv">
+<a class="viewcode-back" href="../../evpv.html#evpv.region.Region.to_csv">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves a csv file with all data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traffic_zones</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Jeremy Dumoulin.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>evpv.evpvsynergies &#8212; EV-PV  documentation</title>
+    <title>evpv.evpvsynergies &#8212; EV-PV 0.1.0 documentation</title>
   
   
   
@@ -34,7 +34,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/evpv/evpvsynergies';</script>
@@ -115,7 +115,7 @@
   
   
   
-    <p class="title logo__title">EV-PV  documentation</p>
+    <p class="title logo__title">EV-PV 0.1.0 documentation</p>
   
 </a></div>
     
@@ -306,130 +306,87 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
 <span class="kn">import</span> <span class="nn">scipy.integrate</span> <span class="k">as</span> <span class="nn">integrate</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">spearmanr</span>
 <span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">IntegrationWarning</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
 
-<span class="kn">from</span> <span class="nn">evpv</span> <span class="kn">import</span> <span class="n">helpers</span> <span class="k">as</span> <span class="n">hlp</span>
-<span class="kn">from</span> <span class="nn">evpv.pvcalculator</span> <span class="kn">import</span> <span class="n">PVCalculator</span> 
-<span class="kn">from</span> <span class="nn">evpv.evcalculator</span> <span class="kn">import</span> <span class="n">EVCalculator</span> 
-<span class="kn">from</span> <span class="nn">evpv.chargingscenario</span> <span class="kn">import</span> <span class="n">ChargingScenario</span>
+<span class="kn">from</span> <span class="nn">evpv.chargingsimulator</span> <span class="kn">import</span> <span class="n">ChargingSimulator</span>
+<span class="kn">from</span> <span class="nn">evpv.pvsimulator</span> <span class="kn">import</span> <span class="n">PVSimulator</span>
 
 <span class="c1"># Suppress repeated IntegrationWarning</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;once&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">IntegrationWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">IntegrationWarning</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EVPVSynergies">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies">[docs]</a>
 <span class="k">class</span> <span class="nc">EVPVSynergies</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class to assess the main EV-PV synergy metrics (self-sufficiency, ...) for a given day or a given timeframe, based on </span>
-<span class="sd">    a PV hourly capacity factor, EV hourly charging demand, an PV installed capacity.</span>
-<span class="sd">    </span>
+<span class="sd">    A class to analyze energy synergies between electric vehicle (EV) charging demand and photovoltaic (PV) production. </span>
+<span class="sd">    The main metrics calculated include energy coverage, self-sufficiency, self-consumption, and excess PV ratios, </span>
+<span class="sd">    as well as the Spearman correlation between EV and PV profiles over specific days.</span>
+
+<span class="sd">    This class requires:</span>
+
+<span class="sd">    - A PVSimulator object, which holds the capacity factor time series data for PV production.</span>
+<span class="sd">    - A ChargingSimulator object, which stores EV charging demand profiles.</span>
+<span class="sd">    - The installed PV capacity (in megawatts, MW) as a float value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1">#######################################</span>
-    <span class="c1">############# Constructor #############</span>
-    <span class="c1">#######################################</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_calculator</span><span class="p">:</span> <span class="s1">&#39;PVCalculator&#39;</span><span class="p">,</span> <span class="n">ev_calculator</span><span class="p">:</span> <span class="s1">&#39;ChargingScenario or EVCalculator&#39;</span><span class="p">,</span> <span class="n">pv_capacity_MW</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">:</span> <span class="n">PVSimulator</span><span class="p">,</span> <span class="n">ev</span><span class="p">:</span> <span class="n">ChargingSimulator</span><span class="p">,</span> <span class="n">pv_capacity_MW</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the EVPVSynergies object.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
-<span class="sd">            pv_calculator: Object containing PV production calculations.</span>
-<span class="sd">            ev_calculator: Object containing EV charging demand calculations.</span>
+<span class="sd">            pv: Object containing PV production calculations.</span>
+<span class="sd">            ev: Object containing EV charging demand calculations.</span>
 <span class="sd">            pv_capacity_MW: PV capacity in megawatts (MW).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creating a new EVPVSynergies object&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creation of a EVPVSynergies object.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">pv_calculator</span> <span class="o">=</span> <span class="n">pv_calculator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span> <span class="o">=</span> <span class="n">ev_calculator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv_capacity_MW</span> <span class="o">=</span> <span class="n">pv_capacity_MW</span>
-        
-        <span class="c1"># Extract required data from the calculator objects</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pv_capacity_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pv_capacity_factor</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ev_charging_demand</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pv_capacity_factor</span> <span class="o">=</span> <span class="n">pv</span>       
 
-    <span class="c1">########################################</span>
-    <span class="c1"># Get PV capacity factor and EV Demand #</span>
-    <span class="c1">########################################</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span> <span class="o">=</span> <span class="n">ev</span>  <span class="c1"># Store the ChargingSimulator object as an instance variable (usefull for recomputing if needed)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span> <span class="o">=</span> <span class="n">ev</span> <span class="c1"># Store only the interpolate charging demand</span>
 
-    <span class="k">def</span> <span class="nf">_get_pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extract PV capacity factor from PVCalculator object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_calculator</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Capacity Factor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span> 
-
-    <span class="k">def</span> <span class="nf">_get_ev_charging_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extract EV charging demand from ChargingScenario or EVCalculator object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="p">,</span> <span class="n">ChargingScenario</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">charging_profile</span><span class="p">[[</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="s1">&#39;Total (MW)&#39;</span><span class="p">]]</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="p">,</span> <span class="n">EVCalculator</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">charging_demand</span><span class="o">.</span><span class="n">charging_profile</span><span class="p">[[</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="s1">&#39;Total (MW)&#39;</span><span class="p">]]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid ev_calculator object. Must be either ChargingScenario or EVCalculator.&quot;</span><span class="p">)</span>
-
-    <span class="c1">#######################################</span>
-    <span class="c1">### Parameters Setters and Getters ####</span>
-    <span class="c1">#######################################</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Successful initialization of input parameters.&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">interp1d</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the EV charging demand interpolation function.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            interp1d: Interpolation function for EV charging demand.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;interp1d: Interpolation function for EV charging demand.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ev_charging_demand_MW</span>
 
     <span class="nd">@ev_charging_demand_MW</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_charging_demand_MW</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the EV charging demand and create an interpolation function.</span>
+    <span class="k">def</span> <span class="nf">ev_charging_demand_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_charging_demand_MW</span><span class="p">:</span> <span class="n">ChargingSimulator</span><span class="p">):</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            ev_charging_demand_MW (pd.DataFrame): DataFrame containing time and total profile in MW.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ev_charging_demand_MW</span><span class="p">,</span> <span class="n">ChargingSimulator</span><span class="p">):</span>
+            <span class="n">demand</span> <span class="o">=</span> <span class="n">ev_charging_demand_MW</span><span class="o">.</span><span class="n">temporal_demand_profile_aggregated</span><span class="p">[[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;total&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid ev object. Must be ChargingSimulator.&quot;</span><span class="p">)</span>
+
         <span class="c1"># Extract the &#39;Time&#39; and &#39;Total profile (MW)&#39; columns</span>
-        <span class="n">time</span> <span class="o">=</span> <span class="n">ev_charging_demand_MW</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
-        <span class="n">profile</span> <span class="o">=</span> <span class="n">ev_charging_demand_MW</span><span class="p">[</span><span class="s1">&#39;Total (MW)&#39;</span><span class="p">]</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+        <span class="n">profile</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ev_charging_demand_MW</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span> 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the PV capacity factor interpolation functions.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: Dictionary of interpolation functions for PV capacity factors by day.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; dict: Dictionary of interpolation functions for PV capacity factors by day.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_factor</span>
 
     <span class="nd">@pv_capacity_factor</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the PV capacity factor and create interpolation functions for each day.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            pv_capacity_factor (pd.DataFrame): DataFrame containing PV capacity factors.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pv_capacity_factor</span>
+    <span class="k">def</span> <span class="nf">pv_capacity_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">:</span> <span class="n">PVSimulator</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pv_capacity_factor (pd.DataFrame): DataFrame containing PV capacity factors.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Capacity Factor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span> 
 
         <span class="c1"># Rename the columns for convenience (optional, but helpful)</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;Total profile (MW)&#39;</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;Capacity Factor&#39;</span><span class="p">]</span>
 
         <span class="c1"># Convert the first column to datetime format</span>
         <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">])</span>
@@ -447,7 +404,7 @@ document.write(`
         <span class="c1"># Create an interpolation function for each day</span>
         <span class="k">for</span> <span class="n">day</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">:</span>
             <span class="n">hours</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Hour&#39;</span><span class="p">]</span>
-            <span class="n">profile</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Total profile (MW)&#39;</span><span class="p">]</span>
+            <span class="n">profile</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Capacity Factor&#39;</span><span class="p">]</span>
 
             <span class="c1"># Create the interpolation function for this day</span>
             <span class="n">interpolation_function</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
@@ -459,25 +416,14 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the PV capacity in megawatts.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            float: PV capacity in megawatts (MW).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; float: PV capacity in megawatts (MW).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_MW</span>
 
     <span class="nd">@pv_capacity_MW</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_MW</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the PV capacity in megawatts.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            pv_capacity_MW (float): PV capacity in megawatts (MW).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">pv_capacity_MW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_capacity_MW</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pv_capacity_MW</span> <span class="o">=</span> <span class="n">pv_capacity_MW</span>
         
-    <span class="c1">#######################################</span>
-    <span class="c1">########### PV Production #############</span>
-    <span class="c1">#######################################</span>
+    <span class="c1"># PV Production</span>
 
 <div class="viewcode-block" id="EVPVSynergies.pv_power_MW">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.pv_power_MW">[docs]</a>
@@ -508,9 +454,7 @@ document.write(`
         <span class="k">return</span> <span class="n">result</span></div>
 
 
-    <span class="c1">#######################################</span>
-    <span class="c1">########### EV Charging Demand ########</span>
-    <span class="c1">#######################################</span>
+    <span class="c1"># EV Charging demand</span>
 
 <div class="viewcode-block" id="EVPVSynergies.ev_demand">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.ev_demand">[docs]</a>
@@ -524,9 +468,7 @@ document.write(`
         <span class="k">return</span> <span class="n">result</span></div>
 
 
-    <span class="c1">#######################################</span>
-    <span class="c1">############# EV-PV Synergies #########</span>
-    <span class="c1">#######################################</span>
+    <span class="c1"># EV-PV Synergies </span>
 
 <div class="viewcode-block" id="EVPVSynergies.energy_coverage_ratio">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.energy_coverage_ratio">[docs]</a>
@@ -637,13 +579,14 @@ document.write(`
 
 <div class="viewcode-block" id="EVPVSynergies.daily_metrics">
 <a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.daily_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">daily_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">daily_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">recompute_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute all energy and synergy metrics over a given period.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            start_date (str): Start date in &#39;MM-DD&#39; format.</span>
 <span class="sd">            end_date (str): End date in &#39;MM-DD&#39; format.</span>
 <span class="sd">            n_points (int): The number of points to sample for each day. Defaults to 100.</span>
+<span class="sd">            recompute_probability (float): Probability (between 0 and 1) of recomputing EV demand for each day.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            pd.DataFrame: DataFrame containing all metrics for each day within the specified range.</span>
@@ -662,7 +605,17 @@ document.write(`
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">filtered_days</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Day: </span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Determine if we should recompute EV demand based on probability</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">recompute_probability</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recomputing the charging profile to add randomness...&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  <span class="c1"># Optional: You may keep this line to indicate recomputing without verbose output</span>
+                <span class="c1"># Suppress output during recomputing</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">,</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">compute_temporal_demand</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Recalculate demand profile in ev_calculator</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span>  <span class="c1"># Update the interpolation function            </span>
+
+            <span class="c1"># Calculate metrics</span>
             <span class="n">spearman_coef</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spearman_correlation</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
             <span class="n">pv_prod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_production</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
             <span class="n">ev_dmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_demand</span><span class="p">()</span>
@@ -687,15 +640,93 @@ document.write(`
                 <span class="s1">&#39;Self Consumption Ratio&#39;</span><span class="p">:</span> <span class="n">self_cons_ratio</span><span class="p">,</span>
                 <span class="s1">&#39;Excess PV Ratio&#39;</span><span class="p">:</span> <span class="n">excess_pv_rat</span>
             <span class="p">})</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># Create a DataFrame from the results</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="EVPVSynergies.calculate_fully_solar_charging_vehicles">
+<a class="viewcode-back" href="../../evpv.html#evpv.evpvsynergies.EVPVSynergies.calculate_fully_solar_charging_vehicles">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_fully_solar_charging_vehicles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recompute_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the number of vehicles that can be fully charged using only solar power on a given day.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            day (str): The day for which to perform the calculation, in &#39;MM-DD&#39; format.</span>
+<span class="sd">            recompute_probability (float): Probability (between 0 and 1) of recomputing EV demand to introduce randomness. Defaults to 0.0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of vehicles fully charged using solar power.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine if we should recompute EV demand based on probability</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">recompute_probability</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recomputing the charging profile to add randomness...&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  <span class="c1"># Optional</span>
+            <span class="c1"># Suppress output during recomputing</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">,</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">compute_temporal_demand</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Recompute demand profile</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ev_charging_demand_MW</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span>  <span class="c1"># Update the interpolation function</span>
+
+        <span class="c1"># Initialize counter for vehicles fully charged using solar energy</span>
+        <span class="n">fully_charged_vehicles</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Determine the number of time steps in the demand profile</span>
+        <span class="n">num_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">temporal_demand_profile</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the time step duration (in hours)</span>
+        <span class="n">time_step</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">/</span> <span class="n">num_rows</span>  <span class="c1"># Assuming evenly spaced intervals over 24 hours</span>
+
+        <span class="c1"># Define the time range for PV availability (6 AM to 9 PM)</span>
+        <span class="n">pv_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span>  <span class="c1"># Convert 6 AM to index</span>
+        <span class="n">pv_end_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">21</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span>  <span class="c1"># Convert 9 PM to index</span>
+
+        <span class="c1"># Compute the solar power profile for the day in kW</span>
+        <span class="n">pv_power_profile</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pv_power_MW</span><span class="p">(</span><span class="n">day</span><span class="p">)(</span><span class="n">t</span> <span class="o">*</span> <span class="n">time_step</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rows</span><span class="p">)</span>
+        <span class="p">]</span>  <span class="c1"># Convert MW to kW</span>
+
+        <span class="c1"># Initialize a copy of the PV energy profile for tracking remaining power</span>
+        <span class="n">remaining_pv</span> <span class="o">=</span> <span class="n">pv_power_profile</span><span class="p">[:]</span>
+
+        <span class="c1"># Iterate over each vehicle in the temporal demand profile</span>
+        <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">temporal_demand_profile</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="c1"># Retrieve the charging demand profile for the vehicle</span>
+            <span class="n">charging_demand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_calculator</span><span class="o">.</span><span class="n">temporal_demand_profile</span><span class="p">[</span><span class="n">vehicle</span><span class="p">]</span>
+
+            <span class="c1"># Identify the time indices where charging demand is non-zero</span>
+            <span class="n">non_zero_indices</span> <span class="o">=</span> <span class="n">charging_demand</span><span class="p">[</span><span class="n">charging_demand</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">if</span> <span class="n">non_zero_indices</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># Skip vehicles with no charging demand</span>
+
+            <span class="c1"># Get the start and end times of charging demand</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">non_zero_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">non_zero_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># Skip vehicles charging outside the PV time range</span>
+            <span class="k">if</span> <span class="n">start_time</span> <span class="o">&lt;</span> <span class="n">pv_start_time</span> <span class="ow">or</span> <span class="n">end_time</span> <span class="o">&gt;=</span> <span class="n">pv_end_time</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Calculate the total energy needed by the vehicle during the PV time range</span>
+            <span class="n">energy_need</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">charging_demand</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">time_step</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+            <span class="c1"># Calculate the total available PV energy in the same time range</span>
+            <span class="n">pv_energy_available</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">remaining_pv</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">time_step</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+            <span class="c1"># Check if the vehicle can be fully charged using the available PV energy</span>
+            <span class="k">if</span> <span class="n">pv_energy_available</span> <span class="o">&gt;=</span> <span class="n">energy_need</span><span class="p">:</span>
+                <span class="n">fully_charged_vehicles</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Increment the counter</span>
+
+                <span class="c1"># Deduct the used PV power from the remaining PV profile</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">required_power</span> <span class="o">=</span> <span class="n">charging_demand</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                    <span class="n">allocated_power</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">remaining_pv</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">required_power</span><span class="p">)</span>
+                    <span class="n">remaining_pv</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-=</span> <span class="n">allocated_power</span>
+
+        <span class="k">return</span> <span class="n">fully_charged_vehicles</span></div>
 </div>
 
-
-        
 </pre></div>
 
                 </article>

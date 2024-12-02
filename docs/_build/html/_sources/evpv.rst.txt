@@ -4,25 +4,15 @@ evpv package
 Submodules
 ----------
 
-evpv.chargingscenario module
-----------------------------
-
-.. automodule:: evpv.chargingscenario
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evpv.evcalculator module
-------------------------
-
-.. automodule:: evpv.evcalculator
+evpv.chargingsimulator module
+-----------------------------
+.. automodule:: evpv.chargingsimulator
    :members:
    :undoc-members:
    :show-inheritance:
 
 evpv.evpvsynergies module
 -------------------------
-
 .. automodule:: evpv.evpvsynergies
    :members:
    :undoc-members:
@@ -30,24 +20,42 @@ evpv.evpvsynergies module
 
 evpv.helpers module
 -------------------
-
 .. automodule:: evpv.helpers
    :members:
    :undoc-members:
    :show-inheritance:
 
-evpv.mobilitysim module
------------------------
-
-.. automodule:: evpv.mobilitysim
+evpv.mobilitysimulator module
+-----------------------------
+.. automodule:: evpv.mobilitysimulator
    :members:
    :undoc-members:
    :show-inheritance:
 
-evpv.pvcalculator module
-------------------------
+evpv.pvsimulator module
+-----------------------
+.. automodule:: evpv.pvsimulator
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. automodule:: evpv.pvcalculator
+evpv.region module
+------------------
+.. automodule:: evpv.region
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+evpv.vehicle module
+-------------------
+.. automodule:: evpv.vehicle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+evpv.vehiclefleet module
+------------------------
+.. automodule:: evpv.vehiclefleet
    :members:
    :undoc-members:
    :show-inheritance:

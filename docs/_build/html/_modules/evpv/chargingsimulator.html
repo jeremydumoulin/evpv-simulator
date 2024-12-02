@@ -1,0 +1,1369 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evpv.chargingsimulator &#8212; EV-PV 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/evpv/chargingsimulator';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">EV-PV 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evpv.html">
+    evpv package
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">evpv.chargin...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for evpv.chargingsimulator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">shape</span><span class="p">,</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">MultiPoint</span>
+<span class="kn">from</span> <span class="nn">shapely.ops</span> <span class="kn">import</span> <span class="n">transform</span><span class="p">,</span> <span class="n">nearest_points</span><span class="p">,</span> <span class="n">snap</span>
+<span class="kn">from</span> <span class="nn">geopy.distance</span> <span class="kn">import</span> <span class="n">geodesic</span><span class="p">,</span> <span class="n">distance</span>
+<span class="kn">import</span> <span class="nn">openrouteservice</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">folium</span>
+<span class="kn">import</span> <span class="nn">branca.colormap</span> <span class="k">as</span> <span class="nn">cm</span>
+
+<span class="kn">from</span> <span class="nn">evpv.vehicle</span> <span class="kn">import</span> <span class="n">Vehicle</span>
+<span class="kn">from</span> <span class="nn">evpv.vehiclefleet</span> <span class="kn">import</span> <span class="n">VehicleFleet</span>
+<span class="kn">from</span> <span class="nn">evpv.region</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">evpv.mobilitysimulator</span> <span class="kn">import</span> <span class="n">MobilitySimulator</span>
+<span class="kn">from</span> <span class="nn">evpv.pvsimulator</span> <span class="kn">import</span> <span class="n">PVSimulator</span>
+<span class="kn">from</span> <span class="nn">evpv</span> <span class="kn">import</span> <span class="n">helpers</span> <span class="k">as</span> <span class="n">hlp</span>
+
+<div class="viewcode-block" id="ChargingSimulator">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator">[docs]</a>
+<span class="k">class</span> <span class="nc">ChargingSimulator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to simulate the spatio-temporal daily charging demand of an electric vehicle fleet within a specified region.</span>
+
+<span class="sd">    This class models charging demand by integrating data from mobility simulations, region-specific characteristics, </span>
+<span class="sd">    and vehicle fleet details, along with user-defined charging scenarios that include charging efficiency and behavior settings.</span>
+
+<span class="sd">    Key Features:</span>
+
+<span class="sd">    - Spatial Charging Demand: Computes the charging demand per traffic zone within the specified region, enabling geographically detailed assessments of charging needs.</span>
+<span class="sd">    - Temporal Charging Demand: Generates a load profile for each electric vehicle across all traffic zones using stochastic allocation.</span>
+<span class="sd">      The number of vehicles charging and charging times are based on a state-of-charge (SOC) decision model, with a &quot;dumb charging&quot; </span>
+<span class="sd">      strategy by default (where vehicles charge at full charger power upon arrival).</span>
+<span class="sd">    - Scenario-Based Modeling: Allows flexible scenario configuration, including charging locations (with varying charger power levels), </span>
+<span class="sd">      and custom arrival times at home and work, to reflect realistic charging patterns.</span>
+<span class="sd">    - Smart Charging Compatibility: Enables the application of smart charging strategies in a secondary processing step, with </span>
+<span class="sd">      pre-implemented strategies such as peak shaving to manage grid impact.</span>
+
+<span class="sd">    Note: This class assumes the use of a predefined region, vehicle fleet, and mobility demand simulator. Charging scenario parameters are provided</span>
+<span class="sd">    as a dictionary, allowing flexible configuration of different charging behaviors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">vehicle_fleet</span><span class="p">:</span> <span class="n">VehicleFleet</span><span class="p">,</span> <span class="n">mobility_demand</span><span class="p">:</span> <span class="n">MobilitySimulator</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">charging_efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the ChargingSimulator class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            region (Region): An instance representing the geographic area for the simulation.</span>
+<span class="sd">            vehicle_fleet (VehicleFleet): The electric vehicle fleet to be simulated.</span>
+<span class="sd">            mobility_demand (MobilitySimulator): An instance of MobilitySimulator providing mobility demand data.</span>
+<span class="sd">            scenario (dict): Configuration parameters for the charging scenario. Keys:</span>
+<span class="sd">                &#39;charging_power&#39; (float): The average power used for charging (in kW).</span>
+<span class="sd">                &#39;max_charging_sessions&#39; (int): Maximum number of charging sessions per day.</span>
+<span class="sd">                &#39;charging_schedule&#39; (str): Type of schedule for charging (e.g., &#39;daytime&#39;, &#39;nighttime&#39;).</span>
+<span class="sd">            charging_efficiency (float): The efficiency factor for charging, ranging between 0 and 1.</span>
+
+<span class="sd">        Prints:</span>
+<span class="sd">            Initialization details, including the chosen region, vehicle fleet characteristics, and scenario configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Creation of a ChargingSimulator object.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========================================&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span> <span class="o">=</span> <span class="n">vehicle_fleet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility_demand</span> <span class="o">=</span> <span class="n">mobility_demand</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_efficiency</span> <span class="o">=</span> <span class="n">charging_efficiency</span>       
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Successful initialization of input parameters.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Modeling results</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile_aggregated</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Results properties (read-only)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spatial_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: The spatial charging demand.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temporal_demand_vehicle_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: The properties of the vehicles that are charging today. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temporal_demand_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: The temporal charging demand for each vehicle.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temporal_demand_profile_aggregated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.DataFrame: The total temporal charging demand (aggregated over each vehicle).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile_aggregated</span>
+
+    <span class="c1"># Properties and Setters </span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Region</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Region: The region used in the simulation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span>
+
+    <span class="nd">@region</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Region</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;region must be an instance of the Region class.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vehicle_fleet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleFleet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;VehicleFleet: The vehicle fleet used in the simulation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vehicle_fleet</span>
+
+    <span class="nd">@vehicle_fleet</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">vehicle_fleet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">VehicleFleet</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VehicleFleet</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;vehicle_fleet must be an instance of the VehicleFleet class.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vehicle_fleet</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mobility_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MobilitySimulator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;MobilitySimulator: The mobility demand (i.e. flows between traffic zones) aggregated over all simulations provided.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mobility_demand</span>
+
+    <span class="nd">@mobility_demand</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mobility_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">MobilitySimulator</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MobilitySimulator</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mobility_demand object must be an instance of the MobilitySimulator class.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;n_outflows&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MobilitySimulator object - Vehicle allocation has not been performed.&quot;</span><span class="p">)</span>
+        <span class="c1"># Check if trip distribution has been performed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;Origin&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">flows</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MobilitySimulator object - Trip distribution has not been performed.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mobility_demand</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;dict: The charging scenario.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenario</span>
+
+    <span class="nd">@scenario</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># Define required structure and expected types for each scenario</span>
+        <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;home&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;share&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,),</span>  <span class="c1"># share should be a float</span>
+                <span class="s1">&#39;power_options_kW&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>  <span class="c1"># power_options should be a list</span>
+                <span class="s1">&#39;arrival_time_h&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>  <span class="c1"># arrival_time should be a list</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;work&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;share&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,),</span>
+                <span class="s1">&#39;power_options_kW&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="s1">&#39;arrival_time_h&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;poi&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;share&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,),</span>
+                <span class="s1">&#39;power_options_kW&#39;</span><span class="p">:</span> <span class="nb">list</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Validate input value</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;scenario must be a dictionary.&quot;</span><span class="p">)</span>
+
+        <span class="n">total_share</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># To track the total share for validation</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">expected_structure</span> <span class="ow">in</span> <span class="n">required_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required key: &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; in scenario.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check that each key&#39;s value is a dictionary and follows the expected structure</span>
+            <span class="n">scenario_part</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scenario_part</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The value for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; must be a dictionary.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Validate each attribute in the scenario part</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">expected_type</span> <span class="ow">in</span> <span class="n">expected_structure</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scenario_part</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; in &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; configuration.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scenario_part</span><span class="p">[</span><span class="n">attr</span><span class="p">],</span> <span class="n">expected_type</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; in &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; must be of type </span><span class="si">{</span><span class="n">expected_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Sum up the shares and validate they sum to 1</span>
+            <span class="n">total_share</span> <span class="o">+=</span> <span class="n">scenario_part</span><span class="p">[</span><span class="s1">&#39;share&#39;</span><span class="p">]</span>
+            
+            <span class="c1"># Validate power options format and shares</span>
+            <span class="n">power_options</span> <span class="o">=</span> <span class="n">scenario_part</span><span class="p">[</span><span class="s1">&#39;power_options_kW&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> 
+                       <span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> 
+                       <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">power_options</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each &#39;power_options_kW&#39; entry in &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; must be a list of [power_level, share].&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Check that the sum of the shares in power_options is exactly 1</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">power_options</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The sum of shares in &#39;power_options_kW&#39; for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; must be exactly 1.&quot;</span><span class="p">)</span>
+            
+        <span class="c1"># Final check that total share is equal to 1</span>
+        <span class="k">if</span> <span class="n">total_share</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The sum of &#39;share&#39; values across all keys must be exactly 1.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># If all checks pass, set the value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scenario</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">charging_efficiency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;float: The charging efficiency (between 0 and 1).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charging_efficiency</span>
+
+    <span class="nd">@charging_efficiency</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">charging_efficiency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The charging efficiency must be between 0 and 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charging_efficiency</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Spatial charging demand</span>
+
+<div class="viewcode-block" id="ChargingSimulator.compute_spatial_demand">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.compute_spatial_demand">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_spatial_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the spatial charging demand and store results in the _spatial_demand DataFrame.</span>
+
+<span class="sd">        This method calculates the total and per-vehicle daily charging demand at each traffic zone based </span>
+<span class="sd">        on the scenario configuration and zone-specific properties. It updates the spatial_demand attribute</span>
+<span class="sd">        with the computed results.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This method does not return a value; it updates the internal _spatial_demand DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Computing the spatial charging demand...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Step 1: Retrieve the shares for different charging locations (origin, destination, intermediate).</span>
+        <span class="n">share_home</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;home&#39;</span><span class="p">][</span><span class="s1">&#39;share&#39;</span><span class="p">]</span>
+        <span class="n">share_work</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">][</span><span class="s1">&#39;share&#39;</span><span class="p">]</span>
+        <span class="n">share_poi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;poi&#39;</span><span class="p">][</span><span class="s1">&#39;share&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Step 2: Calculate the fleet-wide average EV consumption </span>
+        <span class="n">average_ev_consumption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">average_consumption</span><span class="p">()</span>
+
+        <span class="c1"># Step 3: Compute the total and average demand per vehicle at POIs (specific case as we do not know where they charge)</span>
+        <span class="n">demand_at_poi</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mobility_demand</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;fkt_inflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">average_ev_consumption</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_efficiency</span> <span class="o">*</span> <span class="n">share_poi</span> 
+        <span class="p">)</span>
+        <span class="n">tot_vehicles_at_poi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mobility_demand</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="p">[</span><span class="s1">&#39;n_inflows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">share_poi</span> 
+        <span class="n">demand_per_vehicle_at_poi</span> <span class="o">=</span> <span class="p">(</span><span class="n">demand_at_poi</span> <span class="o">/</span> <span class="n">tot_vehicles_at_poi</span><span class="p">)</span> <span class="k">if</span> <span class="n">tot_vehicles_at_poi</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">total_pois</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s1">&#39;n_pois&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># Step 4: Initialize data storage for zone-specific charging demand.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Step 5: Loop over each zone to calculate the charging demand at home, work, and pois.</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mobility_demand</span><span class="o">.</span><span class="n">aggregated_zone_metrics</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="c1"># Retrieve zone-specific information.</span>
+            <span class="n">zone_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Step 6: Compute the total energy demand (kWh) for each charging location</span>
+            <span class="n">Etot_home</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;fkt_outflows&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_home</span> <span class="o">*</span> <span class="n">average_ev_consumption</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_efficiency</span><span class="p">)</span>
+            <span class="n">Etot_work</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;fkt_inflows&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_work</span> <span class="o">*</span> <span class="n">average_ev_consumption</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_efficiency</span><span class="p">)</span>
+
+            <span class="c1"># For poi, get the number of pois at this taz</span>
+            <span class="n">n_pois</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">zone_id</span><span class="p">,</span> <span class="s1">&#39;n_pois&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">Etot_poi</span> <span class="o">=</span> <span class="n">demand_at_poi</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_pois</span> <span class="o">/</span> <span class="n">total_pois</span><span class="p">)</span>
+
+            <span class="c1"># Step 7: Calculate the number of vehicles charging at home and destination for this TAZ.</span>
+            <span class="n">vehicles_home</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;n_outflows&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_home</span><span class="p">)</span>
+            <span class="n">vehicles_work</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;n_inflows&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_work</span><span class="p">)</span>
+            <span class="n">vehicles_poi</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">Etot_poi</span> <span class="o">/</span> <span class="n">demand_per_vehicle_at_poi</span><span class="p">)</span> <span class="k">if</span> <span class="n">Etot_poi</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+            <span class="c1"># Store calculated vehicles temporarily for adjustment</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">zone_id</span><span class="p">,</span>
+                <span class="s1">&#39;geometry&#39;</span><span class="p">:</span> <span class="n">geometry</span><span class="p">,</span>
+                <span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">:</span> <span class="n">vehicles_home</span><span class="p">,</span>
+                <span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">:</span> <span class="n">vehicles_work</span><span class="p">,</span>
+                <span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">:</span> <span class="n">vehicles_poi</span><span class="p">,</span>
+                <span class="s1">&#39;Etot_home_kWh&#39;</span><span class="p">:</span> <span class="n">Etot_home</span><span class="p">,</span>
+                <span class="s1">&#39;Etot_work_kWh&#39;</span><span class="p">:</span> <span class="n">Etot_work</span><span class="p">,</span>
+                <span class="s1">&#39;Etot_poi_kWh&#39;</span><span class="p">:</span> <span class="n">Etot_poi</span>
+            <span class="p">})</span>
+
+        <span class="c1"># Calculate total vehicles from initial estimates</span>
+        <span class="n">total_vehicles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Desired total number of vehicles (this value should be set based on your requirements)</span>
+        <span class="n">desired_total_vehicles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">total_vehicles</span>
+
+        <span class="n">difference</span> <span class="o">=</span> <span class="n">desired_total_vehicles</span> <span class="o">-</span> <span class="n">total_vehicles</span>
+
+        <span class="k">if</span> <span class="n">difference</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> Randomly allocating </span><span class="si">{</span><span class="n">difference</span><span class="si">}</span><span class="s2"> vehicles due to rounding errors...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Step 10: Adjust the number of vehicles by adding/removing one vehicle randomly</span>
+        <span class="k">while</span> <span class="n">total_vehicles</span> <span class="o">!=</span> <span class="n">desired_total_vehicles</span><span class="p">:</span>
+            <span class="n">difference</span> <span class="o">=</span> <span class="n">desired_total_vehicles</span> <span class="o">-</span> <span class="n">total_vehicles</span>  
+            
+            <span class="k">if</span> <span class="n">difference</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Adding a vehicle</span>
+                <span class="c1"># Select a random zone and a random category to add a vehicle</span>
+                <span class="n">random_zone_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="n">selected_zone</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">random_zone_index</span><span class="p">]</span>
+                
+                <span class="c1"># Randomly select the category (home, work, poi)</span>
+                <span class="n">category</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_zone</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Ensure we do not add a vehicle where there is no vehicle</span>
+                    <span class="n">selected_zone</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">total_vehicles</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">elif</span> <span class="n">difference</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Removing a vehicle</span>
+                <span class="c1"># Select a random zone and a random category to remove a vehicle</span>
+                <span class="n">random_zone_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="n">selected_zone</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">random_zone_index</span><span class="p">]</span>
+
+                <span class="c1"># Randomly select the category (home, work, poi)</span>
+                <span class="n">category</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">selected_zone</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Ensure there&#39;s a vehicle to remove</span>
+                    <span class="n">selected_zone</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">total_vehicles</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="c1"># Calculate average charging demand per vehicle for each charging location (kWh per vehicle).</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">item</span><span class="p">[</span><span class="s1">&#39;E_per_vehicle_home_kWh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;Etot_home_kWh&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">round</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">]))</span> <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">item</span><span class="p">[</span><span class="s1">&#39;E_per_vehicle_work_kWh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;Etot_work_kWh&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">round</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">]))</span> <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">item</span><span class="p">[</span><span class="s1">&#39;E_per_vehicle_poi_kWh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demand_per_vehicle_at_poi</span> <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Step 11: Convert data into a DataFrame and store it in the spatial_demand attribute.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Step 12: Print main aggregated outputs</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="se">\t</span><span class="s2"> &gt; Average consumption: </span><span class="si">{</span><span class="n">average_ev_consumption</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh/km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="se">\t</span><span class="s2"> &gt; Total charging needs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;Etot_home_kWh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;Etot_work_kWh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;Etot_poi_kWh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> kWh&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="se">\t</span><span class="s2"> &gt; Home: Total: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;Etot_home_kWh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh - &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Per vehicle (weighted avg): </span><span class="si">{</span><span class="p">(</span>
+<span class="w">                  </span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;E_per_vehicle_home_kWh&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span>
+<span class="w">                  </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh - &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Vehicles: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="se">\t</span><span class="s2"> &gt; Work: Total: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;Etot_work_kWh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh - &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Per vehicle (weighted avg): </span><span class="si">{</span><span class="p">(</span>
+<span class="w">                  </span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;E_per_vehicle_work_kWh&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span>
+<span class="w">                  </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh - &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Vehicles: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="se">\t</span><span class="s2"> &gt; POIs: Total: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;Etot_poi_kWh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh - &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Per vehicle (weighted avg): </span><span class="si">{</span><span class="p">(</span>
+<span class="w">                  </span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;E_per_vehicle_poi_kWh&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span>
+<span class="w">                  </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kWh - &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Vehicles: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Temporal charging demand</span>
+
+<div class="viewcode-block" id="ChargingSimulator.compute_temporal_demand">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.compute_temporal_demand">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_temporal_demand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">travel_time_home_work</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">soc_threshold_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">soc_threshold_std_dev</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Computes the temporal charging demand for vehicles, assigning their properties </span>
+<span class="sd">        and calculating the charging profile based on specified parameters.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            time_step (float): The time interval (in hours) for the charging profile computation.</span>
+<span class="sd">            travel_time_home_work (float): Average travel time from home to work (in hours).</span>
+<span class="sd">            soc_threshold_mean (float): Mean state of charge (SoC) threshold for vehicle charging.</span>
+<span class="sd">            soc_threshold_std_dev (float): Standard deviation for the SoC threshold.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Computing the temporal charging demand...&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR </span><span class="se">\t</span><span class="s2"> Please compute the spatial charging demand before the temporal one.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assign_vehicle_properties</span><span class="p">(</span><span class="n">travel_time_home_work</span><span class="p">,</span> <span class="n">soc_threshold_mean</span><span class="p">,</span> <span class="n">soc_threshold_std_dev</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_charging_profile</span><span class="p">(</span><span class="n">time_step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_aggregated_charging_profile</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_assign_vehicle_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">travel_time_home_work</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">soc_threshold_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">soc_threshold_std_dev</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns energy demand, arrival times, and other properties to each vehicle </span>
+<span class="sd">        based on the charging location, including calculations for daily charging demand </span>
+<span class="sd">        and vehicle characteristics.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            travel_time_home_work (float): Average travel time from home to work (in hours).</span>
+<span class="sd">            soc_threshold_mean (float): Mean state of charge (SoC) threshold for vehicle charging.</span>
+<span class="sd">            soc_threshold_std_dev (float): Standard deviation for the SoC threshold.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Step 1: Assign vehicle properties</span>
+        <span class="c1">########################################################</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Assigning properties to each vehicle...&quot;</span><span class="p">)</span>
+
+        <span class="n">all_vehicle_properties</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># To store DataFrames for each location</span>
+        <span class="n">vehicle_id_counter</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Initialize a counter for unique vehicle IDs</span>
+
+        <span class="c1"># Loop through all possible charging locations</span>
+        <span class="k">for</span> <span class="n">charging_location</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="c1"># Get the number of vehicles and scenario settings</span>
+            <span class="n">vehicle_counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_demand</span><span class="p">[</span><span class="s1">&#39;n_vehicles_&#39;</span> <span class="o">+</span> <span class="n">charging_location</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="c1"># Skip if there are no vehicles for this charging location</span>
+            <span class="k">if</span> <span class="n">vehicle_counts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="n">charging_location</span><span class="p">]</span>
+            <span class="n">work_arrival_mean</span><span class="p">,</span> <span class="n">work_arrival_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">][</span><span class="s1">&#39;arrival_time_h&#39;</span><span class="p">]</span>
+            <span class="n">home_arrival_mean</span><span class="p">,</span> <span class="n">home_arrival_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;home&#39;</span><span class="p">][</span><span class="s1">&#39;arrival_time_h&#39;</span><span class="p">]</span>
+            
+            <span class="c1"># Initialize a DataFrame for vehicle properties</span>
+            <span class="n">vehicle_properties</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+                <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">vehicle_id_counter</span><span class="p">,</span> <span class="n">vehicle_id_counter</span> <span class="o">+</span> <span class="n">vehicle_counts</span><span class="p">),</span>  <span class="c1"># Unique vehicle IDs</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">),</span>
+                <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="n">charging_location</span><span class="p">,</span>
+                <span class="s2">&quot;days_between_charges&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="s2">&quot;charging_demand&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="s2">&quot;arrival_time&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="s2">&quot;departure_time&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="s2">&quot;idling_duration&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="s2">&quot;charging_power&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>                                
+            <span class="p">})</span>
+
+            <span class="c1"># Update the vehicle counter to ensure unique IDs</span>
+            <span class="n">vehicle_id_counter</span> <span class="o">+=</span> <span class="n">vehicle_counts</span>
+
+            <span class="c1"># Aggregate flows and calculate distances and probabilities</span>
+            <span class="n">df_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mobility_demand</span><span class="o">.</span><span class="n">flows</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">grouped_df</span> <span class="o">=</span> <span class="n">df_sum</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">)[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Probability&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">distances</span><span class="p">,</span> <span class="n">distance_probabilities</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Travel Distance (km)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Probability&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="c1"># Randomly select vehicle types for all vehicles at once</span>
+            <span class="n">vehicle_types</span><span class="p">,</span> <span class="n">probabilities</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle_fleet</span><span class="o">.</span><span class="n">vehicle_types</span><span class="p">)</span>
+            <span class="n">selected_vehicles</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">vehicle_types</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">)</span>
+
+            <span class="c1"># Populate the vehicle names directly</span>
+            <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">vehicle</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="n">selected_vehicles</span><span class="p">]</span>
+            <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dumb&quot;</span> <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="n">selected_vehicles</span><span class="p">]</span>            
+
+            <span class="c1"># Randomly generate distances for daily charging demand</span>
+            <span class="n">selected_distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">distance_probabilities</span><span class="p">)</span>
+            
+            <span class="c1"># Calculate daily charging demand in a vectorized way</span>
+            <span class="n">daily_charging_demand</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">selected_distances</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vehicle</span><span class="o">.</span><span class="n">consumption_kWh_per_km</span> <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="n">selected_vehicles</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_efficiency</span>
+            <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;days_between_charges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">calculate_days_between_charges_single_vehicle</span><span class="p">)(</span>
+                <span class="n">daily_charging_demand</span><span class="p">,</span> 
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vehicle</span><span class="o">.</span><span class="n">battery_capacity_kWh</span> <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="n">selected_vehicles</span><span class="p">]),</span>
+                <span class="n">soc_threshold_mean</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">),</span>
+                <span class="n">soc_threshold_std_dev</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">vehicle_counts</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Calculate charging demand in a vectorized way</span>
+            <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;charging_demand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily_charging_demand</span> <span class="o">*</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;days_between_charges&#39;</span><span class="p">]</span>
+            
+            <span class="c1"># Prepare power options</span>
+            <span class="n">power_options</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;power_options_kW&#39;</span><span class="p">])</span>
+            <span class="n">max_charging_powers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vehicle</span><span class="o">.</span><span class="n">max_charging_power_kW</span> <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="n">selected_vehicles</span><span class="p">])</span>
+            
+            <span class="c1"># Select valid charging powers below the max charging power for each vehicle</span>
+            <span class="n">valid_power_choices</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">power</span> <span class="k">for</span> <span class="n">power</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">power_options</span> <span class="k">if</span> <span class="n">power</span> <span class="o">&lt;=</span> <span class="n">max_power</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">max_power</span> <span class="ow">in</span> <span class="n">max_charging_powers</span>
+            <span class="p">]</span>
+            
+            <span class="c1"># Randomly select charging power for each vehicle</span>
+            <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;charging_power&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">valid_powers</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_powers</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">valid_powers</span> <span class="ow">in</span> <span class="n">valid_power_choices</span>
+            <span class="p">]</span>
+            
+            <span class="c1"># Handle arrival and departure times based on charging location</span>
+            <span class="k">if</span> <span class="n">charging_location</span> <span class="o">!=</span> <span class="s1">&#39;poi&#39;</span><span class="p">:</span>
+                <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;arrival_time_h&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;arrival_time_h&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">)</span>
+                <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_times</span> <span class="o">%</span> <span class="mi">24</span>  <span class="c1"># Use modulo for wrapping</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">random_arrival</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">work_arrival_mean</span><span class="p">,</span> <span class="n">work_arrival_std</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">)</span>
+                <span class="n">random_departure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">home_arrival_mean</span><span class="p">,</span> <span class="n">home_arrival_std</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">)</span>
+                <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">random_arrival</span><span class="p">,</span> <span class="n">random_departure</span><span class="p">)</span> <span class="o">%</span> <span class="mi">24</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">charging_location</span> <span class="o">==</span> <span class="s1">&#39;home&#39;</span><span class="p">:</span>
+                <span class="n">work_arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">work_arrival_mean</span><span class="p">,</span> <span class="n">work_arrival_std</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">)</span>
+                <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">work_arrival_times</span> <span class="o">-</span> <span class="n">travel_time_home_work</span><span class="p">)</span> <span class="o">%</span> <span class="mi">24</span>  <span class="c1"># Wrap with modulo</span>
+            <span class="k">elif</span> <span class="n">charging_location</span> <span class="o">==</span> <span class="s1">&#39;work&#39;</span><span class="p">:</span>
+                <span class="n">home_arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">home_arrival_mean</span><span class="p">,</span> <span class="n">home_arrival_std</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">vehicle_counts</span><span class="p">)</span>
+                <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">home_arrival_times</span> <span class="o">-</span> <span class="n">travel_time_home_work</span><span class="p">)</span> <span class="o">%</span> <span class="mi">24</span>
+            <span class="k">elif</span> <span class="n">charging_location</span> <span class="o">==</span> <span class="s1">&#39;poi&#39;</span><span class="p">:</span>
+                <span class="n">charging_durations</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;charging_demand&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;charging_power&#39;</span><span class="p">]</span>
+                <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">charging_durations</span><span class="p">)</span> <span class="o">%</span> <span class="mi">24</span>  <span class="c1"># Wrap with modulo</span>
+
+            <span class="c1"># Vectorized calculation of idling time</span>
+            <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">departure_times</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="c1"># Calculate idling time based on conditions</span>
+            <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;idling_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">departure_times</span> <span class="o">&gt;=</span> <span class="n">arrival_times</span><span class="p">,</span>
+                <span class="n">departure_times</span> <span class="o">-</span> <span class="n">arrival_times</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">24</span> <span class="o">-</span> <span class="n">arrival_times</span><span class="p">)</span> <span class="o">+</span> <span class="n">departure_times</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Append the DataFrame to the list</span>
+            <span class="n">all_vehicle_properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vehicle_properties</span><span class="p">)</span>
+
+        <span class="c1"># Step 2: Select and filter only vehicles charging today</span>
+        <span class="c1">########################################################</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Selecting and filtering only vehicles charging today...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Concatenate all location-specific DataFrames into a single DataFrame</span>
+        <span class="n">vehicle_properties</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_vehicle_properties</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">charging_probability</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;days_between_charges&#39;</span><span class="p">]</span>
+        
+        <span class="c1"># Determine if each vehicle will charge today using vectorized random sampling</span>
+        <span class="n">charging_today</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">charging_probability</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">charging_probability</span>
+        
+        <span class="c1"># Modify the original DataFrame to keep only vehicles charging today</span>
+        <span class="n">vehicle_properties</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="n">charging_today</span><span class="p">]</span>
+        
+        <span class="c1"># Reset the index for the modified DataFrame</span>
+        <span class="n">vehicle_properties</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Number of vehicles charging: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vehicle_properties</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span> <span class="o">=</span> <span class="n">vehicle_properties</span>
+
+    <span class="k">def</span> <span class="nf">_compute_charging_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a 24-hour charging profile for each vehicle, detailing the charging power </span>
+<span class="sd">        at each specified time step.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            time_step (float): The time step interval (in hours) for which the charging profile is computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Computing the charging profile for each vehicle...&quot;</span><span class="p">)</span>
+        <span class="n">vehicle_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_demand_vehicle_properties</span>
+
+        <span class="c1"># Define the time intervals</span>
+        <span class="n">num_time_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">24</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span>
+        <span class="n">time_steps</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span> <span class="o">*</span> <span class="n">time_step</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_time_steps</span><span class="p">)]</span>
+        
+        <span class="c1"># Create a list to hold individual vehicle charging profiles</span>
+        <span class="n">profiles</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Precompute relevant values</span>
+        <span class="n">charging_powers</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s2">&quot;charging_power&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s2">&quot;arrival_time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">idling_durations</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s2">&quot;idling_duration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">charging_demands</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s2">&quot;charging_demand&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># Calculate charging durations and indices</span>
+        <span class="n">charging_durations</span> <span class="o">=</span> <span class="n">charging_demands</span> <span class="o">/</span> <span class="n">charging_powers</span>
+        <span class="n">start_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">arrival_times</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">end_indices</span> <span class="o">=</span> <span class="n">start_indices</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">charging_durations</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># Preliminary checks</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">charging_durations</span> <span class="o">&lt;=</span> <span class="n">time_step</span><span class="p">):</span>
+            <span class="n">num_alerts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">charging_durations</span> <span class="o">&lt;=</span> <span class="n">time_step</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">num_alerts</span><span class="si">}</span><span class="s2">  charging durations are smaller than the timestep. Charging demand may not be met.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Check how many vehicles have a charging duration greater than their idling time</span>
+        <span class="n">vehicles_with_long_charging</span> <span class="o">=</span> <span class="p">(</span><span class="n">charging_durations</span> <span class="o">-</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idling_durations</span> <span class="c1"># Adding a small correction to account for rounding issues</span>
+        <span class="n">count_long_charging</span> <span class="o">=</span> <span class="n">vehicles_with_long_charging</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">count_long_charging</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALERT </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">count_long_charging</span><span class="si">}</span><span class="s2"> vehicle(s) require charging durations longer than their idling periods. Charging continues beyond the expected idling time.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Process each vehicle</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">vehicle_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vehicle_properties</span><span class="p">[</span><span class="s2">&quot;vehicle_id&quot;</span><span class="p">]):</span>
+            <span class="c1"># Initialize profile with zeros</span>
+            <span class="n">profile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_time_steps</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">end_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">num_time_steps</span><span class="p">:</span>  <span class="c1"># Wrap-around case</span>
+                <span class="c1"># Charging from start index to the end of the day</span>
+                <span class="n">profile</span><span class="p">[</span><span class="n">start_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]:]</span> <span class="o">+=</span> <span class="n">charging_powers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="c1"># Charging from the start of the day to the wrap end</span>
+                <span class="n">wrap_end</span> <span class="o">=</span> <span class="n">end_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">%</span> <span class="n">num_time_steps</span>
+                <span class="n">profile</span><span class="p">[:</span><span class="n">wrap_end</span><span class="p">]</span> <span class="o">+=</span> <span class="n">charging_powers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># No-wrap case</span>
+                <span class="n">profile</span><span class="p">[</span><span class="n">start_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]:</span><span class="n">end_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">charging_powers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+            <span class="c1"># Append the vehicle profile to the profiles list</span>
+            <span class="n">profiles</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">vehicle_id</span><span class="p">]</span> <span class="o">+</span> <span class="n">profile</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+        <span class="c1"># Create DataFrame from profiles</span>
+        <span class="n">profile_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">profiles</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;vehicle_id&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">time_steps</span><span class="p">)</span>
+
+        <span class="c1"># Transpose the DataFrame and reset the index</span>
+        <span class="n">profile_df</span> <span class="o">=</span> <span class="n">profile_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">profile_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">profile_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># Rename first column to &#39;time&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span> <span class="o">=</span> <span class="n">profile_df</span>
+
+    <span class="k">def</span> <span class="nf">_compute_aggregated_charging_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an aggregated charging profile, summing the charging power of all vehicles </span>
+<span class="sd">        across different locations (home, work, poi) for each time step. It also includes </span>
+<span class="sd">        statistics on the number of vehicles plugged in and charging at each location.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            time_step (float): The time step interval (in hours) for which the aggregated charging profile is computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Computing the aggregated charging profile by location...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the individual charging profile and vehicle properties DataFrames</span>
+        <span class="n">vehicle_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_demand_vehicle_properties</span>  <span class="c1"># contains &#39;vehicle_id&#39;, &#39;arrival_time&#39;, &#39;departure_time&#39;, &#39;location&#39;</span>
+        <span class="n">charging_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_demand_profile</span>               <span class="c1"># contains &#39;vehicle_id&#39;, &#39;time&#39;, and power data</span>
+
+        <span class="c1"># Convert time columns to float (if not already)</span>
+        <span class="n">time_step</span> <span class="o">=</span> <span class="n">charging_profile</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">charging_profile</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vehicle_properties</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        
+        <span class="c1"># Reshape the charging profile to long format with each vehicle&#39;s charging power at each time interval</span>
+        <span class="n">melted_profile</span> <span class="o">=</span> <span class="n">charging_profile</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s1">&#39;charging_power&#39;</span><span class="p">)</span>
+        <span class="n">melted_profile</span><span class="p">[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">melted_profile</span><span class="p">[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># Merge with vehicle properties to associate each vehicle&#39;s charging with its location</span>
+        <span class="n">merged_df</span> <span class="o">=</span> <span class="n">melted_profile</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">vehicle_properties</span><span class="p">[[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;arrival_time&#39;</span><span class="p">,</span> <span class="s1">&#39;departure_time&#39;</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Vectorized determination of whether each vehicle is plugged in based on arrival and departure times</span>
+        <span class="n">arrival_time</span> <span class="o">=</span> <span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span>
+        <span class="n">departure_time</span> <span class="o">=</span> <span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+        
+        <span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;is_plugged&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">departure_time</span> <span class="o">&gt;</span> <span class="n">arrival_time</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">arrival_time</span> <span class="o">&lt;=</span> <span class="n">time</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">departure_time</span><span class="p">))</span> <span class="o">|</span> \
+                                  <span class="p">((</span><span class="n">departure_time</span> <span class="o">&lt;=</span> <span class="n">arrival_time</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">departure_time</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">time</span> <span class="o">&gt;=</span> <span class="n">arrival_time</span><span class="p">)))</span>
+
+        <span class="c1"># Aggregate charging power by time and location</span>
+        <span class="n">aggregated_profile</span> <span class="o">=</span> <span class="p">(</span><span class="n">merged_df</span>
+                              <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">])[</span><span class="s1">&#39;charging_power&#39;</span><span class="p">]</span>
+                              <span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                              <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                              <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+                              <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Ensure all required columns are present</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="s1">&#39;poi&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aggregated_profile</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">aggregated_profile</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Add missing location columns with zeroes if no data for location</span>
+
+        <span class="c1"># Add the &#39;total&#39; column summing across &#39;home&#39;, &#39;work&#39;, and &#39;poi&#39;</span>
+        <span class="n">aggregated_profile</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aggregated_profile</span><span class="p">[[</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="s1">&#39;poi&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Count the number of vehicles charging (non-zero power) by location and time</span>
+        <span class="n">vehicle_charging_counts</span> <span class="o">=</span> <span class="p">(</span><span class="n">merged_df</span><span class="p">[</span><span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;charging_power&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+                                   <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">])[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span>
+                                   <span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+                                   <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                   <span class="o">.</span><span class="n">reset_index</span><span class="p">())</span>
+        
+        <span class="c1"># Ensure all required columns are present in vehicle_charging_counts</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="s1">&#39;poi&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vehicle_charging_counts</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">vehicle_charging_counts</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Rename columns to indicate they are counts of charging vehicles</span>
+        <span class="n">vehicle_charging_counts</span> <span class="o">=</span> <span class="n">vehicle_charging_counts</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;home&#39;</span><span class="p">:</span> <span class="s1">&#39;home_vehicle_charging&#39;</span><span class="p">,</span>
+                                                                          <span class="s1">&#39;work&#39;</span><span class="p">:</span> <span class="s1">&#39;work_vehicle_charging&#39;</span><span class="p">,</span>
+                                                                          <span class="s1">&#39;poi&#39;</span><span class="p">:</span> <span class="s1">&#39;poi_vehicle_charging&#39;</span><span class="p">})</span>
+        
+        <span class="c1"># Add a total vehicle charging count column</span>
+        <span class="n">vehicle_charging_counts</span><span class="p">[</span><span class="s1">&#39;total_vehicle_charging&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vehicle_charging_counts</span><span class="p">[[</span><span class="s1">&#39;home_vehicle_charging&#39;</span><span class="p">,</span> 
+                                                                                    <span class="s1">&#39;work_vehicle_charging&#39;</span><span class="p">,</span> 
+                                                                                    <span class="s1">&#39;poi_vehicle_charging&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Count the number of vehicles plugged in (regardless of charging status) by location and time</span>
+        <span class="n">vehicle_plugged_counts</span> <span class="o">=</span> <span class="p">(</span><span class="n">merged_df</span><span class="p">[</span><span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;is_plugged&#39;</span><span class="p">]]</span>
+                                  <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">])[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span>
+                                  <span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+                                  <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                  <span class="o">.</span><span class="n">reset_index</span><span class="p">())</span>
+        
+        <span class="c1"># Ensure all required columns are present in vehicle_plugged_counts</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="s1">&#39;poi&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vehicle_plugged_counts</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">vehicle_plugged_counts</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Rename columns to indicate they are counts of plugged-in vehicles</span>
+        <span class="n">vehicle_plugged_counts</span> <span class="o">=</span> <span class="n">vehicle_plugged_counts</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;home&#39;</span><span class="p">:</span> <span class="s1">&#39;home_vehicle_plugged&#39;</span><span class="p">,</span>
+                                                                        <span class="s1">&#39;work&#39;</span><span class="p">:</span> <span class="s1">&#39;work_vehicle_plugged&#39;</span><span class="p">,</span>
+                                                                        <span class="s1">&#39;poi&#39;</span><span class="p">:</span> <span class="s1">&#39;poi_vehicle_plugged&#39;</span><span class="p">})</span>
+        
+        <span class="c1"># Add a total plugged-in vehicle count column</span>
+        <span class="n">vehicle_plugged_counts</span><span class="p">[</span><span class="s1">&#39;total_vehicle_plugged&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vehicle_plugged_counts</span><span class="p">[[</span><span class="s1">&#39;home_vehicle_plugged&#39;</span><span class="p">,</span> 
+                                                                                  <span class="s1">&#39;work_vehicle_plugged&#39;</span><span class="p">,</span> 
+                                                                                  <span class="s1">&#39;poi_vehicle_plugged&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Merge the counts back into the aggregated profile</span>
+        <span class="n">aggregated_profile</span> <span class="o">=</span> <span class="n">aggregated_profile</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">vehicle_charging_counts</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">aggregated_profile</span> <span class="o">=</span> <span class="n">aggregated_profile</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">vehicle_plugged_counts</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile_aggregated</span> <span class="o">=</span> <span class="n">aggregated_profile</span><span class="p">[[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="s1">&#39;poi&#39;</span><span class="p">,</span> <span class="s1">&#39;total&#39;</span><span class="p">,</span>
+                                                                       <span class="s1">&#39;home_vehicle_plugged&#39;</span><span class="p">,</span> <span class="s1">&#39;work_vehicle_plugged&#39;</span><span class="p">,</span> 
+                                                                       <span class="s1">&#39;poi_vehicle_plugged&#39;</span><span class="p">,</span> <span class="s1">&#39;total_vehicle_plugged&#39;</span><span class="p">,</span>
+                                                                       <span class="s1">&#39;home_vehicle_charging&#39;</span><span class="p">,</span> <span class="s1">&#39;work_vehicle_charging&#39;</span><span class="p">,</span> 
+                                                                       <span class="s1">&#39;poi_vehicle_charging&#39;</span><span class="p">,</span> <span class="s1">&#39;total_vehicle_charging&#39;</span><span class="p">]]</span>
+
+        <span class="c1"># Convert power (kW) to energy (kWh) by multiplying each time step by time_step (in hours)</span>
+        <span class="n">energy_needs</span> <span class="o">=</span> <span class="n">aggregated_profile</span><span class="p">[[</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="s1">&#39;poi&#39;</span><span class="p">,</span> <span class="s1">&#39;total&#39;</span><span class="p">]]</span> <span class="o">*</span> <span class="n">time_step</span>
+
+        <span class="c1"># Calculate total and per-location charging needs (kWh)</span>
+        <span class="n">total_charging_needs</span> <span class="o">=</span> <span class="n">energy_needs</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">home_charging_needs</span> <span class="o">=</span> <span class="n">energy_needs</span><span class="p">[</span><span class="s1">&#39;home&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">work_charging_needs</span> <span class="o">=</span> <span class="n">energy_needs</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">poi_charging_needs</span> <span class="o">=</span> <span class="n">energy_needs</span><span class="p">[</span><span class="s1">&#39;poi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Total Charging Needs: </span><span class="si">{</span><span class="n">total_charging_needs</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> kWh&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Home Charging Needs: </span><span class="si">{</span><span class="n">home_charging_needs</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> kWh&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Work Charging Needs: </span><span class="si">{</span><span class="n">work_charging_needs</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> kWh&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; POI Charging Needs: </span><span class="si">{</span><span class="n">poi_charging_needs</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> kWh&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Smart charging</span>
+
+<div class="viewcode-block" id="ChargingSimulator.apply_smart_charging">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.apply_smart_charging">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_smart_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">charging_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">share</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply a smart charging strategy to a subset of vehicles at specific locations.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            location (list): List of location types (&#39;home&#39;, &#39;work&#39;, &#39;poi&#39;).</span>
+<span class="sd">            charging_strategy (str): The name of the charging strategy to apply.</span>
+<span class="sd">            share (float): Proportion of vehicles participating (between 0 and 1).</span>
+<span class="sd">            kwargs: Additional parameters for specific charging strategies.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO </span><span class="se">\t</span><span class="s2"> Applying &#39;</span><span class="si">{</span><span class="n">charging_strategy</span><span class="si">}</span><span class="s2">&#39; charging strategy...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check that share is within the valid range</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">share</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Share must be between 0 and 1.&quot;</span><span class="p">)</span>
+        
+        <span class="n">selected_vehicle_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Initialize an empty list for selected vehicle IDs</span>
+
+        <span class="c1"># Iterate through each specified location</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">location</span><span class="p">:</span>
+            <span class="c1"># Filter vehicles by the current location</span>
+            <span class="n">location_vehicles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">l</span><span class="p">]</span>
+            
+            <span class="c1"># Determine the number of vehicles to modify for the current location</span>
+            <span class="n">num_smart_vehicles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">share</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">location_vehicles</span><span class="p">))</span>
+            
+            <span class="c1"># If there are vehicles at this location, select some</span>
+            <span class="k">if</span> <span class="n">num_smart_vehicles</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Ensure that we do not attempt to select more vehicles than available</span>
+                <span class="n">selected_vehicles</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">location_vehicles</span><span class="p">[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_smart_vehicles</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">location_vehicles</span><span class="p">)))</span>
+                <span class="n">selected_vehicle_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">selected_vehicles</span><span class="p">)</span>  <span class="c1"># Add to the total list of selected vehicle IDs</span>
+                
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> &gt; Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_vehicles</span><span class="p">)</span><span class="si">}</span><span class="s2"> vehicles from &#39;</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if there are any vehicles to process</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_vehicle_ids</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt;</span><span class="se">\t</span><span class="s2"> No vehicles found for the given locations.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Update the strategy column for selected and non-selected vehicles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span><span class="p">[</span>
+            <span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">vid</span><span class="p">:</span> <span class="n">charging_strategy</span> <span class="k">if</span> <span class="n">vid</span> <span class="ow">in</span> <span class="n">selected_vehicle_ids</span> <span class="k">else</span> <span class="s2">&quot;dumb&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get relevant columns in _temporal_demand_profile</span>
+        <span class="n">smart_vehicle_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">vid</span> <span class="k">for</span> <span class="n">vid</span> <span class="ow">in</span> <span class="n">selected_vehicle_ids</span> <span class="k">if</span> <span class="n">vid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">smart_vehicles_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span><span class="p">[[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">smart_vehicle_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="c1"># Apply the selected charging strategy</span>
+        <span class="n">modified_smart_vehicles_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_charging_strategy</span><span class="p">(</span><span class="n">smart_vehicles_df</span><span class="p">,</span> <span class="n">charging_strategy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="c1"># Update _temporal_demand_profile with modified charging profiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">modified_smart_vehicles_df</span><span class="p">)</span>
+        
+        <span class="c1"># Recompute aggregated profile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_aggregated_charging_profile</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_apply_charging_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smart_vehicles_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies a specific charging strategy to the smart vehicles.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            smart_vehicles_df (pd.DataFrame): DataFrame of vehicles to apply the strategy on.</span>
+<span class="sd">            strategy (str): The name of the charging strategy.</span>
+<span class="sd">            **kwargs: Additional parameters specific to certain strategies.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: Modified DataFrame with updated charging profiles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Multiply by (dummy strategy) </span>
+        <span class="c1">##############################</span>
+        <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;multiply_by&quot;</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;factor&quot;</span><span class="p">)</span>
+            <span class="c1"># Multiply each vehicle&#39;s charging profile by factor (skip the &#39;time&#39; column)</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">smart_vehicles_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>  <span class="c1"># Skip the &#39;time&#39; column</span>
+                <span class="n">smart_vehicles_df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">*=</span> <span class="n">factor</span>
+
+        <span class="c1"># Peak shaving through ideal coordination </span>
+        <span class="c1">#########################################</span>
+        <span class="k">elif</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;peak_shaving&quot;</span><span class="p">:</span>
+
+            <span class="c1"># Initialize peak power and power demand array</span>
+            <span class="n">peak_power</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Total power peak</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">smart_vehicles_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">time_step</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">power_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>  <span class="c1"># Tracks power demand over time intervals</span>
+
+            <span class="c1"># Initialize charging profile for each vehicle</span>
+            <span class="n">smart_charging_profile</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">smart_vehicles_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+            <span class="c1"># Filter for vehicles by vehicle_id in the smart_vehicle_ids list</span>
+            <span class="n">smart_vehicle_ids</span> <span class="o">=</span> <span class="n">smart_vehicles_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">smart_vehicles_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_demand_vehicle_properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">temporal_demand_vehicle_properties</span><span class="p">[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">smart_vehicle_ids</span><span class="p">)]</span>
+
+            <span class="c1"># Process each vehicle</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">smart_vehicles_props</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="c1"># print(i)</span>
+                <span class="n">vehicle_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;vehicle_id&#39;</span><span class="p">]</span>
+                <span class="n">arrival_time</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">]</span>
+                <span class="n">departure_time</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">]</span>
+                <span class="n">charging_demand</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;charging_demand&#39;</span><span class="p">]</span>
+                <span class="n">max_power</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;charging_power&#39;</span><span class="p">]</span>
+
+                <span class="c1"># Calculate start and end indices in the time array for charging window</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">arrival_time</span><span class="p">)</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">end_idx</span> <span class="o">&lt;</span> <span class="n">start_idx</span><span class="p">:</span>                    
+                    <span class="n">end_idx</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>  <span class="c1"># Handle wrap-around for overnight charging</span>
+
+                <span class="c1"># Remaining demand to be met</span>
+                <span class="n">remaining_demand</span> <span class="o">=</span> <span class="n">charging_demand</span>
+
+                <span class="c1"># Minimize the total peak load</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">):</span>
+                    <span class="n">current_time_idx</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>  <span class="c1"># Wrap around 24-hour period</span>
+                    <span class="n">current_total_power</span> <span class="o">=</span> <span class="n">power_demand</span><span class="p">[</span><span class="n">current_time_idx</span><span class="p">]</span>
+
+                    <span class="c1"># If the current total power is below the peak power, charge with maximum power to stay below the limit</span>
+                    <span class="k">if</span> <span class="n">current_total_power</span> <span class="o">&lt;</span> <span class="n">peak_power</span><span class="p">:</span>
+                        <span class="n">charge_power</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">peak_power</span> <span class="o">-</span> <span class="n">current_total_power</span><span class="p">,</span> <span class="n">max_power</span><span class="p">)</span>
+                        <span class="n">charge_energy</span> <span class="o">=</span> <span class="n">charge_power</span> <span class="o">*</span> <span class="n">time_step</span>
+
+                        <span class="c1"># Ensure not to exceed remaining charging demand</span>
+                        <span class="k">if</span> <span class="n">charge_energy</span> <span class="o">&gt;</span> <span class="n">remaining_demand</span><span class="p">:</span>
+                            <span class="n">charge_energy</span> <span class="o">=</span> <span class="n">remaining_demand</span>
+                            <span class="n">charge_power</span> <span class="o">=</span> <span class="n">charge_energy</span> <span class="o">/</span> <span class="n">time_step</span>
+
+                        <span class="n">power_demand</span><span class="p">[</span><span class="n">current_time_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">charge_power</span>
+                        <span class="n">remaining_demand</span> <span class="o">-=</span> <span class="n">charge_energy</span>
+                        <span class="n">smart_charging_profile</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">time</span><span class="p">[</span><span class="n">current_time_idx</span><span class="p">],</span> <span class="n">vehicle_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">charge_power</span>
+
+                        <span class="c1"># Stop charging if demand is fully met</span>
+                        <span class="k">if</span> <span class="n">remaining_demand</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="k">break</span>
+
+                <span class="c1"># If there’s still demand, distribute uniformly across the charging window</span>
+                <span class="k">if</span> <span class="n">remaining_demand</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">charging_duration</span> <span class="o">=</span> <span class="p">(</span><span class="mi">24</span> <span class="o">-</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">departure_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">departure_time</span> <span class="o">&lt;</span> <span class="n">arrival_time</span> <span class="k">else</span> <span class="p">(</span><span class="n">departure_time</span> <span class="o">-</span> <span class="n">arrival_time</span><span class="p">)</span>
+                    <span class="n">charge_power</span> <span class="o">=</span> <span class="n">remaining_demand</span> <span class="o">/</span> <span class="n">charging_duration</span>
+
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">):</span>
+                        <span class="n">current_time_idx</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+                        <span class="n">power_demand</span><span class="p">[</span><span class="n">current_time_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">charge_power</span>
+                        <span class="n">smart_charging_profile</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">time</span><span class="p">[</span><span class="n">current_time_idx</span><span class="p">],</span> <span class="n">vehicle_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">charge_power</span>
+
+                <span class="c1"># Update peak power if needed</span>
+                <span class="n">peak_power</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">power_demand</span><span class="p">)</span>
+
+            <span class="c1"># Reset the index to convert the time index into a column</span>
+            <span class="n">smart_charging_profile</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Rename the &#39;index&#39; column to &#39;time&#39; to reflect its content</span>
+            <span class="n">smart_charging_profile</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">smart_vehicles_df</span> <span class="o">=</span> <span class="n">smart_charging_profile</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charging strategy is unknown.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Additional strategies can be implemented here</span>
+
+        <span class="k">return</span> <span class="n">smart_vehicles_df</span>
+
+    <span class="c1"># Export and visualization</span>
+
+<div class="viewcode-block" id="ChargingSimulator.to_csv">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.to_csv">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves two CSV files with the main output data for flows and aggregated zone metrics.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str): Base path for the output files. Automatically appends suffixes</span>
+<span class="sd">                            &quot;_flows&quot; and &quot;_aggregated_zone_metrics&quot; before &quot;.csv&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove any existing file extension</span>
+        <span class="n">filepath_without_ext</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="c1"># Save each dataframe with the respective suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_demand</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath_without_ext</span><span class="si">}</span><span class="s2">_spatial_demand.csv&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_vehicle_properties</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath_without_ext</span><span class="si">}</span><span class="s2">_temporal_demand_vehicle_properties.csv&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath_without_ext</span><span class="si">}</span><span class="s2">_temporal_demand_profile.csv&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_demand_profile_aggregated</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath_without_ext</span><span class="si">}</span><span class="s2">_temporal_demand_profile_aggregated.csv&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChargingSimulator.chargingdemand_total_to_map">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.chargingdemand_total_to_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">chargingdemand_total_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Folium map visualizing the total charging demand at origin and destination points.S</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_demand</span>
+
+        <span class="c1"># 1. Create base map with administrative boundaries</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">create_base_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="c1"># 2. Add TAZ boundaries</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_taz_boundaries</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">)</span>
+
+        <span class="c1"># 3. Add color-mapped feature groups for charging demand</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;Etot_home_kWh&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand at Home&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand (kWh)&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;Etot_work_kWh&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand at Work&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand (kWh)&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;Etot_poi_kWh&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand at POIs&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand (kWh)&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 4. Add Layer Control and Save the map</span>
+        <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">()</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChargingSimulator.chargingdemand_pervehicle_to_map">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.chargingdemand_pervehicle_to_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">chargingdemand_pervehicle_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Folium map visualizing the charging demand per vehicle at home, work, and POI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_demand</span>
+
+        <span class="c1"># 1. Create base map with administrative boundaries</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">create_base_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="c1"># 2. Add TAZ boundaries</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_taz_boundaries</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">)</span>
+
+        <span class="c1"># 3. Add color-mapped feature groups for charging demand per vehicle</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;E_per_vehicle_home_kWh&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging need per vehicle at Home&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand (kWh/vehicle)&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;E_per_vehicle_work_kWh&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging need per vehicle at Work&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand (kWh/vehicle)&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;E_per_vehicle_poi_kWh&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging need per vehicle at POIs&#39;</span><span class="p">,</span> <span class="s1">&#39;Charging demand (kWh/vehicle)&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 4. Add Layer Control and Save the map</span>
+        <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">()</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChargingSimulator.chargingdemand_nvehicles_to_map">
+<a class="viewcode-back" href="../../evpv.html#evpv.chargingsimulator.ChargingSimulator.chargingdemand_nvehicles_to_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">chargingdemand_nvehicles_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Folium map visualizing the number of vehicles charging at home, work, and POI locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_demand</span>
+
+        <span class="c1"># 1. Create base map with administrative boundaries</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">create_base_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="c1"># 2. Add TAZ boundaries</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_taz_boundaries</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">traffic_zones</span><span class="p">)</span>
+
+        <span class="c1"># 3. Add color-mapped feature groups for number of vehicles charging</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_home&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of vehicles charging at Home&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of vehicles&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_work&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of vehicles charging at Work&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of vehicles&#39;</span><span class="p">)</span>
+        <span class="n">hlp</span><span class="o">.</span><span class="n">add_colormapped_feature_group</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="s1">&#39;n_vehicles_poi&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of vehicles charging at POIs&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of vehicles&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 4. Add Layer Control and Save the map</span>
+        <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">()</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Jeremy Dumoulin.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

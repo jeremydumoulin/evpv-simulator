@@ -10,9 +10,12 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('..')) # Append parent directory to include evpv
 
+from version import __version__
+
 project = 'EV-PV'
 copyright = '2024, Jeremy Dumoulin'
 author = 'Jeremy Dumoulin'
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
