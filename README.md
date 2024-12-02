@@ -1,5 +1,5 @@
 # EV-PV
-**The EV-PV (Electric Vehicles - Photovoltaics) model is an open-source Python tool designed to calculate the charging needs of privately-owned electric vehicles (EVs), the potential for photovoltaic power generation (PV), and possible synergies between the two (self-sufficiency, self-consumption, ...) in a specific area. The tool primarily focuses on estimating the charging needs for daily commuting. It calculates the mobility demand for this purpose endogenously by combining georeferenced data with transport demand modeling.**
+**The EV-PV (Electric Vehicles - Photovoltaics) model is an open-source Python tool designed to calculate the spatio-temporal charging needs of privately-owned electric vehicles (EVs) and the potential for locally installed solar photovoltaics (PV) to meet these needs. The tool is primarily suited for modeling mobility demand in cities on weekdays, for which it enables the endogenous computation of daily mobility demand by combining georeferenced data with state-of-the-art spatial trip distribution models. For PV generation, it relies on the PVLib toolbox and integrates various PV installation archetypes (e.g., rooftop, free-standing PV, etc.)..**
 
 Authors = Jeremy Dumoulin, Alejandro Pena-Bello, Noémie Jeannin, Nicolas Wyrsch
 
@@ -26,25 +26,27 @@ Langage = python 3
 ## Overview of the model
 
 The EV-PV model has three main objectives and corresponding outputs (as shown in the following figure, which illustrates the model’s key inputs, outputs, and processing steps):
-1. **Estimate the spatial and temporal charging demand for electric vehicles.** This is done by first calculating the mobility demand within the area of interest. To do so, the later is divided into sub-zones (zoning), and the passenger flows between these zones are estimated, focusing specifically on trips between home and the destinations people travel to for their daily commute (e.g., workplaces, park-and-ride facilities, universities, ...). Based on this, the user can input scenario parameters related to the electric vehicle fleet and the charging behavior to estimate the charging needs.
-2. **Calculate the PV power production potential for the area of interest.** This can be done for different configurations (rooftop, ground-mounted, etc.) and relies on the PVLib toolbox. The output primarily includes an hourly capacity factor over a year, along with other standard PV metrics (performance ratio, production in W/m², etc.).
-2. **Analyze potential synergies between EVs and PV energy.** This involves evaluating various indicators by combining the PV capacity factor with the EV charging curve for a given PV capacity.
+1. **Daily mobility demand.** In this step, the user specifies the region of interest, along with its main geospatial data, including population density, the locations of workplaces, and points of interest (POIs), as well as the number of EVs to simulate. The daily mobility demand for commuting is then estimated by dividing the region of interest into traffic zones, spatially allocating EVs to these zones (as origins), and performing trip distribution between origins and destinations (e.g., workplaces) based on a trip distribution model. This results in a comprehensive dataset that includes the number of EVs for each origin-destination pair and the distances between them.
+
+2. **Spatial and temporal charging needs.** Building on the results of the previous step and the energy consumption characteristics of the various EVs, this step assesses the total charging demand and estimates how the demand is likely to be distributed in space and time using a scenario-based approach. For the spatial demand, the user specifies the likely charging locations for EVs (home, workplace, or POIs). For the temporal demand, the user provides the expected arrival time distribution and the charger power mix at each location. As a result, the tool outputs the charging needs for each zone, as well as the expected charging load curve for each EV. By default, uncoordinated charging is assumed (all EVs charge at full power immediately upon arrival). Additionally, a state-of-charge (SOC)-based charging decision model is used to account for the fact that EVs do not charge every day.
+
+3. **Potential for PV to meet the charging needs.** In this last step, the model uses the PVLib toolbox and local PVGIS weather data to calculate the hourly PV production over a given year. This analysis supports various PV configurations, such as rooftop and free-standing systems. By combining these results with the charging needs determined earlier, the model computes several EV-PV performance indicators, including the self-sufficiency potential or the number of EVs likely to be fully charged with solar energy. Here, it is important to note that this step assumes a closed EV-PV system, meaning all PV energy is treated as if it could potentially be used across all EVs in a centralized way. This approach captures the overall potential benefit of integrating PV with EVs.
 
 <center>
-	<img src="docs/model_overview.png" width="100%"> 
-	<p><font size="-1">EV-PV Model overview. Note that many optional input parameters and additionnal outputs (e.g., mobility demand outputs such as daily distance travelled or total passenger-km) are not shown.</font></p>
+	<img src="docs/model_overview_2.png" width="100%"> 
+	<p><font size="-1">EV-PV Model overview. Note that many optional input parameters and additionnal outputs are not shown.</font></p>
 </center>
 
 ## Installation
 
 ### Requirements
-- **Python**: Ensure Python is installed on your system. 
+- **Python**: Ensure Python is installed on your system. Note that the code was developed and tested using python 3.12, so other python version might not work.
 - **Conda** (optional, but recommended): Use Conda for managing Python environments and dependencies. 
 - **Open Route Service API key** (optional, but recommended to perform realistic road-based distance estimation): Sign up for an API key at [OpenRouteService](https://openrouteservice.org/sign-up/).
 
 > :bulb: If you are new to python and conda environments, we recommand installing python and conda via the [Miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution. During the installation, make sure to select "Add Miniconda to PATH" for ease of use.
 
-> :thumbsdown: If you do not want to use conda, we strongly recommend using an other virtual environment manager (venv, ...). However, you can also manually install all the python dependencies (not recommended) using the list of required modules in the `environment.yml` file (Note that the code was developed and tested using python 3.12, so other python version might not work).
+> :thumbsdown: If you do not want to use conda, we strongly recommend using an other virtual environment manager (venv, ...). However, you can also manually install all the python dependencies (not recommended) using the list of required modules in the `environment.yml` file.
 
 ### Installation with conda
 1. Clone the latest version of the code on GitHub on your local machine. If you are not familiar with git, you can also manually download the folder from GitHub and then run the code. However, you won't be able to contribute to the project.

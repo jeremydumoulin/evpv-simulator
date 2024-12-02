@@ -13,7 +13,6 @@ import openrouteservice
 import time
 import math
 import csv
-import pickle
 import folium
 import branca.colormap as cm
 
