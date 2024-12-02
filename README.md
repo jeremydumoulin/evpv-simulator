@@ -82,11 +82,8 @@ The EV-PV model can be run in two ways:
 
 To run the EV-PV model in command-line mode, follow these steps:
 
-1. **Open a Terminal**: Use a terminal application, such as Anaconda Prompt:
-   ```bash
-   cd [path_to_installation_folder]
-   ```
-2. **Activate the conda environment** (if not already activated)
+1. **Open a Terminal**: Use a terminal application, such as Anaconda Prompt.
+2. **Activate the conda environment** 
 3. **Create a configuration file for your case study**: Create a Python file (e.g., `config.py`) and populate it with your specific input values. Note that some input parameters are georeferenced data files (e.g., population raster). To see all required and optional parameters, refer to the `examples/00_cli_config.py` file. You can either clone this file to suit your needs or run it first to familiarize yourself with the inputs and outputs.
 4. **Run the EV-PV command-line script**: Execute the `evpv.py` script (depending on your Python installation, you may need to use `python3` instead of `python`):
    ```bash
@@ -102,114 +99,86 @@ To run the EV-PV model in command-line mode, follow these steps:
 
 ### Advanced Usage
 
-For advanced users, you can also create a new Python script and manually import and interact with the classes in the `evpv/` folder (see the *Project Structure*):
+For advanced users, you can also create a new Python script and manually import and interact with the classes in the `evpv/` folder (see the *Project Structure*). For a typical use, you will generally need to one ore more of the following classes:
 
-**Core Modules**. These modules are essential for basic usage:
-- **EVCalculator**: Simulates electric vehicle (EV) charging demand.
-- **PVCalculator**: Simulates photovoltaic (PV) production potential.
-- **EVPVSynergies**: Calculates metrics for EV-PV synergies based on results from the other two classes.
-
-**Additional Modules**. These modules offer more advanced features:
-- **MobilitySim**: Provides simulations of mobility demand.
-- **ChargingScenario**: Allows for simulations of different charging scenarios.
-- **helpers.py**: Contains various utility functions used internally by other classes.
-
-> :information_source: While comprehensive documentation is still in progress, you can find a description of the input and output parameters for each class in the generated Sphinx documentation (located in the `docs/_build/html/index.html` folder). 
-For a quick start, explore the example scripts in the `examples/` folder. We recommend starting with `01_advanced_typical-use.py`, which demonstrates how to utilize the three core classes with a minimal set of input parameters. The files `02_advanced_evcalculator-all-params.py` and `03_advanced_pvcalculator-all-params.py` provide more detailed usage of the `EVCalculator` and `PVCalculator` classes, including all available parameters (both required and optional). 
-
-For a typical use, you will generally only need to import the three core classes:
 ```python
-from evpv.evcalculator import EVCalculator
-from evpv.pvcalculator import PVCalculator
+from evpv.vehicle import Vehicle
+from evpv.vehiclefleet import VehicleFleet
+from evpv.region import Region
+from evpv.mobilitysimulator import MobilitySimulator
+from evpv.pvsimulator import PVSimulator
+from evpv.chargingsimulator import ChargingSimulator
 from evpv.evpvsynergies import EVPVSynergies
 ```
 
-For specific needs, you may also want to import the `MobilitySim` and `ChargingScenario` classes. These classes give you more control over EV charging demand estimation by separating mobility demand simulation from charging scenario simulation. In contrast, the `EVCalculator` class combines both tasks into a single step. This feature is especially useful for running independent mobility demand simulations for various trip types (e.g., home-to-work and home-to-study) and aggregating the results for use in a `ChargingScenario`. Note that the `EVCalculator` class essentially wraps the `EVCalculator` and `ChargingScenario` to compute the EV charging demand using only one class. 
-
+> :information_source: Comprehensive documentation is still in progress. However, you can refer to the generated Sphinx documentation for detailed descriptions of the input and output parameters for each class (located in the `docs/_build/html/index.html` folder). For a quick start, we recommend exploring the example scripts in the `examples/` folder. We recommend starting with `01_basic_usage.py`, which demonstrates how to utilize the core classes with a minimal set of input parameters. 
 
 ## Project structure
 ```bash
 ├───environment.yml
-├───evpv.py
+├───setup.py
 ├───LICENSE.md
 ├───README.md
 ├───doc/
 ├───evpv/
-│   ├───chargingscenario.py
-│   ├───evcalculator.py
+│   ├───chargingsimulator.py
 │   ├───evpvsynergies.py
-│   ├───helpers.py
-│   ├───mobilitysim.py
-│   └───pvcalculator.py
+│   ├───mobilitysimulator.py
+│   ├───pvsimulator.py
+│   ├───region.py
+│   ├───vehicle.py
+│   ├───vehiclefleet.py
+│   ├───evpv_cli.py
+│   └───helpers.py
 ├───examples/
 │   ├───input/
 │   ├───output/
-│   ├───00_basic_config.py
+│   ├───00_cli_config.py
 │   └───...
 └───scripts/
 ```  
 ### EV-PV run script
-The file `evpv.py` is a python script that allows users to run to conduct a basic study using a simple command line interface (see section *Usage*).
+The file `evpv_cli.py` is a python script that allows users to run to conduct a basic study using a simple command line interface (see section *Usage*).
 
 ### Python Modules
 In the `evpv/` folder, you will find the following python classes:
 
-- **Core modules** (required for any basic usage):
-  - **EVCalculator**: Simulates the EV charging demand.
-  - **PVCalculator**: Simulates the PV production potential.
-  - **EVPVSynergies**: Calculates EV-PV synergy metrics based on the results from the other two classes.
+**Core Classes**
+These modules are essential for basic usage:
+- **`Vehicle`**: Defines the parameters for a specific type of electric vehicle.
+- **`VehicleFleet`**: Manages information about an EV fleet for simulation.
+- **`Region`**: Represents the region of interest, including geospatial characteristics.
+- **`MobilitySimulator`**: Simulates mobility demand by allocating EVs to origins and determining trip distributions.
+- **`ChargingSimulator`**: Analyzes the spatial and temporal charging needs for the EV fleet.
+- **`PVSimulator`**: Simulates the PV production based on PV-Lib.
+- **`EVPVSynergies`**: Computes metrics for PV-based charging of EVs.
 
-- **Additional modules** :
-  - MobilitySim: Provides mobility demand simulations (for advanced usage).
-  - ChargingScenario: Allows simulation of different charging scenarios (for advanced usage).
-  - helpers.py: Contains various functions used internally by the other classes (internal use).
+**Additional Files**
+- **`evpv_cli.py`**: Provides a command-line interface for running mobility demand simulations.
+- **`helpers.py`**: Contains various utility functions used internally by other classes.
 
 ### Examples
 In the `examples/` folder, you will find various examples illustrating basic and more advanced use cases. We recommend looking at the various scripts, starting with the more basic ones.
 
 ### Scripts
-In the `scripts/` folder, you will find additionnal helpful scripts, notably a script to fetch georeferenced workplaces from OpenStreetMap.
+In the `scripts/` folder, you will find additionnal helpful scripts, notably a script to fetch georeferenced workplaces or points of interest from OpenStreetMap.
 
 ## Features
 
 ### Main features
 - **Endogenous estimation of daily mobility demand for home-to-work commuting.** To estimate charging needs in a specific area, it is essential to assess the commuting transport demand — specifically, the flow of vehicles between potential origin points (e.g., homes) and destination points (e.g., workplaces), as well as the road-based distance between them. The model estimates this demand internally by dividing the region of interest into traffic zones (based on user-defined spatial resolution) and applying a spatial interaction model to distribute the flow of people between their homes and workplaces (or other parking locations, such as park-and-ride facilities). A key feature of this model is its integration of the self-calibrated gravity model developed by [Lenormand et al.](https://doi.org/10.1016/j.jtrangeo.2015.12.008), which removes the need for transport data specific to the region. For accurate road distance calculations, the model utilizes OpenRouteService to perform routing when available in the region of interest.
 
-- **Spatial and temporal charging needs**. Based on the previously mentioned mobility demand, the model computes the daily spatial and temporal charging needs for electric vehicles. This is done using a scenario-based approach, where the user specifies the characteristics of the vehicle fleet (including the charging power for each vehicle) and the expected charging behaviors. For the spatial demand, the model calculates it for each traffic zone, based on the expected share of people charging either at home or at work. The temporal demand (charging curve) is estimated at an aggregate level with a stochastic approach, where for each vehicle, several factors are randomly sampled: arrival time, daily travel distance and energy consumption (which determines the daily charging needs), and available charging power. Building on the work of [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318), our model also introduces randomness in the number of vehicles that decide to charge on a given day. This decision is based on a threshold for the state of charge (SoC), with vehicles choosing to charge if their SoC falls below this threshold. The threshold is randomly assigned from a normal distribution, with an average of 60% and a standard deviation of 20%, as specified by Pareschi et al. However, in our model, we simplify the approach of Pareschi et al. by assuming a steady-state regime: each vehicle is assigned an average number of days between charges (this ensures energy conservation in a single run). The average number of days between two charges is determined by randomly assigning a SoC threshold and calculating the daily decrease in SoC based on each vehicle’s daily charging demand and battery capacity. For decision-making, we also use a reduced battery capacity (80% of the nominal capacity) to account for practical limitations as recommended by Pareschi et al..
+- **Mobility demand for other purposes.** While this model primarily focuses on mobility demand for daily commuting, it may also be beneficial to incorporate mobility demand for other activities, such as shopping and leisure. Currently, this demand is not calculated endogenously within the model. However, users can include an optional parameter (called `km_per_capita_offset`) to account for these additional mobility needs on weekdays.
 
-- **Electric vehicles and charger power mix**. Users can specify any number of electric vehicles for their case study. This list of vehicles should be provided as input to the `EVCalculator` class in the following format: `[[vehicle1, share1], [vehicle2, share2], ...]`. Each entry consists of a vehicle type and its market share (betwee 0 and 1). For each vehicle, there is an associated typical mix of charger powers. The `EVCalculator` class provides a set of predefined vehicles with typical specifications (see examples). For more advanced use cases, users can manually define custom vehicles by providing a dictionary of parameters, including fuel consumption, vehicle occupancy, and charger power mix.
+- **Spatial and temporal charging needs**. Based on the previously mentioned mobility demand, the model computes the daily spatial and temporal charging needs for electric vehicles. This is done using a scenario-based approach, where the user specifies the characteristics of the vehicle fleet (including the charging power for each vehicle) and the expected charging behaviors. For the spatial demand, the model calculates it for each traffic zone, based on the expected share of people charging either at home or at work. The temporal demand (charging curve) is estimated at an aggregate level with a stochastic approach, where for each vehicle, several factors are randomly sampled: arrival time, daily travel distance and energy consumption (which determines the daily charging needs), and available charging power. Building on the work of [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318), our model also introduces randomness in the number of vehicles that decide to charge on a given day. This decision is based on a threshold for the state of charge (SoC), with vehicles choosing to charge if their SoC falls below this threshold. 
 
-```python
-my_vehicle_1 = {
-    'ev_consumption': 0.183, # Electric vehicle consumption (kWh/km)
-    'vehicle_occupancy': 1.4, # Vehicle occupancy (average number of people per vehicle)
-    'battery_capacity': 50, # Nominal battery capacity (kWh)
-    'charger_power': {
-          'Origin': [[7, 0.68], [11, 0.3], [22, 0.02]], # Mix of charger power at origin (home)
-          'Destination': [[7, 0.68], [11, 0.3], [22, 0.02]] # Mix of charger power at destination (workplaces)
-        }
-    }
-my_vehicle_2 = {
-    'ev_consumption': 0.15, # Electric vehicle consumption (kWh/km)
-    'vehicle_occupancy': 1.4, # Vehicle occupancy (average number of people per vehicle)
-    'battery_capacity': 20, # Nominal battery capacity (kWh)
-    'charger_power': {
-          'Origin': [[3.6, 1]], # Mix of charger power at origin (home)
-          'Destination': [[2.1, 0.5], [3.6, 0.5]] # Mix of charger power at destination (workplaces)
-        }
-    }
-# More vehicles can be added similarly
-```
+- **Flexible configuration of EV fleet and charger power**. Supports diverse setups, including mixed charging power levels for each location, customizable vehicle types with user-defined maximum charging power for each vehicle.
 
-- **Smart charging.** Users can specify a portion of vehicles that are "smart charging". These vehicles will adjust their own charging pattern etween their arrival and departure time to smooth the overall charging curve. A simple rule-based algorithm is implemented to manage the smart charging behavior of these vehicles.
+- **Smart charging**: By default, the code simulates uncontrolled ("dumb") charging behavior. However, the data is pre-processed to allow easy post-analysis of smart charging strategies. A "peak shaving" algorithm is already implemented, enabling vehicles to adjust their charging patterns between arrival and departure times to smooth the overall charging demand curve. This smart charging behavior is managed using a simple rule-based algorithm.
 
 - **PV power production.** The code offers a simple method to generate hourly photovoltaic (PV) production and other metrics, such as the capacity factor, for a specific location, year, and type of PV system (e.g., rooftop, ground-mounted, etc.). It is built on the PVLib library, which provides robust tools for simulating and analyzing PV system performance.
  
-- **Synergies between EV and PV.** Using the charging curve and the local PV production, various metrics can be calculated to assess the potential of PV to meet the charging needs. These metrics include self-sufficiency potential, self-consumption, Spearman correlation, and more. The analysis can be performed for a specific day or over a longer time period.
-
-- **Segmenting mobility demand by groups of commuters.** If necessary, it is possible to run separate mobility demand simulations for different groups of commuters, then aggregate the results to better reflect real-world commuting behavior. This is especially useful when one portion of the population commutes to one type of destination (e.g., workplaces) while others travel to different locations (like park-and-ride facilities or universities). Note that this requires more advanced usage.
-
-- **Mobility demand for other purposes.** While this model primarily focuses on mobility demand for daily commuting, it may also be beneficial to incorporate mobility demand for other activities, such as shopping and leisure. Currently, this demand is not calculated endogenously within the model. However, users can include an optional parameter (called `km_per_capita_offset`) to account for these additional mobility needs on weekdays.
+- **Potential for PV to cover the charging needs.** Using the charging curve and the local PV production, various metrics can be calculated to assess the potential of PV to meet the charging needs. These metrics include self-sufficiency potential, self-consumption, Spearman correlation, and more. The analysis can be performed for a specific day or over a longer time period.
 
 ### Limitations & Caveats
 
@@ -225,7 +194,7 @@ my_vehicle_2 = {
 
 - **Zone attractiveness**: When using the number of workplaces from OpenStreetMap (OSM) to determine the attractiveness of a zone for trip distribution, it does not include the number of jobs per workplace. This may reduce the model’s accuracy in areas where the number of jobs per workplace is not evenly distributed.
 
-- **Charging Curve**: The charging curve is aggregated across all traffic zones and is based on the assumed arrival time . The model assumes a normal distribution for arrival times, which may not fully represent real behavior. We also assume that all vehicles charge every day, which may not be entirely accurate (see [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318)). Additionally, in reality, drivers may not charge their vehicles immediately upon arrival, as their decision could depend on factors such as varying electricity tariffs throughout the day (see, for instance, the charging habits of French citizen [here](https://www.enedis.fr/presse/mobilite-electrique-enedis-publie-deux-nouveaux-rapports-sur-les-habitudes-de-mobilite-et-de)). This behavior could be incorporated into future work to better reflect how drivers respond to price signals (or other incentives) when deciding when to charge.
+- **Charging Curve**: The charging curve is aggregated across all traffic zones and is based on the assumed arrival time. The model assumes a normal distribution for arrival times, which may not fully represent real behavior. We also assume that all vehicles charge every day, which may not be entirely accurate (see [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318)). Additionally, in reality, drivers may not charge their vehicles immediately upon arrival, as their decision could depend on factors such as varying electricity tariffs throughout the day (see, for instance, the charging habits of French citizen [here](https://www.enedis.fr/presse/mobilite-electrique-enedis-publie-deux-nouveaux-rapports-sur-les-habitudes-de-mobilite-et-de)). This behavior could be incorporated into a "smart charging" algorithm in future work to better reflect how drivers respond to price signals (or other incentives) when deciding when to charge.
 
 #### Photovoltaic simulation
 
@@ -233,14 +202,14 @@ my_vehicle_2 = {
 
 #### EV-PV synergies
 
-- **One charging curve only**: The model uses a single charging curve, though this may change under a stochastic approach. This could be problematic when dealing with a small number of vehicles.
+- **EV-PV System treated as a closed system**: When evaluating EV-PV synergies, we assume that all PV energy is available exclusively for EV charging. This approach ignores other potential loads and limitations associated with distributed PV systems, such as variations between different charging stations equipped with PV.
 
 ## Contributing
 [To be completed]
 
 ### Open tasks
 
-- [ ] Update the README file to the new architecture
+- [x] Update the README file to the new architecture
 - [ ] Add more advanced examples
 - [x] Enhance inline code documentation
 - [ ] Feature: energy demand per vehicle by traffic zone (i.e., use the distance distribution per zone and not the aggregated one). This will allow more advanced analysis, like variations in the average number of charging stations per vehicle because of higher travelled distances.

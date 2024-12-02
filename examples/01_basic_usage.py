@@ -14,10 +14,6 @@ It consists of the following steps:
 6. Calculate synergies between EV charging demand and PV power production.
 """
 
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # Append parent directory to include evpv modules
-
 from evpv.vehicle import Vehicle
 from evpv.vehiclefleet import VehicleFleet
 from evpv.region import Region
