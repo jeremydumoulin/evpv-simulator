@@ -313,4 +313,80 @@ class EVPVSynergies:
         df = pd.DataFrame(results)
 
         return df
-        
+
+    def calculate_fully_solar_charging_vehicles(self, day: str, recompute_probability: float = 0.0) -> int:
+        """
+        Calculate the number of vehicles that can be fully charged using only solar power on a given day.
+
+        Args:
+            day (str): The day for which to perform the calculation, in 'MM-DD' format.
+            recompute_probability (float): Probability (between 0 and 1) of recomputing EV demand 
+                to introduce randomness. Defaults to 0.0.
+
+        Returns:
+            int: The number of vehicles fully charged using solar power.
+        """
+        # Determine if we should recompute EV demand based on probability
+        if np.random.rand() < recompute_probability:
+            print("Recomputing the charging profile to add randomness...", end='')  # Optional
+            # Suppress output during recomputing
+            with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+                self.ev_calculator.compute_temporal_demand(0.1)  # Recompute demand profile
+            self.ev_charging_demand_MW = self.ev_calculator  # Update the interpolation function
+
+        # Initialize counter for vehicles fully charged using solar energy
+        fully_charged_vehicles = 0
+
+        # Determine the number of time steps in the demand profile
+        num_rows = len(self.ev_calculator.temporal_demand_profile)
+
+        # Calculate the time step duration (in hours)
+        time_step = 24 / num_rows  # Assuming evenly spaced intervals over 24 hours
+
+        # Define the time range for PV availability (6 AM to 9 PM)
+        pv_start_time = int(6 / time_step)  # Convert 6 AM to index
+        pv_end_time = int(21 / time_step)  # Convert 9 PM to index
+
+        # Compute the solar power profile for the day in kW
+        pv_power_profile = [
+            self.pv_power_MW(day)(t * time_step) * 1000 for t in range(num_rows)
+        ]  # Convert MW to kW
+
+        # Initialize a copy of the PV energy profile for tracking remaining power
+        remaining_pv = pv_power_profile[:]
+
+        # Iterate over each vehicle in the temporal demand profile
+        for vehicle in self.ev_calculator.temporal_demand_profile.columns:
+            # Retrieve the charging demand profile for the vehicle
+            charging_demand = self.ev_calculator.temporal_demand_profile[vehicle]
+
+            # Identify the time indices where charging demand is non-zero
+            non_zero_indices = charging_demand[charging_demand > 0].index
+            if non_zero_indices.empty:
+                continue  # Skip vehicles with no charging demand
+
+            # Get the start and end times of charging demand
+            start_time = non_zero_indices[0]
+            end_time = non_zero_indices[-1]
+
+            # Skip vehicles charging outside the PV time range
+            if start_time < pv_start_time or end_time >= pv_end_time:
+                continue
+
+            # Calculate the total energy needed by the vehicle during the PV time range
+            energy_need = sum(charging_demand[t] * time_step for t in range(start_time, end_time + 1))
+
+            # Calculate the total available PV energy in the same time range
+            pv_energy_available = sum(remaining_pv[t] * time_step for t in range(start_time, end_time + 1))
+
+            # Check if the vehicle can be fully charged using the available PV energy
+            if pv_energy_available >= energy_need:
+                fully_charged_vehicles += 1  # Increment the counter
+
+                # Deduct the used PV power from the remaining PV profile
+                for t in range(start_time, end_time + 1):
+                    required_power = charging_demand[t]
+                    allocated_power = min(remaining_pv[t], required_power)
+                    remaining_pv[t] -= allocated_power
+
+        return fully_charged_vehicles
