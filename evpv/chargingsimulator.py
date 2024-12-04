@@ -413,12 +413,19 @@ class ChargingSimulator:
             scenario = self.scenario[charging_location]
             work_arrival_mean, work_arrival_std = self.scenario['work']['arrival_time_h']
             home_arrival_mean, home_arrival_std = self.scenario['home']['arrival_time_h']
+
+            # Assign zones to vehicles based on `n_vehicles_[location]` proportions
+            zones = self._spatial_demand['id'].values
+            zone_vehicle_counts = self._spatial_demand['n_vehicles_' + charging_location].values
+            zone_probabilities = zone_vehicle_counts / zone_vehicle_counts.sum()
+            assigned_zones = np.random.choice(zones, size=vehicle_counts, p=zone_probabilities)            
             
             # Initialize a DataFrame for vehicle properties
             vehicle_properties = pd.DataFrame({
                 "vehicle_id": np.arange(vehicle_id_counter, vehicle_id_counter + vehicle_counts),  # Unique vehicle IDs
                 "name": np.empty(vehicle_counts, dtype=object),
                 "location": charging_location,
+                "origin_zone": assigned_zones,
                 "days_between_charges": np.zeros(vehicle_counts),
                 "charging_demand": np.zeros(vehicle_counts),
                 "arrival_time": np.zeros(vehicle_counts),
@@ -431,25 +438,33 @@ class ChargingSimulator:
             # Update the vehicle counter to ensure unique IDs
             vehicle_id_counter += vehicle_counts
 
-            # Aggregate flows and calculate distances and probabilities
-            df_sum = self.mobility_demand.flows.copy()
-            grouped_df = df_sum.groupby('Travel Distance (km)')['Flow'].sum().reset_index()
-            grouped_df['Probability'] = grouped_df['Flow'] / grouped_df['Flow'].sum()
-            distances, distance_probabilities = grouped_df['Travel Distance (km)'].values, grouped_df['Probability'].values
+            # Loop over each zone to calculate zone-specific travel distance distributions
+            selected_distances = np.zeros(vehicle_counts)  # Placeholder for distances
+            for zone in np.unique(assigned_zones):
+                zone_indices = np.where(assigned_zones == zone)[0]  # Vehicles in this zone
+                zone_demand = self.mobility_demand.flows[self.mobility_demand.flows['Origin'] == zone]
+                
+                # Aggregate flows and calculate distances and probabilities for this zone
+                grouped_zone_demand = zone_demand.groupby('Travel Distance (km)')['Flow'].sum().reset_index()
+                grouped_zone_demand['Probability'] = grouped_zone_demand['Flow'] / grouped_zone_demand['Flow'].sum()
+                distances = grouped_zone_demand['Travel Distance (km)'].values
+                probabilities = grouped_zone_demand['Probability'].values
+                
+                # Assign travel distances for vehicles in this zone
+                selected_distances[zone_indices] = np.random.choice(distances, size=len(zone_indices), p=probabilities)
 
             # Randomly select vehicle types for all vehicles at once
             vehicle_types, probabilities = zip(*self.vehicle_fleet.vehicle_types)
+            print(vehicle_types, probabilities)
             selected_vehicles = random.choices(vehicle_types, weights=probabilities, k=vehicle_counts)
 
             # Populate the vehicle names directly
             vehicle_properties['name'] = [vehicle.name for vehicle in selected_vehicles]
-            vehicle_properties['strategy'] = ["dumb" for vehicle in selected_vehicles]            
-
-            # Randomly generate distances for daily charging demand
-            selected_distances = np.random.choice(distances, size=vehicle_counts, p=distance_probabilities)
+            vehicle_properties['strategy'] = ["dumb" for vehicle in selected_vehicles]        
             
             # Calculate daily charging demand in a vectorized way
             daily_charging_demand = 2 * selected_distances * np.array([vehicle.consumption_kWh_per_km for vehicle in selected_vehicles]) / self.charging_efficiency
+
             vehicle_properties['days_between_charges'] = np.vectorize(hlp.calculate_days_between_charges_single_vehicle)(
                 daily_charging_demand, 
                 np.array([vehicle.battery_capacity_kWh for vehicle in selected_vehicles]),
@@ -525,6 +540,8 @@ class ChargingSimulator:
         
         # Reset the index for the modified DataFrame
         vehicle_properties.reset_index(drop=True, inplace=True)
+
+        print(vehicle_properties)
 
         print(f"\t > Number of vehicles charging: {len(vehicle_properties)}")
 
