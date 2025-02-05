@@ -455,7 +455,7 @@ class ChargingSimulator:
 
             # Randomly select vehicle types for all vehicles at once
             vehicle_types, probabilities = zip(*self.vehicle_fleet.vehicle_types)
-            print(vehicle_types, probabilities)
+
             selected_vehicles = random.choices(vehicle_types, weights=probabilities, k=vehicle_counts)
 
             # Populate the vehicle names directly
@@ -540,8 +540,6 @@ class ChargingSimulator:
         
         # Reset the index for the modified DataFrame
         vehicle_properties.reset_index(drop=True, inplace=True)
-
-        print(vehicle_properties)
 
         print(f"\t > Number of vehicles charging: {len(vehicle_properties)}")
 

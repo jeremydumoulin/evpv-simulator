@@ -264,7 +264,7 @@ class EVPVSynergies:
         # Convert start and end dates from MM-DD to YYYY-MM-DD format
         start_date = f'1901-{start_date}'
         end_date = f'1901-{end_date}'
-        
+
         # Generate a list of dates from start to end date in MM-DD format
         date_range = pd.date_range(start=start_date, end=end_date)
         filtered_days = [date.strftime('%m-%d') for date in date_range if date.strftime('%m-%d') in self.pv_capacity_factor]
@@ -381,12 +381,22 @@ class EVPVSynergies:
 
             # Check if the vehicle can be fully charged using the available PV energy
             if pv_energy_available >= energy_need:
-                fully_charged_vehicles += 1  # Increment the counter
+                # Initialize a flag to check if full charging is possible
+                fully_charged = True
 
                 # Deduct the used PV power from the remaining PV profile
                 for t in range(start_time, end_time + 1):
                     required_power = charging_demand[t]
-                    allocated_power = min(remaining_pv[t], required_power)
+                    allocated_power = min(remaining_pv[t], required_power)                    
+
+                    # Check if allocated power matches the required power
+                    if allocated_power < required_power:
+                        fully_charged = False  # Vehicle cannot be fully charged
+                        break
+
+                # Increment the counter only if the vehicle was fully charged
+                if fully_charged:
+                    fully_charged_vehicles += 1
                     remaining_pv[t] -= allocated_power
 
         return fully_charged_vehicles
