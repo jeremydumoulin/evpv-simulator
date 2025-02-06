@@ -1,5 +1,5 @@
-# EV-PV
-**The EV-PV (Electric Vehicles - Photovoltaics) model is an open-source Python tool designed to calculate the spatio-temporal charging needs of privately-owned electric vehicles (EVs) and the potential for locally installed solar photovoltaics (PV) to meet these needs. The tool is primarily suited for modeling mobility demand in cities on weekdays, for which it enables the endogenous computation of daily mobility demand by combining georeferenced data with state-of-the-art spatial trip distribution models. For PV generation, it relies on the PVLib toolbox and integrates various PV installation archetypes (e.g., rooftop, free-standing PV, etc.)..**
+# evpv-simulator
+**The evpv-simulator (Electric Vehicles - Photovoltaics Simulator) model is an open-source Python tool designed to calculate the spatio-temporal charging needs of privately-owned electric vehicles (EVs) and the potential for locally installed solar photovoltaics (PV) to meet these needs. The tool is primarily suited for modeling mobility demand in cities on weekdays, for which it enables the endogenous computation of daily mobility demand by combining georeferenced data with state-of-the-art spatial trip distribution models. For PV generation, it relies on the PVLib toolbox and integrates various PV installation archetypes (e.g., rooftop, free-standing PV, etc.)..**
 
 Authors = Jeremy Dumoulin, Alejandro Pena-Bello, Noémie Jeannin, Nicolas Wyrsch
 
@@ -9,7 +9,7 @@ Contact = jeremy.dumoulin@epfl.ch
 
 Langage = python 3 
 
-> :bulb: This `README.md` provides a quick start guide for basic usage of the EV-PV model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
+> :bulb: This `README.md` provides a quick start guide for basic usage of the evpv-simulator model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ Langage = python 3
 
 ## Overview of the model
 
-The EV-PV model has three main objectives and corresponding outputs (as shown in the following figure, which illustrates the model’s key inputs, outputs, and processing steps):
+The **evpv-simulator** model has three main objectives and corresponding outputs (as shown in the following figure, which illustrates the model’s key inputs, outputs, and processing steps):
 1. **Daily mobility demand.** In this step, the user specifies the region of interest, along with its main geospatial data, including population density, the locations of workplaces, and points of interest (POIs), as well as the number of EVs to simulate. The daily mobility demand for commuting is then estimated by dividing the region of interest into traffic zones, spatially allocating EVs to these zones (as origins), and performing trip distribution between origins and destinations (e.g., workplaces) based on a trip distribution model. This results in a comprehensive dataset that includes the number of EVs for each origin-destination pair and the distances between them.
 
 2. **Spatial and temporal charging needs.** Building on the results of the previous step and the energy consumption characteristics of the various EVs, this step assesses the total charging demand and estimates how the demand is likely to be distributed in space and time using a scenario-based approach. For the spatial demand, the user specifies the likely charging locations for EVs (home, workplace, or POIs). For the temporal demand, the user provides the expected arrival time distribution and the charger power mix at each location. As a result, the tool outputs the charging needs for each zone, as well as the expected charging load curve for each EV. By default, uncoordinated charging is assumed (all EVs charge at full power immediately upon arrival). Additionally, a state-of-charge (SOC)-based charging decision model is used to account for the fact that EVs do not charge every day.
@@ -34,7 +34,7 @@ The EV-PV model has three main objectives and corresponding outputs (as shown in
 
 <center>
 	<img src="docs/model_overview_2.png" width="100%"> 
-	<p><font size="-1">EV-PV Model overview. Note that many optional input parameters and additionnal outputs are not shown.</font></p>
+	<p><font size="-1">evpv-simulator overview. Note that many optional input parameters and additionnal outputs are not shown.</font></p>
 </center>
 
 ## Installation
@@ -73,27 +73,28 @@ $ pip install -e .
 
 ## Usage
 
-The EV-PV model can be run in two ways:
+The evpv-simulator model can be run in two ways:
 
 1. **Basic Usage (command-line mode)**: Ideal for users who are not familiar with Python or who want to conduct a basic case study using a simple configuration file to specify the input parameters
-2. **Advanced Usage**: Suitable for users who prefer to import and use the EV-PV model as python modules in their own scripts or need to conduct more advanced analyses (such as parametric studies, integrating the EV-PV model with other Python packages, ...).
+2. **Advanced Usage**: Suitable for users who prefer to import and use the evpv-simulator model as python modules in their own scripts or need to conduct more advanced analyses (such as parametric studies, integrating the evpv-simulator with other Python packages, ...).
 
 ### Basic Usage
 
-To run the EV-PV model in command-line mode, follow these steps:
+To run the evpv-simulator in command-line mode, follow these steps:
 
 1. **Open a Terminal**: Use a terminal application, such as Anaconda Prompt.
 2. **Activate the conda environment** 
-3. **Create a configuration file for your case study**: Create a Python file (e.g., `config.py`) and populate it with your specific input values. Note that some input parameters are georeferenced data files (e.g., population raster). To see all required and optional parameters, refer to the `examples/00_cli_config.py` file. You can either clone this file to suit your needs or run it first to familiarize yourself with the inputs and outputs.
-4. **Run the EV-PV command-line script**: Execute the `evpv.py` script (depending on your Python installation, you may need to use `python3` instead of `python`):
+3. **Create a configuration file for your case study**: Create a Python file (e.g., `config.py`) and populate it with your specific input values. Note that some input parameters are georeferenced data files (e.g., population raster). To see all required and optional parameters, refer to the `examples/Basic_AddisAbaba_ConfigFile/config.py` file. You can either clone this file to suit your needs or run it first to familiarize yourself with the inputs and outputs.
+4. **Ensure that your terminal is opened in the directory where the config file is located, OR specify the absolute path to the input/output directories in the config file.**
+5. **Run the EV-PV command-line script**: Execute the `evpv.py` script (depending on your Python installation, you may need to use `python3` instead of `python`):
    ```bash
    evpv
    ```
-5. **Provide configuration file path**: When prompted, enter the path to your configuration file, such as the basic example:
+6. **Provide configuration file path**: When prompted, enter the path to your configuration file, such as the basic example:
    ```bash
-   Enter the path to the python configuration file: C:\Users\(...)\00_cli_config.py
+   Enter the path to the python configuration file: C:\Users\(...)\config.py
    ```
-6. **Check Outputs**: When to code is running, various output values will appear in the terminal. Once the simulation is complete, you will find all output files in the output directory you specified in your configuration file.
+7. **Check Outputs**: When to code is running, various output values will appear in the terminal. Once the simulation is complete, you will find all output files in the output directory you specified in your configuration file.
 
 ![](docs/usage.gif)
 
@@ -132,13 +133,11 @@ from evpv.evpvsynergies import EVPVSynergies
 │   ├───evpv_cli.py
 │   └───helpers.py
 ├───examples/
-│   ├───input/
-│   ├───output/
-│   ├───00_cli_config.py
+│   ├───Basic_AddisAbaba_ConfigFile/
 │   └───...
 └───scripts/
 ```  
-### EV-PV run script
+### evpv-simulator run script
 The file `evpv_cli.py` is a python script that allows users to run to conduct a basic study using a simple command line interface (see section *Usage*).
 
 ### Python Modules
@@ -201,7 +200,7 @@ In the `scripts/` folder, you will find additionnal helpful scripts, notably a s
 
 - **Weather Data**: The model relies on weather data from PVGIS, which requires an internet connection.
 
-#### EV-PV synergies
+#### EV-PV complementarity
 
 - **EV-PV System treated as a closed system**: When evaluating EV-PV synergies, we assume that all PV energy is available exclusively for EV charging. This approach ignores other potential loads and limitations associated with distributed PV systems, such as variations between different charging stations equipped with PV.
 

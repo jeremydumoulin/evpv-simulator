@@ -13,6 +13,22 @@ from evpv.pvsimulator import PVSimulator
 from evpv.chargingsimulator import ChargingSimulator
 from evpv.evpvsynergies import EVPVSynergies
 
+# Std redirection
+
+class Tee:
+    """A class to duplicate stdout to both a file and the terminal."""
+    def __init__(self, filename):
+        self.terminal = sys.stdout  # Keep reference to original stdout
+        self.log = open(filename, "w")
+
+    def write(self, message):
+        self.terminal.write(message)  # Print to terminal
+        self.log.write(message)  # Save to file
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
+
 # Main
 
 def main():
@@ -31,10 +47,14 @@ def main():
     config_path = input("Enter the path to the python configuration file: ")  # e.g., '/path/to/config.py'
     
     # Dynamically load the config
-    config = load_config(config_path)    
+    config = load_config(config_path) 
+
+    sys.stdout = Tee(f"{config.output_folder}/{config.scenario_name}_output.log")  # Capture all prints in a log file   
 
     # Run the simulation using the loaded config module
     run_simulation(config)
+
+    sys.stdout = sys.__stdout__  # Reset stdout after script ends
 
 # Run the simulation
 
@@ -72,8 +92,7 @@ def run_simulation(config):
             "crop_to_region": config.crop_to_region
         }
     )
-
-    region.to_map(f"{config.output_folder}/{config.scenario_name}_region.html") # Save region map to file
+    
 
     # STEP 3: Perform mobility simulation using a gravity model for commuting
     # Initialize the MobilitySimulator to simulate commuting patterns based on region and vehicle fleet data
@@ -100,8 +119,11 @@ def run_simulation(config):
     mobility_sim.trip_distribution()
 
     # Save mobility simulation results and generate visualizations
-    mobility_sim.to_csv(f"{config.output_folder}/{config.scenario_name}_results.csv")
-    mobility_sim.vehicle_allocation_to_map(f"{config.output_folder}/{config.scenario_name}_MobilitySimulation_allocation.html")
+    os.makedirs(f"{config.output_folder}/Mobility", exist_ok=True)  # Creates the folder if it doesn't exist
+
+    region.to_map(f"{config.output_folder}/Mobility/{config.scenario_name}_mobility_vis_Region.html") # Save region map to file
+    mobility_sim.to_csv(f"{config.output_folder}/Mobility/{config.scenario_name}_mobility_res_TripDistribution.csv")
+    mobility_sim.vehicle_allocation_to_map(f"{config.output_folder}/Mobility/{config.scenario_name}_mobility_vis_VehicleAllocation.html")
 
     # STEP 4: Charging demand simulation based on EV travel patterns and charging scenarios
     # Define charging options (home, work, points of interest) with corresponding power and arrival time distributions
@@ -122,10 +144,12 @@ def run_simulation(config):
     # charging_sim.apply_smart_charging(location=["home"], charging_strategy="peak_shaving", share=0.5)
 
     # Save charging demand data and visualizations
-    charging_sim.to_csv(f"{config.output_folder}/{config.scenario_name}_ChargingDemand.csv")
-    charging_sim.chargingdemand_total_to_map(f"{config.output_folder}/{config.scenario_name}_ChargingDemand_total.html")
-    charging_sim.chargingdemand_pervehicle_to_map(f"{config.output_folder}/{config.scenario_name}_ChargingDemand_pervehicle.html")
-    charging_sim.chargingdemand_nvehicles_to_map(f"{config.output_folder}/{config.scenario_name}_ChargingDemand_n_vehicles.html")
+    os.makedirs(f"{config.output_folder}/ChargingDemand", exist_ok=True)  # Creates the folder if it doesn't exist
+
+    charging_sim.to_csv(f"{config.output_folder}/ChargingDemand/{config.scenario_name}_charging_res.csv")
+    charging_sim.chargingdemand_total_to_map(f"{config.output_folder}/ChargingDemand/{config.scenario_name}_charging_vis_TotalDemand.html")
+    charging_sim.chargingdemand_pervehicle_to_map(f"{config.output_folder}/ChargingDemand/{config.scenario_name}_charging_vis_DemandPerVehicle.html")
+    charging_sim.chargingdemand_nvehicles_to_map(f"{config.output_folder}/ChargingDemand/{config.scenario_name}_charging_vis_NumberVehiclesCharging.html")
 
     # STEP 5: PV Simulation for calculating photovoltaic power production
     # Initialize PVSimulator using location coordinates, module characteristics, and installation type
@@ -147,7 +171,9 @@ def run_simulation(config):
     )
 
     pv.compute_pv_production()  # Calculate PV production based on the defined parameters
-    pv.results.to_csv(f"{config.output_folder}/{config.scenario_name}_PVProduction.csv")  # Save PV production data
+
+    os.makedirs(f"{config.output_folder}/EVPV", exist_ok=True)  # Creates the folder if it doesn't exist
+    pv.results.to_csv(f"{config.output_folder}/EVPV/{config.scenario_name}_evpv_res_PVProduction.csv")  # Save PV production data
 
     # STEP 6: EV-PV Synergy Analysis
     # Calculate synergies between PV generation and EV charging demand over a defined time period
@@ -156,7 +182,7 @@ def run_simulation(config):
 
     # Calculate daily synergy metrics for the first week of January, adjusting recompute_probability as needed
     synergy_metrics = evpv.daily_metrics(config.start_date, config.end_date, recompute_probability=config.recompute_probability)
-    synergy_metrics.to_csv(f"{config.output_folder}/{config.scenario_name}_EVPVSynergies.csv") # Save synergy metrics data
+    synergy_metrics.to_csv(f"{config.output_folder}/EVPV/{config.scenario_name}_evpv_res_DailyIndicators.csv") # Save synergy metrics data
 
     # End time and message 
 
@@ -210,5 +236,5 @@ def create_fleet_from_config(config):
     )
     return fleet
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__":    
+    main()  # Run your main function

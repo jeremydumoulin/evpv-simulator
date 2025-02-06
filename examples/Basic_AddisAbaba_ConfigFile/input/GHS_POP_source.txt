@@ -1,0 +1,19 @@
+ GHS-POP SOURCE
+------------------
+
+Residential population is obtained from the GHS-POP datasatet:
+
+Carioli, Alessandra; Schiavina, Marcello; Freire, Sergio; MacManus, Kytt (2023): GHS-POP R2023A - GHS population grid multitemporal (1975-2030). European Commission, Joint Research Centre (JRC) [Dataset] doi: 10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE PID: http://data.europa.eu/89h/2ff68a52-5b5b-4a22-8f40-c41da8332cfe
+
+ Copyright notice
+------------------
+
+(c) European Union, 1995-2024
+
+The Commission's reuse policy is implemented by the Commission Decision of 12 December 2011 
+on the reuse of Commission documents [1]. Any copyright and/or sui generis right on the dataset 
+is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) licence [2]. 
+Reuse is allowed provided appropriate credit is given and any changes are indicated.
+
+[1] https://eur-lex.europa.eu/eli/dec/2011/833/oj
+[2] https://creativecommons.org/licenses/by/4.0
