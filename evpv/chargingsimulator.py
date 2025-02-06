@@ -414,11 +414,10 @@ class ChargingSimulator:
             work_arrival_mean, work_arrival_std = self.scenario['work']['arrival_time_h']
             home_arrival_mean, home_arrival_std = self.scenario['home']['arrival_time_h']
 
-            # Assign zones to vehicles based on `n_vehicles_[location]` proportions
-            zones = self._spatial_demand['id'].values
-            zone_vehicle_counts = self._spatial_demand['n_vehicles_' + charging_location].values
-            zone_probabilities = zone_vehicle_counts / zone_vehicle_counts.sum()
-            assigned_zones = np.random.choice(zones, size=vehicle_counts, p=zone_probabilities)            
+            # Assign origin zone to vehicles 
+            origin_flows = self.mobility_demand.flows.groupby("Origin")["Flow"].sum().reset_index()
+            zone_probabilities = origin_flows["Flow"] / origin_flows["Flow"].sum()
+            assigned_zones = np.random.choice(origin_flows["Origin"], size=vehicle_counts, p=zone_probabilities)
             
             # Initialize a DataFrame for vehicle properties
             vehicle_properties = pd.DataFrame({
@@ -454,9 +453,8 @@ class ChargingSimulator:
                 selected_distances[zone_indices] = np.random.choice(distances, size=len(zone_indices), p=probabilities)
 
             # Randomly select vehicle types for all vehicles at once
-            vehicle_types, probabilities = zip(*self.vehicle_fleet.vehicle_types)
-
-            selected_vehicles = random.choices(vehicle_types, weights=probabilities, k=vehicle_counts)
+            vehicle_types, vehicle_shares = zip(*self.vehicle_fleet.vehicle_types)
+            selected_vehicles = np.random.choice(vehicle_types, size=vehicle_counts, p=vehicle_shares)
 
             # Populate the vehicle names directly
             vehicle_properties['name'] = [vehicle.name for vehicle in selected_vehicles]
@@ -522,6 +520,13 @@ class ChargingSimulator:
 
             # Append the DataFrame to the list
             all_vehicle_properties.append(vehicle_properties)
+
+            # Compute statistics for this scenario
+            num_vehicles = len(vehicle_properties)
+            avg_demand= vehicle_properties['charging_demand'].mean()
+            days= vehicle_properties['days_between_charges'].mean()
+
+            vehicle_counts = vehicle_properties['name'].value_counts().to_dict()
 
         # Step 2: Select and filter only vehicles charging today
         ########################################################
