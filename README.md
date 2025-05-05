@@ -21,7 +21,7 @@ Langage = python 3
 2. [Installation](#installation)
 3. [Usage](#usage)
 4. [Project Structure](#project-structure)
-5. [Features](#features)
+5. [Standout Features & Limitations](#features)
 6. [Scientific Publications](#scientific-publications)
 7. [Acknowledgment](#acknowledgment)
 8. [License](#license)
@@ -141,7 +141,7 @@ All the classes are located in the `evpv/` folder, as shown in the project struc
 - `evpv_cli.py`: Command-line interface (see [Usage](#usage)).  
 - `helpers.py`: Internal utility functions.
 
-## Features
+## Standout Features & Limitations
 
 ### Main features
 - :arrows_counterclockwise: **Calibration-free mobility demand model for home-to-work commuting**. Estimates commuting transport demand by modeling vehicle flows between origins (homes) and destinations (workplaces) using a calibration-free gravity model ([Lenormand et al.](https://doi.org/10.1016/j.jtrangeo.2015.12.008)). No local transport data required and OpenRouteService can be used for accurately evaluating road distances. 
@@ -157,7 +157,7 @@ All the classes are located in the `evpv/` folder, as shown in the project struc
 - :sunny: **PV system presets**. Easily generates PV production and EV–PV complementarity metrics for common PV system types (rooftop, ground-mounted, with or without tracking).
 
 
-### Limitations & Caveats
+### Limitations 
 
 - **Zoning**: Spatial resolution depends on traffic zone size, with no current downscaling. The gravity model hasn’t been validated for zones smaller than 5 km², and rectangular zones may not represent travel patterns accurately.
 
