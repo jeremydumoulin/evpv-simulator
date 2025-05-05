@@ -13,7 +13,7 @@ Contact = jeremy.dumoulin@epfl.ch
 
 Langage = python 3 
 
-> :bulb: This `README.md` provides a quick start guide for basic usage of the evpv-simulator model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. In the meantime, you can refer to this file and explore the `/examples` folder, which includes a variety of examples, from basic to advanced use cases.
+> :bulb: This `README.md` provides a quick start guide for basic usage of the evpv-simulator model. Comprehensive documentation for detailed and advanced usage will soon be available on a [Read the Docs](https://readthedocs.org/) page. 
 
 ## Table of Contents
 
@@ -29,19 +29,26 @@ Langage = python 3
 
 ## Overview of the model
 
-The **evpv-simulator** model has three main objectives and corresponding outputs (as shown in the following figure, which illustrates the model’s key inputs, outputs, and processing steps):
-1. **Daily mobility demand.** In this step, the user specifies the region of interest, along with its main geospatial data, including population density, the locations of workplaces, and points of interest (POIs), as well as the number of EVs to simulate. The daily mobility demand for commuting is then estimated by dividing the region of interest into traffic zones, spatially allocating EVs to these zones (as origins), and performing trip distribution between origins and destinations (e.g., workplaces) based on a trip distribution model. This results in a comprehensive dataset that includes the number of EVs for each origin-destination pair and the distances between them.
+The **evpv-simulator** model has three main objectives and corresponding outputs (as shown in the Fig.1 , which illustrates the model’s key inputs, outputs, and processing steps):
+1. **Mobility Demand Estimation.** Based on a user-defined region of interest and associated geospatial date (population density, workplaces, points of interest (POIs), and number of EVs to simulate), the tool divides the region of intereste into traffic zones and assesses the mobility demand for commuting by simulating origin-destination for all EVs. 
 
-2. **Spatial and temporal charging needs.** Building on the results of the previous step and the energy consumption characteristics of the various EVs, this step assesses the total charging demand and estimates how the demand is likely to be distributed in space and time using a scenario-based approach. For the spatial demand, the user specifies the likely charging locations for EVs (home, workplace, or POIs). For the temporal demand, the user provides the expected arrival time distribution and the charger power mix at each location. As a result, the tool outputs the charging needs for each zone, as well as the expected charging load curve for each EV. By default, uncoordinated charging is assumed (all EVs charge at full power immediately upon arrival). Additionally, a state-of-charge (SOC)-based charging decision model is used to account for the fact that EVs do not charge every day.
+2. **Charging Demand Analysis.** Using the mobility demand and basic properties of the EV fleet, the model calculates the spatial and temporal charging needs. Users define the preferred charging locations of EV users (at home, at work, or at POIs), typical arrival times, and the available charging powers at each locations. The output includes zone-level charging demand and load curves, assuming uncoordinated charging as a baseline charging strategy.
 
-3. **Potential for PV to meet the charging needs.** In this last step, the model uses the PVLib toolbox and local PVGIS weather data to calculate the hourly PV production over a given year. This analysis supports various PV configurations, such as rooftop and free-standing systems. By combining these results with the charging needs determined earlier, the model computes several EV-PV performance indicators, including the self-sufficiency potential or the number of EVs likely to be fully charged with solar energy. Here, it is important to note that this step assumes a closed EV-PV system, meaning all PV energy is treated as if it could potentially be used across all EVs in a centralized way. This approach captures the overall potential benefit of integrating PV with EVs.
+3. **EV-PV Complementarity.** Using PVLib and PVGIS weather data, the tool simulates the local hourly PV production over a given year. It then assesses how much of the EV charging demand can be met by solar energy, generating key performance indicators like self-sufficiency or self-consumption potentials.
 
 <center>
-	<img src="docs/model_overview_2.png" width="100%"> 
-	<p><font size="-1">evpv-simulator overview. Note that many optional input parameters and additionnal outputs are not shown.</font></p>
+	<img src="docs/model_overview_3.png" width="100%"> 
+	<p><font size="-1">Fig. 1: evpv-simulator overview. Note that many optional input parameters and additionnal outputs are not shown.</font></p>
 </center>
 
 ## Installation
+
+### Getting python
+Ensure Python is installed on your system. This project was developped with **Python 3.12**. Other versions may not be compatible.
+
+If it is your first time with Python, we recommend installing python via [Miniconda](https://docs.conda.io/en/latest/miniconda.html). Many tutorials are available online to help you with this installation process (see for example [this one](https://www.youtube.com/watch?v=oHHbsMfyNR4)). During the installation, make sure to select "Add Miniconda to PATH".
+
+> :thumbsup: Miniconda includes `conda`, which allows you to create a dedicated environment for `evpv-simulator`. If not using conda, consider alternatives like `venv`. Manual installation of all dependencies via `environment.yml` is also possible but not recommended.
 
 ### Requirements
 - **Python**: Ensure Python is installed on your system. Note that the code was developed and tested using python 3.12, so other python version might not work.

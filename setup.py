@@ -9,11 +9,9 @@ setup(
     long_description="README.md",
     long_description_content_type="text/markdown",
     author="Jérémy Dumoulin",
-    author_email="jeremy.dumoulin@epfl.ch",
-    license="MIT",              
+    author_email="jeremy.dumoulin@epfl.ch",       
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.12",
