@@ -1,134 +1,106 @@
-# ------------------------------------------------------------------------------------------------------------------------
-# CONFIGURATION FILE FOR THE EV-PV MODEL
-# ------------------------------------------------------------------------------------------------------------------------
-# This configuration file is used to set up the parameters required for computing the electric vehicle (EV) charging 
-# demand, photovoltaic (PV) potential, and EV-PV synergies
-# 
-# The file is organized into two main sections:
-#   1. BASIC PARAMETERS: These must be specified for the code to run.
-#   2. ADVANCED PARAMETERS: These can be customized or left as default.
-# ------------------------------------------------------------
+# ------------------------------------------
+# CONFIGURATION FILE: EV-PV MODEL
+# ------------------------------------------
+# Defines inputs for simulating EV charging demand,
+# PV production, and EV-PV synergies.
+# ------------------------------------------
 
+# ========================================== #
+# ============= BASIC PARAMETERS =========== #
+# ========================================== #
 
-# ------------------------------------------------------------------------------------------------------------------------
-# 1. BASIC PARAMETERS
-# These parameters must be specified by the user for the code to run.
-# ------------------------------------------------------------------------------------------------------------------------
+# --- General ---
+output_folder = "output"  # Output folder path (stores the output files)
+scenario_name = "AddisAbaba"  # Scenario label (used in output filenames)
 
-
-# ------------------------------------------------------------
-# 1.0 General Parameters
-# ------------------------------------------------------------
-output_folder = "output"     # Path to the folder where you want to store the output results (absolute or relative to the location of the evpv/ installation folder)
-scenario_name = "AddisAbaba"          # Name of the scenario (e.g., city or region of your case study) - This is only used as a prefix for the simulation result files
-
-# ------------------------------------------------------------
-# 1.1 Electric Vehicle Fleet
-# ------------------------------------------------------------
-
-# Individual electric vehicle properties and shares in the total fleet
-ev_1 = {
-    "name": "car",
-    "battery_capacity_kWh": 50,
-    "consumption_kWh_per_km": 0.18,
-    "max_charging_power_kW": 22,
-    "share": 0.9
-}
-
-ev_2 = {
-    "name": "motorcycle",
-    "battery_capacity_kWh": 10,
-    "consumption_kWh_per_km": 0.05,
-    "max_charging_power_kW": 10,
-    "share": 0.1
-}
-
-# Number of electric vehicles to simulate
+# --- EV Fleet Properties ---
 fleet_config = {
     "total_vehicles": 1000,
-    "vehicle_types": [ev_1, ev_2]
+    "vehicle_types": [
+        {
+            "name": "car",
+            "battery_capacity_kWh": 50,
+            "consumption_kWh_per_km": 0.18,
+            "max_charging_power_kW": 100,
+            "share": 0.9
+        },
+        {
+            "name": "motorcycle",
+            "battery_capacity_kWh": 10,
+            "consumption_kWh_per_km": 0.05,
+            "max_charging_power_kW": 7,
+            "share": 0.1
+        }
+    ]
 }
 
-# ------------------------------------------------------------
-# 1.2 Region of Interest
-# ------------------------------------------------------------
+# --- Region of Interest ---
+region_geojson = "input/gadm41_ETH_1_AddisAbeba.json"  # Boundary polygon (geojson)
+population_raster = "input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif" # Population raster (.tif in WGS84 coordinate system)
+workplaces_csv = "input/workplaces.csv"  # Workplace locations (CSV file)
+pois_csv = "input/pois.csv"  # Points of interest (CSV file)
+target_size_km = 5  # Target traffic zone size (in km)
 
-# Georeferenced data (paths to required input files)
-region_geojson = "input/gadm41_ETH_1_AddisAbeba.json"   # GeoJSON for the target area
-population_raster = "input/GHS_POP_merged_4326_3ss_V1_0_R8andR9_C22_cropped.tif"  # Raster file for population distribution
-workplaces_csv = "input/workplaces.csv"  # CSV file with the location of all possible home to work destinations (e.g., workplaces from open street map)
-pois_csv = 'input/pois.csv'  # CSV file with the location of all possible POIs 
+# --- Mobility Demand Simulation ---
+ors_key = None  # ORS API key (None if not using routing)
+road_to_euclidian_ratio = 1.63  # Fallback ratio between distance by road and euclidian distance (if ORS not used)
 
-# Traffic zone properties
-target_size_km = 5 # Target width of each traffic zone (in kilometers) 
-
-# ------------------------------------------------------------
-# 1.3 Mobility Demand Simulation
-# ------------------------------------------------------------
-
-ors_key = None # None or ORS Key to perform routing between traffic zones using open route service
-road_to_euclidian_ratio = 1.63 # Average ratio between the distance by road and the distance as the crows flies (typically around 1.5)
-
-# ------------------------------------------------------------
-# 1.4 Charging Demand
-# ------------------------------------------------------------
-
-# Charging scenario (location, available power options for charging, arrival time at charging location)
+# --- Charging Demand ---
+# The charging scenario, with:
+#   - "share": fraction of EVs charging at this location
+#   - "power_options_kW": list of [charging power in kW, probability] pairs.
+#   - "arrival_time_h": [mean, std] of arrival time in hours (optional for POIs, calculated automatically if not provided)
 scenario = {
-    'home': {
-        'share': 0.5,  # 50% of EVs charge at home
-        'power_options_kW': [[3.7, 0.9], [7.4, 0.1]],    
-        'arrival_time_h': [18, 2]  # Arrival time with mean and std deviation
+    "home": {
+        "share": 0.5,
+        "power_options_kW": [[3.7, 0.9], [7.4, 0.1]],
+        "arrival_time_h": [18, 2]
     },
-    'work': {
-        'share': 0.3,  # 30% of EVs charge at work
-        'power_options_kW': [[7.4, 0.9], [11, 0.1]],    
-        'arrival_time_h': [9, 1]
+    "work": {
+        "share": 0.3,
+        "power_options_kW": [[7.4, 0.9], [11, 0.1]],
+        "arrival_time_h": [9, 1]
     },
-    'poi': {
-        'share': 0.2,  # 20% of EVs charge at points of interest
-        'power_options_kW': [[3.7, 0.1], [7.4, 0.3], [11, 0.6]]    
+    "poi": {
+        "share": 0.2,
+        "power_options_kW": [[3.7, 0.1], [7.4, 0.3], [11, 0.6]]
+        # Arrival time automatically calculated for POIs
     }
 }
 
-# ------------------------------------------------------------
-# 1.5 PV Production Potential
-# ------------------------------------------------------------
+# --- PV Production ---
+year = 2020 # Year to simulate
+installation_type = "groundmounted_fixed"  
+# Options: 'rooftop', 'groundmounted_fixed', 'groundmounted_singleaxis_horizontal', 
+#          'groundmounted_singleaxis_vertical', 'groundmounted_dualaxis'
 
-year = 2020 # Reference year                  
-installation_type = 'groundmounted_fixed'  # Installation type (options are: 'rooftop', 'groundmounted_fixed', 'groundmounted_dualaxis', 'groundmounted_singleaxis_horizontal', 'groundmounted_singleaxis_vertical')
+# --- EV-PV Complementarity ---
+pv_capacity_MW = 10 # Installed nominal PV capacity
+start_date = "01-01" # Start date of the simulation (Format: MM-DD)
+end_date = "01-07" # End date of the simulation (Format: MM-DD)
 
-# ------------------------------------------------------------
-# 1.6 EV-PV Synergies
-# ------------------------------------------------------------
+# ========================================== #
+# =========== ADVANCED PARAMETERS ========== #
+# ========================================== #
 
-pv_capacity_MW = 10
+# --- Traffic Zone Creation ---
+crop_to_region = True  # Clip traffic zones to region of interest boundaries
 
-start_date = '01-01'            # Start date of the analysis (MM-DD)
-end_date = '01-07'              # End date of the analysis (MM-DD)
+# --- Mobility Model Settings ---
+randomness = 0.0  # Add randomness to trip distribution results
+model_type = "gravity_exp_scaled"  # Options: 'gravity_exp_scaled', 'radiation'
+attraction_feature = "workplaces"  # Zone attractiveness feature. Options: 'population', 'workplaces'
+cost_feature = "distance_road"  # Travel cost measure. Options: 'distance_road', 'distance_centroid'
+distance_offset_km = 0.0  # Offset in the daily travel distance (added to the commuting distance)
 
-
-# ------------------------------------------------------------------------------------------------------------------------
-# 2. ADVANCED PARAMETERS
-# These parameters must be specified by the user for the code to run.
-# ------------------------------------------------------------------------------------------------------------------------
-
-
-zone_shape = "rectangle"
-crop_to_region = True
-
-allocation_method = "population"
-randomness = 0.0
-model_type = "gravity_exp_scaled"               
-attraction_feature = "workplaces"    
-cost_feature = "distance_road"       
-distance_offset_km = 0.0    
-
+# --- Charging Simulation ---
 charging_efficiency = 0.9
-time_step = 0.1
+time_step = 0.1  # Time resolution (in hours)
 
-efficiency = 0.22 # Nominal efficiency  
-temperature_coefficient = -0.004
-system_losses = 0.14
+# --- PV Simulation Parameters ---
+efficiency = 0.22  # PV module nominal efficiency
+temperature_coefficient = -0.004  # Efficiency drop per °C
+system_losses = 0.14  # Additional losse factor due to the PV system
 
-recompute_probability = 0.0 
+# --- EV-PV complementarity ---
+recompute_probability = 0.0  # Probability of recomputing daily charge needs from one day to another

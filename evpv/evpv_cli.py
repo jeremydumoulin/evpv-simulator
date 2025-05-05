@@ -88,7 +88,7 @@ def run_simulation(config):
         pois_csv=config.pois_csv,
         traffic_zone_properties={
             "target_size_km": config.target_size_km,
-            "shape": config.zone_shape,
+            "shape": "rectangle",
             "crop_to_region": config.crop_to_region
         }
     )
@@ -101,7 +101,7 @@ def run_simulation(config):
         vehicle_fleet=fleet,
         region=region,
         vehicle_allocation_params={
-            "method": config.allocation_method,                
+            "method": "population",                
             "randomness": config.randomness
         }, 
         trip_distribution_params={
