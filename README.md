@@ -22,10 +22,9 @@ Langage = python 3
 3. [Usage](#usage)
 4. [Project Structure](#project-structure)
 5. [Features](#features)
-6. [Contributing](#contributing)
-7. [Scientific Publications](#scientific-publications)
-8. [Acknowledgment](#acknowledgment)
-9. [License](#license)
+6. [Scientific Publications](#scientific-publications)
+7. [Acknowledgment](#acknowledgment)
+8. [License](#license)
 
 ## Overview of the model
 
@@ -155,7 +154,7 @@ All the classes are located in the `evpv/` folder, as shown in the project struc
 
 - :bulb: **Smart charging ready**. Simulates uncontrolled ("dumb") charging by default. Includes a basic rule-based peak shaving algorithm that shifts charging within arrival–departure windows to smooth demand. Output can be used for more advanced smart charging strategies.
 
-- :sunny **PV system presets**. Easily generates PV production and EV–PV complementarity metrics for common PV system types (rooftop, ground-mounted, with or without tracking).
+- :sunny: **PV system presets**. Easily generates PV production and EV–PV complementarity metrics for common PV system types (rooftop, ground-mounted, with or without tracking).
 
 
 ### Limitations & Caveats
