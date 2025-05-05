@@ -20,11 +20,10 @@ Langage = python 3
 1. [Overview of the Model](#overview-of-the-model)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Project Structure](#project-structure)
-5. [Standout Features & Limitations](#features)
-6. [Scientific Publications](#scientific-publications)
-7. [Acknowledgment](#acknowledgment)
-8. [License](#license)
+4. [Standout Features & Limitations](#standout-features-&-limitations)
+5. [Scientific Publications](#scientific-publications)
+6. [Acknowledgment](#acknowledgment)
+7. [License](#license)
 
 ## Overview of the model
 
