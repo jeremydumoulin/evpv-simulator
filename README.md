@@ -82,72 +82,65 @@ Enter the path to the python configuration file: C:\Users\(...)\config.py
 ```
 > :warning: Use absolute paths in the config file, or start the terminal in the same directory to use relative paths.
 
+Here below an animation showing process for the Addis Ababa example:
 ![](docs/usage.gif)
 
-### Advanced Usage
+### Where can I get the needed Geospatial Data?
 
-For advanced users, you can also create a new Python script and manually import and interact with the classes in the `evpv/` folder (see the *Project Structure*). For a typical use, you will generally need to one ore more of the following classes:
+To run the model, you will need the following four types of geospatial input data:
+
+- **Region of interest**: A GeoJSON file defining the boundary of your study area. For most administrative regions, you can download this from the [GADM dataset](https://gadm.org/).
+
+- **Residential population**: A `.tif` raster file showing population density, in the WGS84 coordinate system. We recommend using the [GHS-POP dataset](https://human-settlement.emergency.copernicus.eu/download.php?ds=pop) at the lowest available resolution.
+
+- **List of workplaces**: A CSV file with the following columns: `name`, `latitude`, `longitude`, and `weight`. You can generate this manually from local data or automatically extract it from OpenStreetMap using the helper script in `scripts/extract_pois_from_osm.py`.
+
+- **List of POIs (Points of Interest)**: Same format and process as for workplaces. Use the same script but with modified inputs.
+
+### Using evpv classes in python scripts (advanced usage)
+
+Advanced users can write custom Python scripts by importing and interacting with core classes from the `evpv/` module:
 
 ```python
 from evpv.vehicle import Vehicle
 from evpv.vehiclefleet import VehicleFleet
-from evpv.region import Region
-from evpv.mobilitysimulator import MobilitySimulator
-from evpv.pvsimulator import PVSimulator
-from evpv.chargingsimulator import ChargingSimulator
-from evpv.evpvsynergies import EVPVSynergies
+# etc.
 ```
 
-> :information_source: Comprehensive documentation is still in progress. However, you can refer to the generated Sphinx documentation for detailed descriptions of the input and output parameters for each class (located in the `docs/_build/html/index.html` folder). For a quick start, we recommend exploring the example scripts in the `examples/` folder. We recommend starting with `01_basic_usage.py`, which demonstrates how to utilize the core classes with a minimal set of input parameters. 
+All the classes are located in the `evpv/` folder, as shown in the project structure:
 
-## Project structure
 ```bash
-├───environment.yml
-├───setup.py
-├───version.py
-├───LICENSE.md
-├───README.md
-├───doc/
-├───evpv/
-│   ├───chargingsimulator.py
-│   ├───evpvsynergies.py
-│   ├───mobilitysimulator.py
-│   ├───pvsimulator.py
-│   ├───region.py
-│   ├───vehicle.py
-│   ├───vehiclefleet.py
-│   ├───evpv_cli.py
-│   └───helpers.py
-├───examples/
-│   ├───Basic_AddisAbaba_ConfigFile/
-│   └───...
-└───scripts/
-```  
-### evpv-simulator run script
-The file `evpv_cli.py` is a python script that allows users to run to conduct a basic study using a simple command line interface (see section *Usage*).
+├── setup.py
+├── README.md
+├── evpv/
+│   ├── vehicle.py
+│   ├── vehiclefleet.py
+│   ├── region.py
+│   ├── mobilitysimulator.py
+│   ├── chargingsimulator.py
+│   ├── pvsimulator.py
+│   ├── evpvsynergies.py
+│   ├── evpv_cli.py
+│   └── helpers.py
+├── examples/
+│   └── Basic_AddisAbaba_ConfigFile/
+├── scripts/
+│   └── extract_pois_from_osm.py
+└── docs/
+```
 
-### Python Modules
-In the `evpv/` folder, you will find the following python classes:
+**Core Classes**  
+- `Vehicle`: Defines a vehicle type.  
+- `VehicleFleet`: Manages EV fleet data.  
+- `Region`: Defines geospatial properties.  
+- `MobilitySimulator`: Simulates trip generation and allocation.  
+- `ChargingSimulator`: Estimates charging demand over time and space.  
+- `PVSimulator`: Simulates solar energy production.  
+- `EVPVSynergies`: Analyzes EV-PV interaction metrics.
 
-**Core Classes**
-These modules are essential for basic usage:
-- **`Vehicle`**: Defines the parameters for a specific type of electric vehicle.
-- **`VehicleFleet`**: Manages information about an EV fleet for simulation.
-- **`Region`**: Represents the region of interest, including geospatial characteristics.
-- **`MobilitySimulator`**: Simulates mobility demand by allocating EVs to origins and determining trip distributions.
-- **`ChargingSimulator`**: Analyzes the spatial and temporal charging needs for the EV fleet.
-- **`PVSimulator`**: Simulates the PV production based on PV-Lib.
-- **`EVPVSynergies`**: Computes metrics for PV-based charging of EVs.
-
-**Additional Files**
-- **`evpv_cli.py`**: Provides a command-line interface for running mobility demand simulations.
-- **`helpers.py`**: Contains various utility functions used internally by other classes.
-
-### Examples
-In the `examples/` folder, you will find various examples illustrating basic and more advanced use cases. We recommend looking at the various scripts, starting with the more basic ones.
-
-### Scripts
-In the `scripts/` folder, you will find additionnal helpful scripts, notably a script to fetch georeferenced workplaces or points of interest from OpenStreetMap.
+**Utilities**  
+- `evpv_cli.py`: Command-line interface (see [Usage](#usage)).  
+- `helpers.py`: Internal utility functions.
 
 ## Features
 
