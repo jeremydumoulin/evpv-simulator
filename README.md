@@ -20,7 +20,7 @@ Langage = python 3
 1. [Overview of the Model](#overview-of-the-model)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Standout Features & Limitations](#standout-features-&-limitations)
+4. [Standout Features & Limitations](#standout-features--limitations)
 5. [Scientific Publications](#scientific-publications)
 6. [Acknowledgment](#acknowledgment)
 7. [License](#license)
@@ -80,8 +80,8 @@ $ Enter the path to the python configuration file: C:\Users\(...)\config.py
 ```
 > :warning: Use absolute paths in the config file, or start the terminal in the same directory to use relative paths.
 
-Here below an animation showing process for the Addis Ababa example:
-![](docs/usage.gif)
+> Here is an animation showing the step-by-step run process for the **Addis Ababa example**: ![](docs/usage.gif)
+
 
 ### Where can I get the needed Geospatial Data?
 
