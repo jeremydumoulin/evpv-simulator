@@ -74,11 +74,11 @@ First, create a configuration file by copying an existing example such as the [A
 
 Once your config file is ready, open a terminal, activate your conda environment (optional), and run:
 ```bash
-evpv
+$ evpv
 ```
 You’ll be prompted to enter the path to your config file:
 ```bash
-Enter the path to the python configuration file: C:\Users\(...)\config.py
+$ Enter the path to the python configuration file: C:\Users\(...)\config.py
 ```
 > :warning: Use absolute paths in the config file, or start the terminal in the same directory to use relative paths.
 
@@ -145,57 +145,41 @@ All the classes are located in the `evpv/` folder, as shown in the project struc
 ## Features
 
 ### Main features
-- **Endogenous estimation of daily mobility demand for home-to-work commuting.** To estimate charging needs in a specific area, it is essential to assess the commuting transport demand — specifically, the flow of vehicles between potential origin points (e.g., homes) and destination points (e.g., workplaces), as well as the road-based distance between them. The model estimates this demand internally by dividing the region of interest into traffic zones (based on user-defined spatial resolution) and applying a spatial interaction model to distribute the flow of people between their homes and workplaces (or other parking locations, such as park-and-ride facilities). A key feature of this model is its integration of the self-calibrated gravity model developed by [Lenormand et al.](https://doi.org/10.1016/j.jtrangeo.2015.12.008), which removes the need for transport data specific to the region. For accurate road distance calculations, the model utilizes OpenRouteService to perform routing when available in the region of interest.
+- :arrows_counterclockwise: **Calibration-free mobility demand model for home-to-work commuting**. Estimates commuting transport demand by modeling vehicle flows between origins (homes) and destinations (workplaces) using a calibration-free gravity model ([Lenormand et al.](https://doi.org/10.1016/j.jtrangeo.2015.12.008)). No local transport data required and OpenRouteService can be used for accurately evaluating road distances. 
 
-- **Mobility demand for other purposes.** While this model primarily focuses on mobility demand for daily commuting, it may also be beneficial to incorporate mobility demand for other activities, such as shopping and leisure. Currently, this demand is not calculated endogenously within the model. However, users can include an optional parameter (called `km_per_capita_offset`) to account for these additional mobility needs on weekdays.
+- :convenience_store: **Mobility demand for other purposes**.Although focused on commuting, the model allows users to include additional weekday mobility (e.g., shopping, leisure) via an optional `km_per_capita_offset` parameter.
 
-- **Spatial and temporal charging needs**. Based on the previously mentioned mobility demand, the model computes the daily spatial and temporal charging needs for electric vehicles. This is done using a scenario-based approach, where the user specifies the characteristics of the vehicle fleet (including the charging power for each vehicle) and the expected charging behaviors. For the spatial demand, the model calculates it for each traffic zone, based on the expected share of people charging either at home or at work. The temporal demand (charging curve) is estimated with a stochastic approach, where for each vehicle, several factors are randomly sampled: arrival time, daily travel distance and energy consumption (which determines the daily charging needs), and available charging power. Building on the work of [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318), our model also introduces randomness in the number of vehicles that decide to charge on a given day. This decision is based on a threshold for the state of charge (SoC), with vehicles choosing to charge if their SoC falls below this threshold. 
+- :electric_plug: **Charging-decision modeling**. Uses a state-of-the-art model based on state-of-charge (SoC) thresholds to determine whether vehicles charge on a given day, following [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318).
 
-- **Flexible configuration of EV fleet and charger power**. Supports diverse setups, including mixed charging power levels for each location, customizable vehicle types with user-defined maximum charging power for each vehicle.
+- :memo: **Flexible EV fleet and charging infrastructure**. Supports every possible user-defined scenario regarding the EV fleet properties and charging infrastructure to simulate, accounting also for a maximum charging power per vehicle.
 
-- **Smart charging**: By default, the code simulates uncontrolled ("dumb") charging behavior. However, the data is pre-processed to allow easy post-analysis of smart charging strategies. A "peak shaving" algorithm is already implemented, enabling vehicles to adjust their charging patterns between arrival and departure times to smooth the overall charging demand curve. This smart charging behavior is managed using a simple rule-based algorithm.
+- :bulb: **Smart charging ready**. Simulates uncontrolled ("dumb") charging by default. Includes a basic rule-based peak shaving algorithm that shifts charging within arrival–departure windows to smooth demand. Output can be used for more advanced smart charging strategies.
 
-- **PV power production.** The code offers a simple method to generate hourly photovoltaic (PV) production and other metrics, such as the capacity factor, for a specific location, year, and type of PV system (e.g., rooftop, ground-mounted, etc.). It is built on the PVLib library, which provides robust tools for simulating and analyzing PV system performance.
- 
-- **Potential for PV to cover the charging needs.** Using the charging curve and the local PV production, various metrics can be calculated to assess the potential of PV to meet the charging needs. These metrics include self-sufficiency potential, self-consumption, Spearman correlation, and more. The analysis can be performed for a specific day or over a longer time period.
+- :sunny **PV system presets**. Easily generates PV production and EV–PV complementarity metrics for common PV system types (rooftop, ground-mounted, with or without tracking).
+
 
 ### Limitations & Caveats
 
-#### Mobility and EV Charging Demand
+- **Zoning**: Spatial resolution depends on traffic zone size, with no current downscaling. The gravity model hasn’t been validated for zones smaller than 5 km², and rectangular zones may not represent travel patterns accurately.
 
-- **Zoning**: The spatial resolution is constrained by the size of the traffic zones, with no downscaling procedure available for the moment. The accuracy may also be affected when using a self-calibrated gravity model, which has not been validated for zones smaller than 5 km². Additionally, rectangular zoning may not be the optimal choice for transport demand modelling.
-  
-- **Trip purposes**: The mobility demand assumes direct trips between home and destination (and destination to home) with no intermediate stops. Alsom, other trip purposes than daily commuting cannot be modeled.
+- **Trip purposes**: Only direct home-to-destination and back trips are modeled. Intermediate stops and non-commuting purposes (e.g., shopping, leisure) are not included.
 
-- **Routing**: Accurate routing depends on OpenRouteService, which requires an internet connection.
+- **Routing**: Relies on OpenRouteService for accurate distances, which requires an internet connection.
 
-- **Weekdays only**: The model only accounts for mobility and charging on weekdays.
+- **Weekdays only**: The model simulates mobility and charging only for weekdays, not weekends.
 
-- **Zone attractiveness**: When using the number of workplaces from OpenStreetMap (OSM) to determine the attractiveness of a zone for trip distribution, it does not include the number of jobs per workplace. This may reduce the model’s accuracy in areas where the number of jobs per workplace is not evenly distributed.
+- **Zone attractiveness**: Zone attractiveness is based on the number of workplaces from OpenStreetMap, not the number of jobs. This may reduce accuracy in areas with uneven job distribution.
 
-- **Charging Curve**: The charging curve is calculated for each location and traffic zone, based on the zone-specific travel distance distribution and the assumed arrival time. The model assumes a normal distribution for arrival times, which may not fully represent real behavior. We also assume that all vehicles charge every day, which may not be entirely accurate (see [Pareschi et al.](https://doi.org/10.1016/j.apenergy.2020.115318)). Additionally, in reality, drivers may not charge their vehicles immediately upon arrival, as their decision could depend on factors such as varying electricity tariffs throughout the day (see, for instance, the charging habits of French citizen [here](https://www.enedis.fr/presse/mobilite-electrique-enedis-publie-deux-nouveaux-rapports-sur-les-habitudes-de-mobilite-et-de)). This behavior could be incorporated into a "smart charging" algorithm in future work to better reflect how drivers respond to price signals (or other incentives) when deciding when to charge.
+- **Weather data**: PV production relies on PVGIS weather data, which also requires an internet connection.
 
-#### Photovoltaic simulation
+- **EV-PV as a closed system**: Assumes all PV energy is used only for EV charging, without accounting for other loads or infrastructure limitations.
 
-- **Weather Data**: The model relies on weather data from PVGIS, which requires an internet connection.
+### Planned features
 
-#### EV-PV complementarity
-
-- **EV-PV System treated as a closed system**: When evaluating EV-PV synergies, we assume that all PV energy is available exclusively for EV charging. This approach ignores other potential loads and limitations associated with distributed PV systems, such as variations between different charging stations equipped with PV.
-
-## Contributing
-[To be completed]
-
-### Open tasks
-
-- [x] Update the README file to the new architecture
-- [ ] Add more advanced examples
-- [x] Enhance inline code documentation
-- [x] Feature: energy demand per vehicle by traffic zone (i.e., use the distance distribution per zone and not the aggregated one). This will allow more advanced analysis, like variations in the average number of charging stations per vehicle because of higher travelled distances.
-- [x] Create a CLI for easy usage
-- [ ] Create a readthedocs
-- [ ] Make a contributing guide
-- [ ] Write some unit tests 
+- Adding more examples
+- Create a readthedocs
+- Make a contributing guide
+- Write some unit tests 
 
 ## Scientific publications
 [1] Jérémy Dumoulin et al. A modeling framework to support the electrification of private transport in African cities: a case study of Addis Ababa. arXiv preprint arXiv:2503.03671, 2025. [https://doi.org/10.48550/arXiv.2503.03671](https://doi.org/10.48550/arXiv.2503.03671). 
