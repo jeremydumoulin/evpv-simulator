@@ -30,7 +30,7 @@ Langage = python 3
 ## Overview of the model
 
 The **evpv-simulator** model has three main objectives and corresponding outputs (as shown in the Fig.1 , which illustrates the model’s key inputs, outputs, and processing steps):
-1. **Mobility Demand Estimation.** Based on a user-defined region of interest and associated geospatial date (population density, workplaces, points of interest (POIs), and number of EVs to simulate), the tool divides the region of intereste into traffic zones and assesses the mobility demand for commuting by simulating origin-destination for all EVs. 
+1. **Mobility Demand Estimation.** Based on a user-defined region of interest and associated geospatial input data (population density, workplaces, points of interest (POIs), and number of EVs to simulate), the tool divides the region of intereste into traffic zones and assesses the mobility demand for commuting by simulating origin-destination for all EVs. 
 
 2. **Charging Demand Analysis.** Using the mobility demand and basic properties of the EV fleet, the model calculates the spatial and temporal charging needs. Users define the preferred charging locations of EV users (at home, at work, or at POIs), typical arrival times, and the available charging powers at each locations. The output includes zone-level charging demand and load curves, assuming uncoordinated charging as a baseline charging strategy.
 
@@ -48,36 +48,20 @@ Ensure Python is installed on your system. This project was developped with **Py
 
 If it is your first time with Python, we recommend installing python via [Miniconda](https://docs.conda.io/en/latest/miniconda.html). Many tutorials are available online to help you with this installation process (see for example [this one](https://www.youtube.com/watch?v=oHHbsMfyNR4)). During the installation, make sure to select "Add Miniconda to PATH".
 
-> :thumbsup: Miniconda includes `conda`, which allows you to create a dedicated environment for `evpv-simulator`. If not using conda, consider alternatives like `venv`. Manual installation of all dependencies via `environment.yml` is also possible but not recommended.
+> :thumbsup: Miniconda includes `conda`, which allows you to create a dedicated python environment for `evpv-simulator`. If not using conda, consider alternative environment managers like `venv`. Manual installation of all dependencies via `environment.yml`
+is also possible but not recommended.
 
-### Requirements
-- **Python**: Ensure Python is installed on your system. Note that the code was developed and tested using python 3.12, so other python version might not work.
-- **Conda** (optional, but recommended): Use Conda for managing Python environments and dependencies. 
-- **Open Route Service API key** (optional, but recommended to perform realistic road-based distance estimation): Sign up for an API key at [OpenRouteService](https://openrouteservice.org/sign-up/).
+### Installation 
+1. (Optional) Create a Conda environment with Python 3.12. As stated before, it is not mandatory but recommended to use a dedicated environment. Here an example with conda using an environment named *evpv-env*
 
-> :bulb: If you are new to python and conda environments, we recommand installing python and conda via the [Miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution. During the installation, make sure to select "Add Miniconda to PATH" for ease of use.
-
-> :thumbsdown: If you do not want to use conda, we strongly recommend using an other virtual environment manager (venv, ...). However, you can also manually install all the python dependencies (not recommended) using the list of required modules in the `environment.yml` file.
-
-### Installation with conda
-1. Clone the latest version of the code on GitHub on your local machine. If you are not familiar with git, you can also manually download the folder from GitHub and then run the code. However, you won't be able to contribute to the project.
 ```bash
-$ git clone https://github.com/jeremydumoulin/evpv.git
+$ conda create --name evpv-env python=3.12
+$ conda activate evpv-env
 ```
 
-2. Open an Anaconda prompt and create a new conda environment with the required dependencies. 
+2. Install evpv as a python package from the GitHub repository
 ```bash
-$ conda env create -f environment.yml -n your_environment_name
-```
-
-3. Activate the conda environment (assuming the environment is named `your_environment_name`). 
-```bash
-$ conda activate your_environment_name
-```
-
-4. Install evpv as a python package (optionnal, but recommended to streamline the import and execution of the code). The "-e" option allows changes to the model (e.g., in case of pull ) to be to reflected immediately without reinstallation.
-```bash
-$ pip install -e .
+$ pip install git+https://github.com/jeremydumoulin/evpv-simulator.git
 ```
 
 ![](docs/installation.gif)
