@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_87212c9317e49b7c532775a39a2c7816 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_87212c9317e49b7c532775a39a2c7816" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_87212c9317e49b7c532775a39a2c7816 = L.map(
+                "map_87212c9317e49b7c532775a39a2c7816",
+                {
+                    center: [8.98046850261216, 38.78545971870749],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 12,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+            L.control.scale().addTo(map_87212c9317e49b7c532775a39a2c7816);
+
+            
+
+        
+    
+            var tile_layer_f569888df5d80e8be9641ed5e6052572 = L.tileLayer(
+                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca target=\"_blank\" href=\"http://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca target=\"_blank\" href=\"http://cartodb.com/attributions\"\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca target=\"_blank\" href =\"http://cartodb.com/attributions\"\u003eattributions\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+        function geo_json_5adf5b685fa2f8195194a89970f7ca15_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "blue", "fillColor": "none", "weight": 3};
+            }
+        }
+
+        function geo_json_5adf5b685fa2f8195194a89970f7ca15_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_5adf5b685fa2f8195194a89970f7ca15 = L.geoJson(null, {
+                onEachFeature: geo_json_5adf5b685fa2f8195194a89970f7ca15_onEachFeature,
+            
+                style: geo_json_5adf5b685fa2f8195194a89970f7ca15_styler,
+        });
+
+        function geo_json_5adf5b685fa2f8195194a89970f7ca15_add (data) {
+            geo_json_5adf5b685fa2f8195194a89970f7ca15
+                .addData(data)
+                .addTo(map_87212c9317e49b7c532775a39a2c7816);
+        }
+            geo_json_5adf5b685fa2f8195194a89970f7ca15_add({"features": [{"geometry": {"coordinates": [[[[38.8794, 8.9183], [38.8733, 8.9051], [38.8775, 8.8958], [38.8698, 8.8808], [38.8687, 8.873], [38.8638, 8.8829], [38.8584, 8.8836], [38.8471, 8.88], [38.8407, 8.8799], [38.833, 8.8829], [38.826, 8.8802], [38.8294, 8.8688], [38.8239, 8.8528], [38.8244, 8.8413], [38.8175, 8.8393], [38.8125, 8.84], [38.7976, 8.8335], [38.792, 8.8358], [38.7806, 8.8359], [38.7784, 8.8418], [38.7775, 8.8524], [38.773, 8.8575], [38.7565, 8.8532], [38.7541, 8.8586], [38.7455, 8.8634], [38.7452, 8.8695], [38.7473, 8.8772], [38.7432, 8.8804], [38.7445, 8.8921], [38.7436, 8.9026], [38.7365, 8.9013], [38.7311, 8.9051], [38.7191, 8.9197], [38.7084, 8.9209], [38.702, 8.9256], [38.6968, 8.9327], [38.6938, 8.9419], [38.6879, 8.9397], [38.6806, 8.9411], [38.681, 8.9497], [38.6762, 8.9576], [38.6428, 8.9659], [38.6394, 8.974], [38.6546, 8.9769], [38.6594, 8.9854], [38.6578, 8.9948], [38.6511, 9.0025], [38.6519, 9.0103], [38.667, 9.01], [38.6672, 9.0262], [38.6721, 9.0331], [38.6726, 9.0387], [38.6835, 9.05], [38.6837, 9.0663], [38.6854, 9.073], [38.7007, 9.0805], [38.7067, 9.0818], [38.7166, 9.0878], [38.7271, 9.0857], [38.738, 9.0869], [38.7509, 9.0905], [38.7652, 9.0982], [38.7712, 9.0982], [38.7782, 9.0937], [38.7913, 9.0777], [38.8, 9.0786], [38.8051, 9.0823], [38.8247, 9.0759], [38.8426, 9.0786], [38.8495, 9.0782], [38.8568, 9.0835], [38.8682, 9.0849], [38.8763, 9.0816], [38.882, 9.0686], [38.8829, 9.0521], [38.8967, 9.0305], [38.905, 9.0095], [38.9061, 8.9975], [38.9043, 8.9922], [38.9062, 8.9774], [38.9028, 8.9624], [38.8962, 8.9548], [38.9011, 8.9461], [38.8968, 8.937], [38.8914, 8.9343], [38.8614, 8.9427], [38.8556, 8.9383], [38.8608, 8.9322], [38.8794, 8.9183]]]], "type": "MultiPolygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            var rectangle_2956b7dbf5381b3fab2fcae6ed7a1d68 = L.rectangle(
+                [[8.965739755378113, 38.63936451876394], [9.009899885450594, 38.683873553670054]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_43d64e447c0e8a05915550ba442f3133 = L.rectangle(
+                [[8.921660898794752, 38.683873553670054], [8.965815787080833, 38.7283718561157]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_46f3836d3321bdf527ab00b0b99e5e4e = L.rectangle(
+                [[8.965780444727844, 38.683835300412134], [9.009935404499071, 38.72833915124168]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_ab5e486826eff0f40e19f9dfa7e339e1 = L.rectangle(
+                [[9.009899885450594, 38.68379685160476], [9.05405491624774, 38.728306278421954]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_50655462ea7019bf4167990be80c881a = L.rectangle(
+                [[9.054019220462683, 38.683758207131866], [9.098174321826976, 38.728273237557346]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_935348c5ea76acd01f0a3fe89559904d = L.rectangle(
+                [[8.877576237236347, 38.7283718561157], [8.921725909816118, 38.7728594807324]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_ca16eb6862b895be57d973cacaaad547 = L.rectangle(
+                [[8.921696064493137, 38.72833915124168], [8.965845782331586, 38.77283226928161]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_a21e2939a65b13d61758660245ee548c = L.rectangle(
+                [[8.965815787080833, 38.728306278421954], [9.00996554971229, 38.77280491745652]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_4ab54dcfad6df8c8bd5a6f37d18b286b = L.rectangle(
+                [[9.009935404499071, 38.728273237557346], [9.054085211458297, 38.77277742517461]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_ae09e9bb56829a7c8a270a2f4f320dda = L.rectangle(
+                [[9.05405491624774, 38.72824002854811], [9.098204767069932, 38.77274979235292]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_17969b168dee7221655cfab6c5068c14 = L.rectangle(
+                [[8.833485851381887, 38.7728594807324], [8.877630334352466, 38.81733648215402]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_2b07d760e4d4fcfd224bdaef06ac91ca = L.rectangle(
+                [[8.877605932666073, 38.77283226928161], [8.921750434674623, 38.81731470919699]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_dcee903d645a2dc69b849a175620fa93 = L.rectangle(
+                [[8.921725909816118, 38.77280491745652], [8.965870430390565, 38.81729282340483]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_3ed817aa65bd3e51fd962e755ac0effe = L.rectangle(
+                [[8.965845782331586, 38.77277742517461], [9.009990321000249, 38.81727082471154]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_25911cff7858027af87072ba2d04226f = L.rectangle(
+                [[9.00996554971229, 38.77274979235292], [9.054110106003897, 38.817248713050745]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_07d46d2cf3f1b0f3fe0a69d3fd2118b6 = L.rectangle(
+                [[9.054085211458297, 38.77272201890802], [9.098229784901982, 38.81722648835572]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_16eb3d388c3cff25d2bb8ef1a92514d1 = L.rectangle(
+                [[8.877630334352466, 38.81729282340483], [8.921769638995453, 38.86177005096534]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_6d7e2cdac51ee38f5531060d755343d1 = L.rectangle(
+                [[8.921750434674623, 38.81727082471154], [8.96588973118419, 38.86175349089809]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_a6d29d31e053e11213e548a28eb365ea = L.rectangle(
+                [[8.965870430390565, 38.817248713050745], [9.010009718288995, 38.86173684540325]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_5693003b163a252170b2f4dfd76c0ca4 = L.rectangle(
+                [[9.009990321000249, 38.81722648835573], [9.054129599810205, 38.861720114430575]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_7c18933ba6a0e5820a9b6f021fdb2d0d = L.rectangle(
+                [[9.054110106003897, 38.8172041505594], [9.098249375248413, 38.8617032979296]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_a40fc42c7580e35688c037ec0895f3d5 = L.rectangle(
+                [[8.921769638995453, 38.86173684540325], [8.965903684654847, 38.90621424417376]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_ccd4cd954dc5a0609044a614db7e62c9 = L.rectangle(
+                [[8.96588973118419, 38.861720114430575], [9.010023741520614, 38.90620295192778]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_0ddb4fefd8849791d9030000d8282b6e = L.rectangle(
+                [[9.010009718288995, 38.8617032979296], [9.054143692819013, 38.90619160169394]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "grey", "fillOpacity": 0.0, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var feature_group_1b8da661fdaceb2ee17728faf9096e0c = L.featureGroup(
+                {}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_dea5b69fea9dd9d15eb0a21596c790e7 = L.rectangle(
+                [[8.965739755378113, 38.63936451876394], [9.009899885450594, 38.683873553670054]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff8eff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_3b7d4eb38004bc5b2d48d76feb8133f8 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a371098467255bb3f04f406180ce7774 = $(`<div id="html_a371098467255bb3f04f406180ce7774" style="width: 100.0%; height: 100.0%;">Number of vehicles: 20</div>`)[0];
+                popup_3b7d4eb38004bc5b2d48d76feb8133f8.setContent(html_a371098467255bb3f04f406180ce7774);
+            
+        
+
+        rectangle_dea5b69fea9dd9d15eb0a21596c790e7.bindPopup(popup_3b7d4eb38004bc5b2d48d76feb8133f8)
+        ;
+
+        
+    
+    
+            var rectangle_f88d3ef50863552a6fa1f376166a7598 = L.rectangle(
+                [[8.921660898794752, 38.683873553670054], [8.965815787080833, 38.7283718561157]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffa4ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_147d03dbf3fa9b2e479ccb62bdd6bb14 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ab6b2b5c4528cc90cd118ed49de4274d = $(`<div id="html_ab6b2b5c4528cc90cd118ed49de4274d" style="width: 100.0%; height: 100.0%;">Number of vehicles: 16</div>`)[0];
+                popup_147d03dbf3fa9b2e479ccb62bdd6bb14.setContent(html_ab6b2b5c4528cc90cd118ed49de4274d);
+            
+        
+
+        rectangle_f88d3ef50863552a6fa1f376166a7598.bindPopup(popup_147d03dbf3fa9b2e479ccb62bdd6bb14)
+        ;
+
+        
+    
+    
+            var rectangle_8c49b5c91ade84cfec1c67b0f381751e = L.rectangle(
+                [[8.965780444727844, 38.683835300412134], [9.009935404499071, 38.72833915124168]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff27ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_7890c003062cb8ba484944a76314e728 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_f124c739524240c5009bbc20c864b47d = $(`<div id="html_f124c739524240c5009bbc20c864b47d" style="width: 100.0%; height: 100.0%;">Number of vehicles: 38</div>`)[0];
+                popup_7890c003062cb8ba484944a76314e728.setContent(html_f124c739524240c5009bbc20c864b47d);
+            
+        
+
+        rectangle_8c49b5c91ade84cfec1c67b0f381751e.bindPopup(popup_7890c003062cb8ba484944a76314e728)
+        ;
+
+        
+    
+    
+            var rectangle_28313eaba007b442ad3a5e9e2f266502 = L.rectangle(
+                [[9.009899885450594, 38.68379685160476], [9.05405491624774, 38.728306278421954]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9f00ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_3eec51d5ab0c9793011272005c84bd81 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_b4124815c1414d16f554c32c18ae6deb = $(`<div id="html_b4124815c1414d16f554c32c18ae6deb" style="width: 100.0%; height: 100.0%;">Number of vehicles: 62</div>`)[0];
+                popup_3eec51d5ab0c9793011272005c84bd81.setContent(html_b4124815c1414d16f554c32c18ae6deb);
+            
+        
+
+        rectangle_28313eaba007b442ad3a5e9e2f266502.bindPopup(popup_3eec51d5ab0c9793011272005c84bd81)
+        ;
+
+        
+    
+    
+            var rectangle_7cf330365108ef657bc2c5be2971abd9 = L.rectangle(
+                [[9.054019220462683, 38.683758207131866], [9.098174321826976, 38.728273237557346]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff99ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_b179ff6188bcce0b0287d36a9c9efb5d = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_4d55a77eda3f3a9923fdc689027f0358 = $(`<div id="html_4d55a77eda3f3a9923fdc689027f0358" style="width: 100.0%; height: 100.0%;">Number of vehicles: 18</div>`)[0];
+                popup_b179ff6188bcce0b0287d36a9c9efb5d.setContent(html_4d55a77eda3f3a9923fdc689027f0358);
+            
+        
+
+        rectangle_7cf330365108ef657bc2c5be2971abd9.bindPopup(popup_b179ff6188bcce0b0287d36a9c9efb5d)
+        ;
+
+        
+    
+    
+            var rectangle_13ad6a93485a68283961da9247820edd = L.rectangle(
+                [[8.877576237236347, 38.7283718561157], [8.921725909816118, 38.7728594807324]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffc7ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_e6b6b4a5f1a7baabb7cf5282530df20c = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_36ab765cb963aa1833db484f40d4f96e = $(`<div id="html_36ab765cb963aa1833db484f40d4f96e" style="width: 100.0%; height: 100.0%;">Number of vehicles: 10</div>`)[0];
+                popup_e6b6b4a5f1a7baabb7cf5282530df20c.setContent(html_36ab765cb963aa1833db484f40d4f96e);
+            
+        
+
+        rectangle_13ad6a93485a68283961da9247820edd.bindPopup(popup_e6b6b4a5f1a7baabb7cf5282530df20c)
+        ;
+
+        
+    
+    
+            var rectangle_6b4cc73a394362c2b5d9c2264afec9ff = L.rectangle(
+                [[8.921696064493137, 38.72833915124168], [8.965845782331586, 38.77283226928161]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff6cff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_e0febb0cb0349574b868ecf38ddb3d0c = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ba62a19ffc23aa4efea01be27d898d57 = $(`<div id="html_ba62a19ffc23aa4efea01be27d898d57" style="width: 100.0%; height: 100.0%;">Number of vehicles: 26</div>`)[0];
+                popup_e0febb0cb0349574b868ecf38ddb3d0c.setContent(html_ba62a19ffc23aa4efea01be27d898d57);
+            
+        
+
+        rectangle_6b4cc73a394362c2b5d9c2264afec9ff.bindPopup(popup_e0febb0cb0349574b868ecf38ddb3d0c)
+        ;
+
+        
+    
+    
+            var rectangle_d9d84c3aa6dd0a89a708f578c93e9910 = L.rectangle(
+                [[8.965815787080833, 38.728306278421954], [9.00996554971229, 38.77280491745652]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffd800ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_d9f9b416ce084caabdf7b49bd98cf7e4 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_413ce71f4f92388125ad138d5233068b = $(`<div id="html_413ce71f4f92388125ad138d5233068b" style="width: 100.0%; height: 100.0%;">Number of vehicles: 52</div>`)[0];
+                popup_d9f9b416ce084caabdf7b49bd98cf7e4.setContent(html_413ce71f4f92388125ad138d5233068b);
+            
+        
+
+        rectangle_d9d84c3aa6dd0a89a708f578c93e9910.bindPopup(popup_d9f9b416ce084caabdf7b49bd98cf7e4)
+        ;
+
+        
+    
+    
+            var rectangle_3dc9a052b98cb54108b592647668b07a = L.rectangle(
+                [[9.009935404499071, 38.728273237557346], [9.054085211458297, 38.77277742517461]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_a16fd71e42f9f7e7df8adea50b9513cd = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a0b667f6e01672fe8ebf196182e9d247 = $(`<div id="html_a0b667f6e01672fe8ebf196182e9d247" style="width: 100.0%; height: 100.0%;">Number of vehicles: 90</div>`)[0];
+                popup_a16fd71e42f9f7e7df8adea50b9513cd.setContent(html_a0b667f6e01672fe8ebf196182e9d247);
+            
+        
+
+        rectangle_3dc9a052b98cb54108b592647668b07a.bindPopup(popup_a16fd71e42f9f7e7df8adea50b9513cd)
+        ;
+
+        
+    
+    
+            var rectangle_7600912ea0a78efb258e831c660c28e0 = L.rectangle(
+                [[9.05405491624774, 38.72824002854811], [9.098204767069932, 38.77274979235292]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff3eff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_160c1ba10a7aae7e015de290e0a46a9f = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_3d92e7a1188f2e1b5987968ddf34d83a = $(`<div id="html_3d92e7a1188f2e1b5987968ddf34d83a" style="width: 100.0%; height: 100.0%;">Number of vehicles: 34</div>`)[0];
+                popup_160c1ba10a7aae7e015de290e0a46a9f.setContent(html_3d92e7a1188f2e1b5987968ddf34d83a);
+            
+        
+
+        rectangle_7600912ea0a78efb258e831c660c28e0.bindPopup(popup_160c1ba10a7aae7e015de290e0a46a9f)
+        ;
+
+        
+    
+    
+            var rectangle_394de6b9062ba5f3e2cebe1dd6259ac4 = L.rectangle(
+                [[8.833485851381887, 38.7728594807324], [8.877630334352466, 38.81733648215402]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffd8ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_645d2d578aa90a8a516642bfa9194143 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_8cfb03d42553825832f11fea108c0808 = $(`<div id="html_8cfb03d42553825832f11fea108c0808" style="width: 100.0%; height: 100.0%;">Number of vehicles: 7</div>`)[0];
+                popup_645d2d578aa90a8a516642bfa9194143.setContent(html_8cfb03d42553825832f11fea108c0808);
+            
+        
+
+        rectangle_394de6b9062ba5f3e2cebe1dd6259ac4.bindPopup(popup_645d2d578aa90a8a516642bfa9194143)
+        ;
+
+        
+    
+    
+            var rectangle_6621c3c727791fe6de36e2061d4b4e14 = L.rectangle(
+                [[8.877605932666073, 38.77283226928161], [8.921750434674623, 38.81731470919699]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffddff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_a60b6a1f9142f67df5be5da4f6461cc8 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_8feeae6944d79bbd62f229c8e5166ee9 = $(`<div id="html_8feeae6944d79bbd62f229c8e5166ee9" style="width: 100.0%; height: 100.0%;">Number of vehicles: 6</div>`)[0];
+                popup_a60b6a1f9142f67df5be5da4f6461cc8.setContent(html_8feeae6944d79bbd62f229c8e5166ee9);
+            
+        
+
+        rectangle_6621c3c727791fe6de36e2061d4b4e14.bindPopup(popup_a60b6a1f9142f67df5be5da4f6461cc8)
+        ;
+
+        
+    
+    
+            var rectangle_fcbf08f1de809f6ea0ac7b823d9eeb96 = L.rectangle(
+                [[8.921725909816118, 38.77280491745652], [8.965870430390565, 38.81729282340483]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffddff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_4c376923d9cd43377d676ca768bf3499 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_9fe864a216887f2115a3211d4cc46a41 = $(`<div id="html_9fe864a216887f2115a3211d4cc46a41" style="width: 100.0%; height: 100.0%;">Number of vehicles: 6</div>`)[0];
+                popup_4c376923d9cd43377d676ca768bf3499.setContent(html_9fe864a216887f2115a3211d4cc46a41);
+            
+        
+
+        rectangle_fcbf08f1de809f6ea0ac7b823d9eeb96.bindPopup(popup_4c376923d9cd43377d676ca768bf3499)
+        ;
+
+        
+    
+    
+            var rectangle_072dc4376c3bbef0daa62bddc2da3d2f = L.rectangle(
+                [[8.965845782331586, 38.77277742517461], [9.009990321000249, 38.81727082471154]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff99ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_67fbd01eed9aa540a6ce47e5304d47f0 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_571eda5074305e1b84e0afb04ca49047 = $(`<div id="html_571eda5074305e1b84e0afb04ca49047" style="width: 100.0%; height: 100.0%;">Number of vehicles: 18</div>`)[0];
+                popup_67fbd01eed9aa540a6ce47e5304d47f0.setContent(html_571eda5074305e1b84e0afb04ca49047);
+            
+        
+
+        rectangle_072dc4376c3bbef0daa62bddc2da3d2f.bindPopup(popup_67fbd01eed9aa540a6ce47e5304d47f0)
+        ;
+
+        
+    
+    
+            var rectangle_d37a8fe9b279dbd9ad104e1f363a6cef = L.rectangle(
+                [[9.00996554971229, 38.77274979235292], [9.054110106003897, 38.817248713050745]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff60ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_c017e8a6296806cee3e537218a6fd274 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_01cdc4a5e827b6c7cafd84e4244daff2 = $(`<div id="html_01cdc4a5e827b6c7cafd84e4244daff2" style="width: 100.0%; height: 100.0%;">Number of vehicles: 28</div>`)[0];
+                popup_c017e8a6296806cee3e537218a6fd274.setContent(html_01cdc4a5e827b6c7cafd84e4244daff2);
+            
+        
+
+        rectangle_d37a8fe9b279dbd9ad104e1f363a6cef.bindPopup(popup_c017e8a6296806cee3e537218a6fd274)
+        ;
+
+        
+    
+    
+            var rectangle_4885b235322bd3a8c77f3095506a2250 = L.rectangle(
+                [[9.054085211458297, 38.77272201890802], [9.098229784901982, 38.81722648835572]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe3ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_ca11340e14abf3cfab61d6debe8e1cae = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_851ca16d6afea46924345bf2d035de74 = $(`<div id="html_851ca16d6afea46924345bf2d035de74" style="width: 100.0%; height: 100.0%;">Number of vehicles: 5</div>`)[0];
+                popup_ca11340e14abf3cfab61d6debe8e1cae.setContent(html_851ca16d6afea46924345bf2d035de74);
+            
+        
+
+        rectangle_4885b235322bd3a8c77f3095506a2250.bindPopup(popup_ca11340e14abf3cfab61d6debe8e1cae)
+        ;
+
+        
+    
+    
+            var rectangle_2c96fc1d5598910d8173650f19750534 = L.rectangle(
+                [[8.877630334352466, 38.81729282340483], [8.921769638995453, 38.86177005096534]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff4ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_d794fbe937d48bb36c52f7d1dbc9b545 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_870026f1fd849cc2cca0a04af9320a88 = $(`<div id="html_870026f1fd849cc2cca0a04af9320a88" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_d794fbe937d48bb36c52f7d1dbc9b545.setContent(html_870026f1fd849cc2cca0a04af9320a88);
+            
+        
+
+        rectangle_2c96fc1d5598910d8173650f19750534.bindPopup(popup_d794fbe937d48bb36c52f7d1dbc9b545)
+        ;
+
+        
+    
+    
+            var rectangle_75c1ef4975a4794e51dd58b716013f53 = L.rectangle(
+                [[8.921750434674623, 38.81727082471154], [8.96588973118419, 38.86175349089809]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_3b1874ea55d1836e92ca4fe7fe119dcb = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_fba446955302ee8c19c8788cd4787fc3 = $(`<div id="html_fba446955302ee8c19c8788cd4787fc3" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_3b1874ea55d1836e92ca4fe7fe119dcb.setContent(html_fba446955302ee8c19c8788cd4787fc3);
+            
+        
+
+        rectangle_75c1ef4975a4794e51dd58b716013f53.bindPopup(popup_3b1874ea55d1836e92ca4fe7fe119dcb)
+        ;
+
+        
+    
+    
+            var rectangle_6a84e20fff54dd45515d74f35aaa66c8 = L.rectangle(
+                [[8.965870430390565, 38.817248713050745], [9.010009718288995, 38.86173684540325]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffb0ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_50ff236a0bb32ad869fda085d0da2442 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_03d923436dc304daebe4c82e9a656bbf = $(`<div id="html_03d923436dc304daebe4c82e9a656bbf" style="width: 100.0%; height: 100.0%;">Number of vehicles: 14</div>`)[0];
+                popup_50ff236a0bb32ad869fda085d0da2442.setContent(html_03d923436dc304daebe4c82e9a656bbf);
+            
+        
+
+        rectangle_6a84e20fff54dd45515d74f35aaa66c8.bindPopup(popup_50ff236a0bb32ad869fda085d0da2442)
+        ;
+
+        
+    
+    
+            var rectangle_c6d37a2a8e9f114e9fcb19c2946ce2eb = L.rectangle(
+                [[9.009990321000249, 38.81722648835573], [9.054129599810205, 38.861720114430575]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff4fff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_455b8642c231984e94937bd931842955 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_d0ae37fc1d48ac5a12b4b2a2286edc6e = $(`<div id="html_d0ae37fc1d48ac5a12b4b2a2286edc6e" style="width: 100.0%; height: 100.0%;">Number of vehicles: 31</div>`)[0];
+                popup_455b8642c231984e94937bd931842955.setContent(html_d0ae37fc1d48ac5a12b4b2a2286edc6e);
+            
+        
+
+        rectangle_c6d37a2a8e9f114e9fcb19c2946ce2eb.bindPopup(popup_455b8642c231984e94937bd931842955)
+        ;
+
+        
+    
+    
+            var rectangle_19eb3183eb5d7294160fea8428d0d3b9 = L.rectangle(
+                [[9.054110106003897, 38.8172041505594], [9.098249375248413, 38.8617032979296]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffffaff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_c93e624224787eaa96c6721bcf6b63c1 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_dfc6526672256c45ef6fdc0dc1dc4ac6 = $(`<div id="html_dfc6526672256c45ef6fdc0dc1dc4ac6" style="width: 100.0%; height: 100.0%;">Number of vehicles: 1</div>`)[0];
+                popup_c93e624224787eaa96c6721bcf6b63c1.setContent(html_dfc6526672256c45ef6fdc0dc1dc4ac6);
+            
+        
+
+        rectangle_19eb3183eb5d7294160fea8428d0d3b9.bindPopup(popup_c93e624224787eaa96c6721bcf6b63c1)
+        ;
+
+        
+    
+    
+            var rectangle_3e51783fbde226ae580bc47b2c5364ef = L.rectangle(
+                [[8.921769638995453, 38.86173684540325], [8.965903684654847, 38.90621424417376]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_51f811fef58b7cf6ba73fdaf9f9cdcb2 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_0b26dbcc0a2fe3da71beac41c81f8844 = $(`<div id="html_0b26dbcc0a2fe3da71beac41c81f8844" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_51f811fef58b7cf6ba73fdaf9f9cdcb2.setContent(html_0b26dbcc0a2fe3da71beac41c81f8844);
+            
+        
+
+        rectangle_3e51783fbde226ae580bc47b2c5364ef.bindPopup(popup_51f811fef58b7cf6ba73fdaf9f9cdcb2)
+        ;
+
+        
+    
+    
+            var rectangle_4798baedae45dcb0d7d350062c718585 = L.rectangle(
+                [[8.96588973118419, 38.861720114430575], [9.010023741520614, 38.90620295192778]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffeeff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_42ef14c63c3478a3934697e8e79ddb14 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_fa1fc8f7cdd10a963d2a793910f07cf4 = $(`<div id="html_fa1fc8f7cdd10a963d2a793910f07cf4" style="width: 100.0%; height: 100.0%;">Number of vehicles: 3</div>`)[0];
+                popup_42ef14c63c3478a3934697e8e79ddb14.setContent(html_fa1fc8f7cdd10a963d2a793910f07cf4);
+            
+        
+
+        rectangle_4798baedae45dcb0d7d350062c718585.bindPopup(popup_42ef14c63c3478a3934697e8e79ddb14)
+        ;
+
+        
+    
+    
+            var rectangle_e92b7eef063c88bb4509338b3637bc85 = L.rectangle(
+                [[9.010009718288995, 38.8617032979296], [9.054143692819013, 38.90619160169394]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffc1ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1b8da661fdaceb2ee17728faf9096e0c);
+        
+    
+        var popup_d362442c4fd72e13f57fb9e2a4df104b = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_e9bfc95988a81fe49766470f870fec8b = $(`<div id="html_e9bfc95988a81fe49766470f870fec8b" style="width: 100.0%; height: 100.0%;">Number of vehicles: 11</div>`)[0];
+                popup_d362442c4fd72e13f57fb9e2a4df104b.setContent(html_e9bfc95988a81fe49766470f870fec8b);
+            
+        
+
+        rectangle_e92b7eef063c88bb4509338b3637bc85.bindPopup(popup_d362442c4fd72e13f57fb9e2a4df104b)
+        ;
+
+        
+    
+    
+    var color_map_01ea7b2a4c2fe067da21202ee40c7d8d = {};
+
+    
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.color = d3.scale.threshold()
+              .domain([0.0, 0.18036072144288579, 0.36072144288577157, 0.5410821643286573, 0.7214428857715431, 0.9018036072144289, 1.0821643286573146, 1.2625250501002003, 1.4428857715430863, 1.623246492985972, 1.8036072144288577, 1.9839679358717435, 2.164328657314629, 2.344689378757515, 2.5250501002004007, 2.7054108216432864, 2.8857715430861726, 3.0661322645290583, 3.246492985971944, 3.4268537074148298, 3.6072144288577155, 3.787575150300601, 3.967935871743487, 4.148296593186373, 4.328657314629258, 4.509018036072145, 4.68937875751503, 4.869739478957916, 5.050100200400801, 5.2304609218436875, 5.410821643286573, 5.591182364729459, 5.771543086172345, 5.95190380761523, 6.132264529058117, 6.312625250501002, 6.492985971943888, 6.673346693386773, 6.8537074148296595, 7.034068136272545, 7.214428857715431, 7.394789579158316, 7.575150300601202, 7.755511022044089, 7.935871743486974, 8.11623246492986, 8.296593186372746, 8.47695390781563, 8.657314629258517, 8.837675350701403, 9.01803607214429, 9.198396793587174, 9.37875751503006, 9.559118236472946, 9.739478957915832, 9.919839679358718, 10.100200400801603, 10.280561122244489, 10.460921843687375, 10.641282565130261, 10.821643286573146, 11.002004008016032, 11.182364729458918, 11.362725450901804, 11.54308617234469, 11.723446893787575, 11.90380761523046, 12.084168336673347, 12.264529058116233, 12.444889779559118, 12.625250501002004, 12.80561122244489, 12.985971943887776, 13.16633266533066, 13.346693386773547, 13.527054108216433, 13.707414829659319, 13.887775551102205, 14.06813627254509, 14.248496993987976, 14.428857715430862, 14.609218436873748, 14.789579158316633, 14.969939879759519, 15.150300601202405, 15.330661322645291, 15.511022044088177, 15.691382765531062, 15.871743486973948, 16.052104208416832, 16.23246492985972, 16.412825651302605, 16.593186372745492, 16.773547094188377, 16.95390781563126, 17.13426853707415, 17.314629258517034, 17.49498997995992, 17.675350701402806, 17.85571142284569, 18.03607214428858, 18.216432865731463, 18.396793587174347, 18.577154308617235, 18.75751503006012, 18.937875751503007, 19.118236472945892, 19.298597194388776, 19.478957915831664, 19.65931863727455, 19.839679358717436, 20.02004008016032, 20.200400801603205, 20.380761523046093, 20.561122244488978, 20.741482965931862, 20.92184368737475, 21.102204408817634, 21.282565130260522, 21.462925851703407, 21.64328657314629, 21.82364729458918, 22.004008016032063, 22.18436873747495, 22.364729458917836, 22.54509018036072, 22.725450901803608, 22.905811623246493, 23.08617234468938, 23.266533066132265, 23.44689378757515, 23.627254509018037, 23.80761523046092, 23.987975951903806, 24.168336673346694, 24.34869739478958, 24.529058116232466, 24.70941883767535, 24.889779559118235, 25.070140280561123, 25.250501002004007, 25.430861723446895, 25.61122244488978, 25.791583166332664, 25.971943887775552, 26.152304609218437, 26.33266533066132, 26.51302605210421, 26.693386773547093, 26.87374749498998, 27.054108216432866, 27.23446893787575, 27.414829659318638, 27.595190380761522, 27.77555110220441, 27.955911823647295, 28.13627254509018, 28.316633266533067, 28.49699398797595, 28.677354709418836, 28.857715430861724, 29.03807615230461, 29.218436873747496, 29.39879759519038, 29.579158316633265, 29.759519038076153, 29.939879759519037, 30.120240480961925, 30.30060120240481, 30.480961923847694, 30.661322645290582, 30.841683366733466, 31.022044088176354, 31.20240480961924, 31.382765531062123, 31.56312625250501, 31.743486973947896, 31.92384769539078, 32.104208416833664, 32.28456913827655, 32.46492985971944, 32.64529058116233, 32.82565130260521, 33.0060120240481, 33.186372745490985, 33.366733466933866, 33.547094188376754, 33.72745490981964, 33.90781563126252, 34.08817635270541, 34.2685370741483, 34.44889779559118, 34.62925851703407, 34.809619238476955, 34.98997995991984, 35.170340681362724, 35.35070140280561, 35.5310621242485, 35.71142284569138, 35.89178356713427, 36.07214428857716, 36.25250501002004, 36.432865731462925, 36.61322645290581, 36.793587174348694, 36.97394789579158, 37.15430861723447, 37.33466933867736, 37.51503006012024, 37.69539078156313, 37.875751503006015, 38.056112224448896, 38.236472945891784, 38.41683366733467, 38.59719438877755, 38.77755511022044, 38.95791583166333, 39.13827655310621, 39.3186372745491, 39.498997995991985, 39.67935871743487, 39.859719438877754, 40.04008016032064, 40.22044088176353, 40.40080160320641, 40.5811623246493, 40.76152304609219, 40.94188376753507, 41.122244488977955, 41.30260521042084, 41.482965931863724, 41.66332665330661, 41.8436873747495, 42.02404809619239, 42.20440881763527, 42.38476953907816, 42.565130260521045, 42.745490981963925, 42.92585170340681, 43.1062124248497, 43.28657314629258, 43.46693386773547, 43.64729458917836, 43.82765531062124, 44.00801603206413, 44.188376753507015, 44.3687374749499, 44.549098196392784, 44.72945891783567, 44.90981963927856, 45.09018036072144, 45.27054108216433, 45.450901803607216, 45.6312625250501, 45.811623246492985, 45.99198396793587, 46.17234468937876, 46.35270541082164, 46.53306613226453, 46.71342685370742, 46.8937875751503, 47.07414829659319, 47.254509018036075, 47.434869739478955, 47.61523046092184, 47.79559118236473, 47.97595190380761, 48.1563126252505, 48.33667334669339, 48.517034068136276, 48.69739478957916, 48.877755511022045, 49.05811623246493, 49.23847695390781, 49.4188376753507, 49.59919839679359, 49.77955911823647, 49.95991983967936, 50.140280561122246, 50.32064128256513, 50.501002004008015, 50.6813627254509, 50.86172344689379, 51.04208416833667, 51.22244488977956, 51.40280561122245, 51.58316633266533, 51.763527054108216, 51.943887775551104, 52.124248496993985, 52.30460921843687, 52.48496993987976, 52.66533066132264, 52.84569138276553, 53.02605210420842, 53.206412825651306, 53.38677354709419, 53.567134268537075, 53.74749498997996, 53.92785571142284, 54.10821643286573, 54.28857715430862, 54.4689378757515, 54.64929859719439, 54.829659318637276, 55.01002004008016, 55.190380761523045, 55.37074148296593, 55.55110220440882, 55.7314629258517, 55.91182364729459, 56.09218436873748, 56.27254509018036, 56.452905811623246, 56.633266533066134, 56.813627254509015, 56.9939879759519, 57.17434869739479, 57.35470941883767, 57.53507014028056, 57.71543086172345, 57.895791583166336, 58.07615230460922, 58.256513026052104, 58.43687374749499, 58.61723446893787, 58.79759519038076, 58.97795591182365, 59.15831663326653, 59.33867735470942, 59.519038076152306, 59.699398797595194, 59.879759519038075, 60.06012024048096, 60.24048096192385, 60.42084168336673, 60.60120240480962, 60.78156312625251, 60.96192384769539, 61.142284569138276, 61.322645290581164, 61.503006012024045, 61.68336673346693, 61.86372745490982, 62.04408817635271, 62.22444889779559, 62.40480961923848, 62.585170340681366, 62.765531062124246, 62.945891783567134, 63.12625250501002, 63.3066132264529, 63.48697394789579, 63.66733466933868, 63.84769539078156, 64.02805611222445, 64.20841683366733, 64.38877755511022, 64.5691382765531, 64.74949899799599, 64.92985971943888, 65.11022044088176, 65.29058116232466, 65.47094188376754, 65.65130260521042, 65.83166332665331, 66.0120240480962, 66.19238476953907, 66.37274549098197, 66.55310621242485, 66.73346693386773, 66.91382765531063, 67.09418837675351, 67.27454909819639, 67.45490981963928, 67.63527054108216, 67.81563126252505, 67.99599198396794, 68.17635270541082, 68.3567134268537, 68.5370741482966, 68.71743486973948, 68.89779559118236, 69.07815631262525, 69.25851703406813, 69.43887775551102, 69.61923847695391, 69.79959919839679, 69.97995991983969, 70.16032064128257, 70.34068136272545, 70.52104208416834, 70.70140280561122, 70.8817635270541, 71.062124248497, 71.24248496993988, 71.42284569138276, 71.60320641282566, 71.78356713426854, 71.96392785571142, 72.14428857715431, 72.3246492985972, 72.50501002004007, 72.68537074148297, 72.86573146292585, 73.04609218436873, 73.22645290581163, 73.40681362725451, 73.58717434869739, 73.76753507014028, 73.94789579158316, 74.12825651302605, 74.30861723446894, 74.48897795591182, 74.66933867735472, 74.8496993987976, 75.03006012024048, 75.21042084168337, 75.39078156312625, 75.57114228456913, 75.75150300601203, 75.93186372745491, 76.11222444889779, 76.29258517034069, 76.47294589178357, 76.65330661322645, 76.83366733466934, 77.01402805611222, 77.1943887775551, 77.374749498998, 77.55511022044088, 77.73547094188376, 77.91583166332666, 78.09619238476954, 78.27655310621242, 78.45691382765531, 78.6372745490982, 78.81763527054109, 78.99799599198397, 79.17835671342685, 79.35871743486975, 79.53907815631263, 79.71943887775551, 79.8997995991984, 80.08016032064128, 80.26052104208416, 80.44088176352706, 80.62124248496994, 80.80160320641282, 80.98196392785572, 81.1623246492986, 81.34268537074148, 81.52304609218437, 81.70340681362725, 81.88376753507013, 82.06412825651303, 82.24448897795591, 82.42484969939879, 82.60521042084169, 82.78557114228457, 82.96593186372745, 83.14629258517034, 83.32665330661322, 83.50701402805612, 83.687374749499, 83.86773547094188, 84.04809619238478, 84.22845691382766, 84.40881763527054, 84.58917835671343, 84.76953907815631, 84.9498997995992, 85.13026052104209, 85.31062124248497, 85.49098196392785, 85.67134268537075, 85.85170340681363, 86.03206412825651, 86.2124248496994, 86.39278557114228, 86.57314629258516, 86.75350701402806, 86.93386773547094, 87.11422845691382, 87.29458917835672, 87.4749498997996, 87.65531062124248, 87.83567134268537, 88.01603206412825, 88.19639278557115, 88.37675350701403, 88.55711422845691, 88.7374749498998, 88.91783567134269, 89.09819639278557, 89.27855711422846, 89.45891783567134, 89.63927855711422, 89.81963927855712, 90.0])
+              .range(['#ffffffff', '#fffffeff', '#fffffdff', '#fffffcff', '#fffffbff', '#fffffaff', '#fffff9ff', '#fffff8ff', '#fffff7ff', '#fffff6ff', '#fffff5ff', '#fffff4ff', '#fffff3ff', '#fffff2ff', '#fffff1ff', '#fffff0ff', '#ffffefff', '#ffffeeff', '#ffffedff', '#ffffecff', '#ffffebff', '#ffffeaff', '#ffffe9ff', '#ffffe8ff', '#ffffe7ff', '#ffffe6ff', '#ffffe5ff', '#ffffe4ff', '#ffffe3ff', '#ffffe2ff', '#ffffe1ff', '#ffffe0ff', '#ffffdfff', '#ffffdeff', '#ffffddff', '#ffffdcff', '#ffffdbff', '#ffffdaff', '#ffffd9ff', '#ffffd7ff', '#ffffd6ff', '#ffffd5ff', '#ffffd4ff', '#ffffd3ff', '#ffffd2ff', '#ffffd1ff', '#ffffd0ff', '#ffffcfff', '#ffffceff', '#ffffcdff', '#ffffccff', '#ffffcbff', '#ffffcaff', '#ffffc9ff', '#ffffc8ff', '#ffffc7ff', '#ffffc6ff', '#ffffc5ff', '#ffffc4ff', '#ffffc3ff', '#ffffc2ff', '#ffffc1ff', '#ffffc0ff', '#ffffbfff', '#ffffbeff', '#ffffbdff', '#ffffbcff', '#ffffbbff', '#ffffbaff', '#ffffb9ff', '#ffffb8ff', '#ffffb7ff', '#ffffb6ff', '#ffffb5ff', '#ffffb4ff', '#ffffb3ff', '#ffffb2ff', '#ffffb0ff', '#ffffafff', '#ffffaeff', '#ffffadff', '#ffffacff', '#ffffabff', '#ffffaaff', '#ffffa9ff', '#ffffa8ff', '#ffffa7ff', '#ffffa6ff', '#ffffa5ff', '#ffffa4ff', '#ffffa3ff', '#ffffa2ff', '#ffffa1ff', '#ffffa0ff', '#ffff9fff', '#ffff9eff', '#ffff9dff', '#ffff9cff', '#ffff9bff', '#ffff9aff', '#ffff99ff', '#ffff98ff', '#ffff97ff', '#ffff96ff', '#ffff95ff', '#ffff94ff', '#ffff93ff', '#ffff92ff', '#ffff91ff', '#ffff90ff', '#ffff8fff', '#ffff8eff', '#ffff8dff', '#ffff8cff', '#ffff8bff', '#ffff8aff', '#ffff88ff', '#ffff87ff', '#ffff86ff', '#ffff85ff', '#ffff84ff', '#ffff83ff', '#ffff82ff', '#ffff81ff', '#ffff80ff', '#ffff7fff', '#ffff7eff', '#ffff7dff', '#ffff7cff', '#ffff7bff', '#ffff7aff', '#ffff79ff', '#ffff78ff', '#ffff77ff', '#ffff76ff', '#ffff75ff', '#ffff74ff', '#ffff73ff', '#ffff72ff', '#ffff71ff', '#ffff70ff', '#ffff6fff', '#ffff6eff', '#ffff6dff', '#ffff6cff', '#ffff6bff', '#ffff6aff', '#ffff69ff', '#ffff68ff', '#ffff67ff', '#ffff66ff', '#ffff65ff', '#ffff64ff', '#ffff63ff', '#ffff61ff', '#ffff60ff', '#ffff5fff', '#ffff5eff', '#ffff5dff', '#ffff5cff', '#ffff5bff', '#ffff5aff', '#ffff59ff', '#ffff58ff', '#ffff57ff', '#ffff56ff', '#ffff55ff', '#ffff54ff', '#ffff53ff', '#ffff52ff', '#ffff51ff', '#ffff50ff', '#ffff4fff', '#ffff4eff', '#ffff4dff', '#ffff4cff', '#ffff4bff', '#ffff4aff', '#ffff49ff', '#ffff48ff', '#ffff47ff', '#ffff46ff', '#ffff45ff', '#ffff44ff', '#ffff43ff', '#ffff42ff', '#ffff41ff', '#ffff40ff', '#ffff3fff', '#ffff3eff', '#ffff3dff', '#ffff3cff', '#ffff3aff', '#ffff39ff', '#ffff38ff', '#ffff37ff', '#ffff36ff', '#ffff35ff', '#ffff34ff', '#ffff33ff', '#ffff32ff', '#ffff31ff', '#ffff30ff', '#ffff2fff', '#ffff2eff', '#ffff2dff', '#ffff2cff', '#ffff2bff', '#ffff2aff', '#ffff29ff', '#ffff28ff', '#ffff27ff', '#ffff26ff', '#ffff25ff', '#ffff24ff', '#ffff23ff', '#ffff22ff', '#ffff21ff', '#ffff20ff', '#ffff1fff', '#ffff1eff', '#ffff1dff', '#ffff1cff', '#ffff1bff', '#ffff1aff', '#ffff19ff', '#ffff18ff', '#ffff17ff', '#ffff16ff', '#ffff15ff', '#ffff14ff', '#ffff12ff', '#ffff11ff', '#ffff10ff', '#ffff0fff', '#ffff0eff', '#ffff0dff', '#ffff0cff', '#ffff0bff', '#ffff0aff', '#ffff09ff', '#ffff08ff', '#ffff07ff', '#ffff06ff', '#ffff05ff', '#ffff04ff', '#ffff03ff', '#ffff02ff', '#ffff01ff', '#ffff00ff', '#ffff00ff', '#fffe00ff', '#fffd00ff', '#fffc00ff', '#fffb00ff', '#fffa00ff', '#fff900ff', '#fff800ff', '#fff700ff', '#fff600ff', '#fff500ff', '#fff400ff', '#fff300ff', '#fff200ff', '#fff100ff', '#fff000ff', '#ffef00ff', '#ffee00ff', '#ffed00ff', '#ffeb00ff', '#ffea00ff', '#ffe900ff', '#ffe800ff', '#ffe700ff', '#ffe600ff', '#ffe500ff', '#ffe400ff', '#ffe300ff', '#ffe200ff', '#ffe100ff', '#ffe000ff', '#ffdf00ff', '#ffde00ff', '#ffdd00ff', '#ffdc00ff', '#ffdb00ff', '#ffda00ff', '#ffd900ff', '#ffd800ff', '#ffd700ff', '#ffd600ff', '#ffd500ff', '#ffd400ff', '#ffd300ff', '#ffd200ff', '#ffd100ff', '#ffd000ff', '#ffcf00ff', '#ffce00ff', '#ffcd00ff', '#ffcc00ff', '#ffcb00ff', '#ffca00ff', '#ffc900ff', '#ffc800ff', '#ffc700ff', '#ffc600ff', '#ffc500ff', '#ffc300ff', '#ffc200ff', '#ffc100ff', '#ffc000ff', '#ffbf00ff', '#ffbe00ff', '#ffbd00ff', '#ffbc00ff', '#ffbb00ff', '#ffba00ff', '#ffb900ff', '#ffb800ff', '#ffb700ff', '#ffb600ff', '#ffb500ff', '#ffb400ff', '#ffb300ff', '#ffb200ff', '#ffb100ff', '#ffb000ff', '#ffaf00ff', '#ffae00ff', '#ffad00ff', '#ffac00ff', '#ffab00ff', '#ffaa00ff', '#ffa900ff', '#ffa800ff', '#ffa700ff', '#ffa600ff', '#ffa500ff', '#ffa400ff', '#ffa300ff', '#ffa200ff', '#ffa100ff', '#ffa000ff', '#ff9f00ff', '#ff9e00ff', '#ff9c00ff', '#ff9b00ff', '#ff9a00ff', '#ff9900ff', '#ff9800ff', '#ff9700ff', '#ff9600ff', '#ff9500ff', '#ff9400ff', '#ff9300ff', '#ff9200ff', '#ff9100ff', '#ff9000ff', '#ff8f00ff', '#ff8e00ff', '#ff8d00ff', '#ff8c00ff', '#ff8b00ff', '#ff8a00ff', '#ff8900ff', '#ff8800ff', '#ff8700ff', '#ff8600ff', '#ff8500ff', '#ff8400ff', '#ff8300ff', '#ff8200ff', '#ff8100ff', '#ff8000ff', '#ff7f00ff', '#ff7e00ff', '#ff7d00ff', '#ff7c00ff', '#ff7b00ff', '#ff7a00ff', '#ff7900ff', '#ff7800ff', '#ff7700ff', '#ff7500ff', '#ff7400ff', '#ff7300ff', '#ff7200ff', '#ff7100ff', '#ff7000ff', '#ff6f00ff', '#ff6e00ff', '#ff6d00ff', '#ff6c00ff', '#ff6b00ff', '#ff6a00ff', '#ff6900ff', '#ff6800ff', '#ff6700ff', '#ff6600ff', '#ff6500ff', '#ff6400ff', '#ff6300ff', '#ff6200ff', '#ff6100ff', '#ff6000ff', '#ff5f00ff', '#ff5e00ff', '#ff5d00ff', '#ff5c00ff', '#ff5b00ff', '#ff5a00ff', '#ff5900ff', '#ff5800ff', '#ff5700ff', '#ff5600ff', '#ff5500ff', '#ff5400ff', '#ff5300ff', '#ff5200ff', '#ff5100ff', '#ff5000ff', '#ff4f00ff', '#ff4d00ff', '#ff4c00ff', '#ff4b00ff', '#ff4a00ff', '#ff4900ff', '#ff4800ff', '#ff4700ff', '#ff4600ff', '#ff4500ff', '#ff4400ff', '#ff4300ff', '#ff4200ff', '#ff4100ff', '#ff4000ff', '#ff3f00ff', '#ff3e00ff', '#ff3d00ff', '#ff3c00ff', '#ff3b00ff', '#ff3a00ff', '#ff3900ff', '#ff3800ff', '#ff3700ff', '#ff3600ff', '#ff3500ff', '#ff3400ff', '#ff3300ff', '#ff3200ff', '#ff3100ff', '#ff3000ff', '#ff2f00ff', '#ff2e00ff', '#ff2d00ff', '#ff2c00ff', '#ff2b00ff', '#ff2a00ff', '#ff2900ff', '#ff2800ff', '#ff2600ff', '#ff2500ff', '#ff2400ff', '#ff2300ff', '#ff2200ff', '#ff2100ff', '#ff2000ff', '#ff1f00ff', '#ff1e00ff', '#ff1d00ff', '#ff1c00ff', '#ff1b00ff', '#ff1a00ff', '#ff1900ff', '#ff1800ff', '#ff1700ff', '#ff1600ff', '#ff1500ff', '#ff1400ff', '#ff1300ff', '#ff1200ff', '#ff1100ff', '#ff1000ff', '#ff0f00ff', '#ff0e00ff', '#ff0d00ff', '#ff0c00ff', '#ff0b00ff', '#ff0a00ff', '#ff0900ff', '#ff0800ff', '#ff0700ff', '#ff0600ff', '#ff0500ff', '#ff0400ff', '#ff0300ff', '#ff0200ff', '#ff0100ff', '#ff0000ff']);
+    
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.x = d3.scale.linear()
+              .domain([0.0, 90.0])
+              .range([0, 450 - 50]);
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.legend = L.control({position: 'topright'});
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.legend.onAdd = function (map) {var div = L.DomUtil.create('div', 'legend'); return div};
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.legend.addTo(map_87212c9317e49b7c532775a39a2c7816);
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.xAxis = d3.svg.axis()
+        .scale(color_map_01ea7b2a4c2fe067da21202ee40c7d8d.x)
+        .orient("top")
+        .tickSize(1)
+        .tickValues([0.0, 45.0, 90.0]);
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.svg = d3.select(".legend.leaflet-control").append("svg")
+        .attr("id", 'legend')
+        .attr("width", 450)
+        .attr("height", 40);
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.g = color_map_01ea7b2a4c2fe067da21202ee40c7d8d.svg.append("g")
+        .attr("class", "key")
+        .attr("fill", "black")
+        .attr("transform", "translate(25,16)");
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.g.selectAll("rect")
+        .data(color_map_01ea7b2a4c2fe067da21202ee40c7d8d.color.range().map(function(d, i) {
+          return {
+            x0: i ? color_map_01ea7b2a4c2fe067da21202ee40c7d8d.x(color_map_01ea7b2a4c2fe067da21202ee40c7d8d.color.domain()[i - 1]) : color_map_01ea7b2a4c2fe067da21202ee40c7d8d.x.range()[0],
+            x1: i < color_map_01ea7b2a4c2fe067da21202ee40c7d8d.color.domain().length ? color_map_01ea7b2a4c2fe067da21202ee40c7d8d.x(color_map_01ea7b2a4c2fe067da21202ee40c7d8d.color.domain()[i]) : color_map_01ea7b2a4c2fe067da21202ee40c7d8d.x.range()[1],
+            z: d
+          };
+        }))
+      .enter().append("rect")
+        .attr("height", 40 - 30)
+        .attr("x", function(d) { return d.x0; })
+        .attr("width", function(d) { return d.x1 - d.x0; })
+        .style("fill", function(d) { return d.z; });
+
+    color_map_01ea7b2a4c2fe067da21202ee40c7d8d.g.call(color_map_01ea7b2a4c2fe067da21202ee40c7d8d.xAxis).append("text")
+        .attr("class", "caption")
+        .attr("y", 21)
+        .attr("fill", "black")
+        .text("Number of vehicles (n_vehicles_home)");
+    
+            var feature_group_a1e2de1b18abfc08941630049c9ed40d = L.featureGroup(
+                {}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_a06af470abd497c5dc1e4550205776d5 = L.rectangle(
+                [[8.965739755378113, 38.63936451876394], [9.009899885450594, 38.683873553670054]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff1ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_643b44960bcf5a693cdf4cadcb1654dc = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_4cf68d70e93bd46f81cba61461c3a397 = $(`<div id="html_4cf68d70e93bd46f81cba61461c3a397" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_643b44960bcf5a693cdf4cadcb1654dc.setContent(html_4cf68d70e93bd46f81cba61461c3a397);
+            
+        
+
+        rectangle_a06af470abd497c5dc1e4550205776d5.bindPopup(popup_643b44960bcf5a693cdf4cadcb1654dc)
+        ;
+
+        
+    
+    
+            var rectangle_403f44e3334c16c1aecf1fce4fbbc7c1 = L.rectangle(
+                [[8.921660898794752, 38.683873553670054], [8.965815787080833, 38.7283718561157]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffdbff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_21fcf1dc800a18393b13ba48aae36e85 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_e88e79db8921a10e4338ac6ea6e1f1fe = $(`<div id="html_e88e79db8921a10e4338ac6ea6e1f1fe" style="width: 100.0%; height: 100.0%;">Number of vehicles: 5</div>`)[0];
+                popup_21fcf1dc800a18393b13ba48aae36e85.setContent(html_e88e79db8921a10e4338ac6ea6e1f1fe);
+            
+        
+
+        rectangle_403f44e3334c16c1aecf1fce4fbbc7c1.bindPopup(popup_21fcf1dc800a18393b13ba48aae36e85)
+        ;
+
+        
+    
+    
+            var rectangle_7d8e92444c18191bd78ab35581b7a5b3 = L.rectangle(
+                [[8.965780444727844, 38.683835300412134], [9.009935404499071, 38.72833915124168]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffa9ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_3425853f9414d26a7839c2e5fb6f3cd4 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_bc9e7206be747712937e739fe9c3dfd9 = $(`<div id="html_bc9e7206be747712937e739fe9c3dfd9" style="width: 100.0%; height: 100.0%;">Number of vehicles: 12</div>`)[0];
+                popup_3425853f9414d26a7839c2e5fb6f3cd4.setContent(html_bc9e7206be747712937e739fe9c3dfd9);
+            
+        
+
+        rectangle_7d8e92444c18191bd78ab35581b7a5b3.bindPopup(popup_3425853f9414d26a7839c2e5fb6f3cd4)
+        ;
+
+        
+    
+    
+            var rectangle_b027ab26b41800ede421c4f9078aa6e3 = L.rectangle(
+                [[9.009899885450594, 38.68379685160476], [9.05405491624774, 38.728306278421954]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff9bff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_9e40698ba88f619e4d754ff09b5eb082 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_56a896472d24f9beb95123404662fbb6 = $(`<div id="html_56a896472d24f9beb95123404662fbb6" style="width: 100.0%; height: 100.0%;">Number of vehicles: 14</div>`)[0];
+                popup_9e40698ba88f619e4d754ff09b5eb082.setContent(html_56a896472d24f9beb95123404662fbb6);
+            
+        
+
+        rectangle_b027ab26b41800ede421c4f9078aa6e3.bindPopup(popup_9e40698ba88f619e4d754ff09b5eb082)
+        ;
+
+        
+    
+    
+            var rectangle_6bcfeb98bf78968ede231e9357f04b22 = L.rectangle(
+                [[9.054019220462683, 38.683758207131866], [9.098174321826976, 38.728273237557346]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffeaff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_3af6eb793bcf9d48e4e1188925608ccf = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_cc970362b8e3edec8fd64707a70b3725 = $(`<div id="html_cc970362b8e3edec8fd64707a70b3725" style="width: 100.0%; height: 100.0%;">Number of vehicles: 3</div>`)[0];
+                popup_3af6eb793bcf9d48e4e1188925608ccf.setContent(html_cc970362b8e3edec8fd64707a70b3725);
+            
+        
+
+        rectangle_6bcfeb98bf78968ede231e9357f04b22.bindPopup(popup_3af6eb793bcf9d48e4e1188925608ccf)
+        ;
+
+        
+    
+    
+            var rectangle_b323e728bc1006b9bf02b606ff10ca95 = L.rectangle(
+                [[8.877576237236347, 38.7283718561157], [8.921725909816118, 38.7728594807324]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe3ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_6063971623aabd2b9009d4866e012477 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a8ddfc5c5c45fff74c4bee72ef3d091b = $(`<div id="html_a8ddfc5c5c45fff74c4bee72ef3d091b" style="width: 100.0%; height: 100.0%;">Number of vehicles: 4</div>`)[0];
+                popup_6063971623aabd2b9009d4866e012477.setContent(html_a8ddfc5c5c45fff74c4bee72ef3d091b);
+            
+        
+
+        rectangle_b323e728bc1006b9bf02b606ff10ca95.bindPopup(popup_6063971623aabd2b9009d4866e012477)
+        ;
+
+        
+    
+    
+            var rectangle_2b7e343d28e62b28870a94d7f9a753fb = L.rectangle(
+                [[8.921696064493137, 38.72833915124168], [8.965845782331586, 38.77283226928161]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff85ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_1e97b78ec9d4bfdc8e84b7eb7a849e47 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ddb7f57c41b76f6d9dd11bb1b0aed770 = $(`<div id="html_ddb7f57c41b76f6d9dd11bb1b0aed770" style="width: 100.0%; height: 100.0%;">Number of vehicles: 17</div>`)[0];
+                popup_1e97b78ec9d4bfdc8e84b7eb7a849e47.setContent(html_ddb7f57c41b76f6d9dd11bb1b0aed770);
+            
+        
+
+        rectangle_2b7e343d28e62b28870a94d7f9a753fb.bindPopup(popup_1e97b78ec9d4bfdc8e84b7eb7a849e47)
+        ;
+
+        
+    
+    
+            var rectangle_c8d07a1a0f37a119332fc8941fc86128 = L.rectangle(
+                [[8.965815787080833, 38.728306278421954], [9.00996554971229, 38.77280491745652]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff4f00ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_20f5adacfbb8edbc2fa40684ab1a52c1 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_076772bbc0a50eecfe9ea7ca77188c6c = $(`<div id="html_076772bbc0a50eecfe9ea7ca77188c6c" style="width: 100.0%; height: 100.0%;">Number of vehicles: 60</div>`)[0];
+                popup_20f5adacfbb8edbc2fa40684ab1a52c1.setContent(html_076772bbc0a50eecfe9ea7ca77188c6c);
+            
+        
+
+        rectangle_c8d07a1a0f37a119332fc8941fc86128.bindPopup(popup_20f5adacfbb8edbc2fa40684ab1a52c1)
+        ;
+
+        
+    
+    
+            var rectangle_1b179f9cf60d9781755b669608d8974d = L.rectangle(
+                [[9.009935404499071, 38.728273237557346], [9.054085211458297, 38.77277742517461]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_ab998caf807afedbc20da58fba93ffc4 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a65bb2161985cf77ddab92e8bd5f266c = $(`<div id="html_a65bb2161985cf77ddab92e8bd5f266c" style="width: 100.0%; height: 100.0%;">Number of vehicles: 71</div>`)[0];
+                popup_ab998caf807afedbc20da58fba93ffc4.setContent(html_a65bb2161985cf77ddab92e8bd5f266c);
+            
+        
+
+        rectangle_1b179f9cf60d9781755b669608d8974d.bindPopup(popup_ab998caf807afedbc20da58fba93ffc4)
+        ;
+
+        
+    
+    
+            var rectangle_aadc104de0eb34a46cffa7c2da3f5625 = L.rectangle(
+                [[9.05405491624774, 38.72824002854811], [9.098204767069932, 38.77274979235292]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffdbff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_3872a2c2ad54c0423633bdf903b2fc24 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_c38af6f258f8f4a94377c49286400cc5 = $(`<div id="html_c38af6f258f8f4a94377c49286400cc5" style="width: 100.0%; height: 100.0%;">Number of vehicles: 5</div>`)[0];
+                popup_3872a2c2ad54c0423633bdf903b2fc24.setContent(html_c38af6f258f8f4a94377c49286400cc5);
+            
+        
+
+        rectangle_aadc104de0eb34a46cffa7c2da3f5625.bindPopup(popup_3872a2c2ad54c0423633bdf903b2fc24)
+        ;
+
+        
+    
+    
+            var rectangle_fc4f770806bac0a644bbf4dd97a56bcd = L.rectangle(
+                [[8.833485851381887, 38.7728594807324], [8.877630334352466, 38.81733648215402]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff8ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_9304e4a8fd3e8f63e60eeedc7be53e66 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_c2f451e9cebda80eb9e54d5d2c708988 = $(`<div id="html_c2f451e9cebda80eb9e54d5d2c708988" style="width: 100.0%; height: 100.0%;">Number of vehicles: 1</div>`)[0];
+                popup_9304e4a8fd3e8f63e60eeedc7be53e66.setContent(html_c2f451e9cebda80eb9e54d5d2c708988);
+            
+        
+
+        rectangle_fc4f770806bac0a644bbf4dd97a56bcd.bindPopup(popup_9304e4a8fd3e8f63e60eeedc7be53e66)
+        ;
+
+        
+    
+    
+            var rectangle_4afc4f2e4afb195bd2b347fa0936e5c4 = L.rectangle(
+                [[8.877605932666073, 38.77283226928161], [8.921750434674623, 38.81731470919699]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffeaff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_c2bc923855c3ca46306062b47d4f793d = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_54958f9dd93533eee6e8a4e0bd053999 = $(`<div id="html_54958f9dd93533eee6e8a4e0bd053999" style="width: 100.0%; height: 100.0%;">Number of vehicles: 3</div>`)[0];
+                popup_c2bc923855c3ca46306062b47d4f793d.setContent(html_54958f9dd93533eee6e8a4e0bd053999);
+            
+        
+
+        rectangle_4afc4f2e4afb195bd2b347fa0936e5c4.bindPopup(popup_c2bc923855c3ca46306062b47d4f793d)
+        ;
+
+        
+    
+    
+            var rectangle_9d2503a3288d68078f38ad339eebc720 = L.rectangle(
+                [[8.921725909816118, 38.77280491745652], [8.965870430390565, 38.81729282340483]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff1ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_31ec483331f62c0c07dced656a658abf = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a6e441f512850eec24541c7a120a5202 = $(`<div id="html_a6e441f512850eec24541c7a120a5202" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_31ec483331f62c0c07dced656a658abf.setContent(html_a6e441f512850eec24541c7a120a5202);
+            
+        
+
+        rectangle_9d2503a3288d68078f38ad339eebc720.bindPopup(popup_31ec483331f62c0c07dced656a658abf)
+        ;
+
+        
+    
+    
+            var rectangle_72fd0d49e8e7ac8a1c2c237268c1b68c = L.rectangle(
+                [[8.965845782331586, 38.77277742517461], [9.009990321000249, 38.81727082471154]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc200ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_844905f3feb370aaba80905f5901465b = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_f4565f394c61d70da27f6061e9190a3c = $(`<div id="html_f4565f394c61d70da27f6061e9190a3c" style="width: 100.0%; height: 100.0%;">Number of vehicles: 44</div>`)[0];
+                popup_844905f3feb370aaba80905f5901465b.setContent(html_f4565f394c61d70da27f6061e9190a3c);
+            
+        
+
+        rectangle_72fd0d49e8e7ac8a1c2c237268c1b68c.bindPopup(popup_844905f3feb370aaba80905f5901465b)
+        ;
+
+        
+    
+    
+            var rectangle_a3246d4d22908866b0dad08ad3e48a8e = L.rectangle(
+                [[9.00996554971229, 38.77274979235292], [9.054110106003897, 38.817248713050745]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffe600ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_453fd2ff1b823f69b102848e55e06116 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_89c8ba188691494ea5fab8ce1d5864e7 = $(`<div id="html_89c8ba188691494ea5fab8ce1d5864e7" style="width: 100.0%; height: 100.0%;">Number of vehicles: 39</div>`)[0];
+                popup_453fd2ff1b823f69b102848e55e06116.setContent(html_89c8ba188691494ea5fab8ce1d5864e7);
+            
+        
+
+        rectangle_a3246d4d22908866b0dad08ad3e48a8e.bindPopup(popup_453fd2ff1b823f69b102848e55e06116)
+        ;
+
+        
+    
+    
+            var rectangle_7016d4b150037433d044b2964a622e1f = L.rectangle(
+                [[9.054085211458297, 38.77272201890802], [9.098229784901982, 38.81722648835572]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff1ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_87c5814a53b0e611db54060bf7d75375 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_c9b6132a26e2742fddb1d059a639c631 = $(`<div id="html_c9b6132a26e2742fddb1d059a639c631" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_87c5814a53b0e611db54060bf7d75375.setContent(html_c9b6132a26e2742fddb1d059a639c631);
+            
+        
+
+        rectangle_7016d4b150037433d044b2964a622e1f.bindPopup(popup_87c5814a53b0e611db54060bf7d75375)
+        ;
+
+        
+    
+    
+            var rectangle_cf9c609ff6208d13de3ef53b78d9a370 = L.rectangle(
+                [[8.877630334352466, 38.81729282340483], [8.921769638995453, 38.86177005096534]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_a7186a6b84346b551c763d5cb0dfa256 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ee6ec308a9d2670304f2c04c39e3eab8 = $(`<div id="html_ee6ec308a9d2670304f2c04c39e3eab8" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_a7186a6b84346b551c763d5cb0dfa256.setContent(html_ee6ec308a9d2670304f2c04c39e3eab8);
+            
+        
+
+        rectangle_cf9c609ff6208d13de3ef53b78d9a370.bindPopup(popup_a7186a6b84346b551c763d5cb0dfa256)
+        ;
+
+        
+    
+    
+            var rectangle_1bd6a0b6ebda0660d4b0f3e8575e8962 = L.rectangle(
+                [[8.921750434674623, 38.81727082471154], [8.96588973118419, 38.86175349089809]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_259c191cbf88d46cbd7be95c2ede4dfa = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_1f61a850224cee0c3142d1c377bc75d8 = $(`<div id="html_1f61a850224cee0c3142d1c377bc75d8" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_259c191cbf88d46cbd7be95c2ede4dfa.setContent(html_1f61a850224cee0c3142d1c377bc75d8);
+            
+        
+
+        rectangle_1bd6a0b6ebda0660d4b0f3e8575e8962.bindPopup(popup_259c191cbf88d46cbd7be95c2ede4dfa)
+        ;
+
+        
+    
+    
+            var rectangle_480b6e7ddf79c7864c83301be2c49f22 = L.rectangle(
+                [[8.965870430390565, 38.817248713050745], [9.010009718288995, 38.86173684540325]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffeaff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_a397ed411d96084f92256f853d492dda = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_905c2661964fb0a7958d6cb96c28da1d = $(`<div id="html_905c2661964fb0a7958d6cb96c28da1d" style="width: 100.0%; height: 100.0%;">Number of vehicles: 3</div>`)[0];
+                popup_a397ed411d96084f92256f853d492dda.setContent(html_905c2661964fb0a7958d6cb96c28da1d);
+            
+        
+
+        rectangle_480b6e7ddf79c7864c83301be2c49f22.bindPopup(popup_a397ed411d96084f92256f853d492dda)
+        ;
+
+        
+    
+    
+            var rectangle_092064bf1e793e62791e32cd51edeedf = L.rectangle(
+                [[9.009990321000249, 38.81722648835573], [9.054129599810205, 38.861720114430575]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffb0ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_41951dd780d85bb901da7d037c167ee8 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_69ee7ae9098b0636a1d4f4a94a6c95f6 = $(`<div id="html_69ee7ae9098b0636a1d4f4a94a6c95f6" style="width: 100.0%; height: 100.0%;">Number of vehicles: 11</div>`)[0];
+                popup_41951dd780d85bb901da7d037c167ee8.setContent(html_69ee7ae9098b0636a1d4f4a94a6c95f6);
+            
+        
+
+        rectangle_092064bf1e793e62791e32cd51edeedf.bindPopup(popup_41951dd780d85bb901da7d037c167ee8)
+        ;
+
+        
+    
+    
+            var rectangle_5e15d3f61460a9eda934ef605cad67a9 = L.rectangle(
+                [[9.054110106003897, 38.8172041505594], [9.098249375248413, 38.8617032979296]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_e7c5967bd7c053bb088416009ad7e660 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_406e7819e3f816861555e9a3c61346b9 = $(`<div id="html_406e7819e3f816861555e9a3c61346b9" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_e7c5967bd7c053bb088416009ad7e660.setContent(html_406e7819e3f816861555e9a3c61346b9);
+            
+        
+
+        rectangle_5e15d3f61460a9eda934ef605cad67a9.bindPopup(popup_e7c5967bd7c053bb088416009ad7e660)
+        ;
+
+        
+    
+    
+            var rectangle_72a329e61b763790d5dbcc527a51670c = L.rectangle(
+                [[8.921769638995453, 38.86173684540325], [8.965903684654847, 38.90621424417376]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_60af7365fcfb8ccbdf4b6e89118cec8d = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_999081edc548d8b2af2e44f038839d4f = $(`<div id="html_999081edc548d8b2af2e44f038839d4f" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_60af7365fcfb8ccbdf4b6e89118cec8d.setContent(html_999081edc548d8b2af2e44f038839d4f);
+            
+        
+
+        rectangle_72a329e61b763790d5dbcc527a51670c.bindPopup(popup_60af7365fcfb8ccbdf4b6e89118cec8d)
+        ;
+
+        
+    
+    
+            var rectangle_9558c4d968a26f56d2b16f6e4729d638 = L.rectangle(
+                [[8.96588973118419, 38.861720114430575], [9.010023741520614, 38.90620295192778]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_a16d90c8a6dae297bebc9c48edbacc84 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_5a88ec669cf9d581ab669b184f3cac5d = $(`<div id="html_5a88ec669cf9d581ab669b184f3cac5d" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_a16d90c8a6dae297bebc9c48edbacc84.setContent(html_5a88ec669cf9d581ab669b184f3cac5d);
+            
+        
+
+        rectangle_9558c4d968a26f56d2b16f6e4729d638.bindPopup(popup_a16d90c8a6dae297bebc9c48edbacc84)
+        ;
+
+        
+    
+    
+            var rectangle_5beb1648d2a9ef1019f68453cdef18cd = L.rectangle(
+                [[9.010009718288995, 38.8617032979296], [9.054143692819013, 38.90619160169394]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffeaff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a1e2de1b18abfc08941630049c9ed40d);
+        
+    
+        var popup_a49d29d38204113107fdcb973ef6bf07 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_fab79da17697ba3d1e7857f8834aef21 = $(`<div id="html_fab79da17697ba3d1e7857f8834aef21" style="width: 100.0%; height: 100.0%;">Number of vehicles: 3</div>`)[0];
+                popup_a49d29d38204113107fdcb973ef6bf07.setContent(html_fab79da17697ba3d1e7857f8834aef21);
+            
+        
+
+        rectangle_5beb1648d2a9ef1019f68453cdef18cd.bindPopup(popup_a49d29d38204113107fdcb973ef6bf07)
+        ;
+
+        
+    
+    
+    var color_map_bf614bbd04c6f8d9e92c8edffa78fa90 = {};
+
+    
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.color = d3.scale.threshold()
+              .domain([0.0, 0.14228456913827656, 0.2845691382765531, 0.42685370741482964, 0.5691382765531062, 0.7114228456913828, 0.8537074148296593, 0.9959919839679359, 1.1382765531062125, 1.280561122244489, 1.4228456913827656, 1.565130260521042, 1.7074148296593186, 1.8496993987975952, 1.9919839679358717, 2.1342685370741483, 2.276553106212425, 2.4188376753507015, 2.561122244488978, 2.7034068136272547, 2.8456913827655312, 2.987975951903808, 3.130260521042084, 3.2725450901803605, 3.414829659318637, 3.5571142284569137, 3.6993987975951903, 3.841683366733467, 3.9839679358717435, 4.12625250501002, 4.268537074148297, 4.410821643286573, 4.55310621242485, 4.695390781563126, 4.837675350701403, 4.979959919839679, 5.122244488977956, 5.264529058116232, 5.406813627254509, 5.5490981963927855, 5.6913827655310625, 5.833667334669339, 5.975951903807616, 6.118236472945892, 6.260521042084168, 6.402805611222445, 6.545090180360721, 6.687374749498998, 6.829659318637274, 6.971943887775551, 7.114228456913827, 7.2565130260521045, 7.398797595190381, 7.541082164328658, 7.683366733466934, 7.825651302605211, 7.967935871743487, 8.110220440881763, 8.25250501002004, 8.394789579158317, 8.537074148296593, 8.67935871743487, 8.821643286573146, 8.963927855711423, 9.1062124248497, 9.248496993987976, 9.390781563126252, 9.53306613226453, 9.675350701402806, 9.817635270541082, 9.959919839679358, 10.102204408817636, 10.244488977955912, 10.386773547094188, 10.529058116232465, 10.67134268537074, 10.813627254509019, 10.955911823647295, 11.098196392785571, 11.240480961923847, 11.382765531062125, 11.525050100200401, 11.667334669338677, 11.809619238476953, 11.951903807615231, 12.094188376753507, 12.236472945891784, 12.37875751503006, 12.521042084168336, 12.663326653306614, 12.80561122244489, 12.947895791583166, 13.090180360721442, 13.23246492985972, 13.374749498997996, 13.517034068136272, 13.659318637274549, 13.801603206412826, 13.943887775551103, 14.086172344689379, 14.228456913827655, 14.370741482965931, 14.513026052104209, 14.655310621242485, 14.797595190380761, 14.939879759519037, 15.082164328657315, 15.224448897795591, 15.366733466933868, 15.509018036072144, 15.651302605210422, 15.793587174348698, 15.935871743486974, 16.07815631262525, 16.220440881763526, 16.362725450901802, 16.50501002004008, 16.647294589178358, 16.789579158316634, 16.93186372745491, 17.074148296593187, 17.216432865731463, 17.35871743486974, 17.501002004008015, 17.64328657314629, 17.78557114228457, 17.927855711422847, 18.070140280561123, 18.2124248496994, 18.354709418837675, 18.49699398797595, 18.639278557114228, 18.781563126252504, 18.92384769539078, 19.06613226452906, 19.208416833667336, 19.350701402805612, 19.492985971943888, 19.635270541082164, 19.77755511022044, 19.919839679358716, 20.062124248496993, 20.204408817635272, 20.34669338677355, 20.488977955911825, 20.6312625250501, 20.773547094188377, 20.915831663326653, 21.05811623246493, 21.200400801603205, 21.34268537074148, 21.48496993987976, 21.627254509018037, 21.769539078156313, 21.91182364729459, 22.054108216432866, 22.196392785571142, 22.338677354709418, 22.480961923847694, 22.62324649298597, 22.76553106212425, 22.907815631262526, 23.050100200400802, 23.19238476953908, 23.334669338677354, 23.47695390781563, 23.619238476953907, 23.761523046092183, 23.903807615230463, 24.04609218436874, 24.188376753507015, 24.33066132264529, 24.472945891783567, 24.615230460921843, 24.75751503006012, 24.899799599198396, 25.04208416833667, 25.18436873747495, 25.326653306613228, 25.468937875751504, 25.61122244488978, 25.753507014028056, 25.895791583166332, 26.03807615230461, 26.180360721442884, 26.322645290581164, 26.46492985971944, 26.607214428857716, 26.749498997995993, 26.89178356713427, 27.034068136272545, 27.17635270541082, 27.318637274549097, 27.460921843687373, 27.603206412825653, 27.74549098196393, 27.887775551102205, 28.03006012024048, 28.172344689378757, 28.314629258517034, 28.45691382765531, 28.599198396793586, 28.741482965931862, 28.88376753507014, 29.026052104208418, 29.168336673346694, 29.31062124248497, 29.452905811623246, 29.595190380761522, 29.7374749498998, 29.879759519038075, 30.022044088176354, 30.16432865731463, 30.306613226452907, 30.448897795591183, 30.59118236472946, 30.733466933867735, 30.87575150300601, 31.018036072144287, 31.160320641282564, 31.302605210420843, 31.44488977955912, 31.587174348697395, 31.72945891783567, 31.871743486973948, 32.014028056112224, 32.1563126252505, 32.298597194388776, 32.44088176352705, 32.58316633266533, 32.725450901803605, 32.86773547094188, 33.01002004008016, 33.15230460921844, 33.294589178356716, 33.43687374749499, 33.57915831663327, 33.721442885771545, 33.86372745490982, 34.0060120240481, 34.14829659318637, 34.29058116232465, 34.432865731462925, 34.5751503006012, 34.71743486973948, 34.859719438877754, 35.00200400801603, 35.144288577154306, 35.28657314629258, 35.42885771543086, 35.57114228456914, 35.71342685370742, 35.855711422845694, 35.99799599198397, 36.140280561122246, 36.28256513026052, 36.4248496993988, 36.567134268537075, 36.70941883767535, 36.85170340681363, 36.9939879759519, 37.13627254509018, 37.278557114228455, 37.42084168336673, 37.56312625250501, 37.705410821643284, 37.84769539078156, 37.98997995991984, 38.13226452905812, 38.274549098196395, 38.41683366733467, 38.55911823647295, 38.701402805611224, 38.8436873747495, 38.985971943887776, 39.12825651302605, 39.27054108216433, 39.412825651302605, 39.55511022044088, 39.69739478957916, 39.83967935871743, 39.98196392785571, 40.124248496993985, 40.26653306613226, 40.408817635270545, 40.55110220440882, 40.6933867735471, 40.83567134268537, 40.97795591182365, 41.120240480961925, 41.2625250501002, 41.40480961923848, 41.547094188376754, 41.68937875751503, 41.831663326653306, 41.97394789579158, 42.11623246492986, 42.258517034068134, 42.40080160320641, 42.54308617234469, 42.68537074148296, 42.82765531062124, 42.96993987975952, 43.1122244488978, 43.254509018036075, 43.39679358717435, 43.53907815631263, 43.6813627254509, 43.82364729458918, 43.965931863727455, 44.10821643286573, 44.25050100200401, 44.392785571142284, 44.53507014028056, 44.677354709418836, 44.81963927855711, 44.96192384769539, 45.104208416833664, 45.24649298597194, 45.388777555110224, 45.5310621242485, 45.673346693386776, 45.81563126252505, 45.95791583166333, 46.100200400801604, 46.24248496993988, 46.38476953907816, 46.52705410821643, 46.66933867735471, 46.811623246492985, 46.95390781563126, 47.09619238476954, 47.23847695390781, 47.38076152304609, 47.523046092184366, 47.66533066132264, 47.807615230460925, 47.9498997995992, 48.09218436873748, 48.234468937875754, 48.37675350701403, 48.519038076152306, 48.66132264529058, 48.80360721442886, 48.945891783567134, 49.08817635270541, 49.23046092184369, 49.37274549098196, 49.51503006012024, 49.657314629258515, 49.79959919839679, 49.94188376753507, 50.08416833667334, 50.22645290581163, 50.3687374749499, 50.51102204408818, 50.653306613226455, 50.79559118236473, 50.93787575150301, 51.08016032064128, 51.22244488977956, 51.364729458917836, 51.50701402805611, 51.64929859719439, 51.791583166332664, 51.93386773547094, 52.07615230460922, 52.21843687374749, 52.36072144288577, 52.503006012024045, 52.64529058116233, 52.787575150300604, 52.92985971943888, 53.07214428857716, 53.21442885771543, 53.35671342685371, 53.498997995991985, 53.64128256513026, 53.78356713426854, 53.92585170340681, 54.06813627254509, 54.210420841683366, 54.35270541082164, 54.49498997995992, 54.637274549098194, 54.77955911823647, 54.921843687374746, 55.06412825651302, 55.206412825651306, 55.34869739478958, 55.49098196392786, 55.633266533066134, 55.77555110220441, 55.91783567134269, 56.06012024048096, 56.20240480961924, 56.344689378757515, 56.48697394789579, 56.62925851703407, 56.77154308617234, 56.91382765531062, 57.056112224448896, 57.19839679358717, 57.34068136272545, 57.482965931863724, 57.62525050100201, 57.76753507014028, 57.90981963927856, 58.052104208416836, 58.19438877755511, 58.33667334669339, 58.478957915831664, 58.62124248496994, 58.763527054108216, 58.90581162324649, 59.04809619238477, 59.190380761523045, 59.33266533066132, 59.4749498997996, 59.61723446893787, 59.75951903807615, 59.901803607214426, 60.04408817635271, 60.186372745490985, 60.32865731462926, 60.47094188376754, 60.61322645290581, 60.75551102204409, 60.897795591182366, 61.04008016032064, 61.18236472945892, 61.324649298597194, 61.46693386773547, 61.609218436873746, 61.75150300601202, 61.8937875751503, 62.036072144288575, 62.17835671342685, 62.32064128256513, 62.46292585170341, 62.605210420841686, 62.74749498997996, 62.88977955911824, 63.032064128256515, 63.17434869739479, 63.31663326653307, 63.45891783567134, 63.60120240480962, 63.743486973947896, 63.88577154308617, 64.02805611222445, 64.17034068136273, 64.312625250501, 64.45490981963928, 64.59719438877755, 64.73947895791584, 64.8817635270541, 65.02404809619239, 65.16633266533066, 65.30861723446894, 65.45090180360721, 65.59318637274549, 65.73547094188376, 65.87775551102204, 66.02004008016031, 66.1623246492986, 66.30460921843688, 66.44689378757515, 66.58917835671343, 66.7314629258517, 66.87374749498998, 67.01603206412825, 67.15831663326654, 67.3006012024048, 67.44288577154309, 67.58517034068136, 67.72745490981964, 67.86973947895791, 68.0120240480962, 68.15430861723446, 68.29659318637275, 68.43887775551102, 68.5811623246493, 68.72344689378758, 68.86573146292585, 69.00801603206413, 69.1503006012024, 69.29258517034069, 69.43486973947896, 69.57715430861724, 69.71943887775551, 69.86172344689379, 70.00400801603206, 70.14629258517034, 70.28857715430861, 70.4308617234469, 70.57314629258516, 70.71543086172345, 70.85771543086172, 71.0])
+              .range(['#ffffffff', '#fffffeff', '#fffffdff', '#fffffcff', '#fffffbff', '#fffffaff', '#fffff9ff', '#fffff8ff', '#fffff7ff', '#fffff6ff', '#fffff5ff', '#fffff4ff', '#fffff3ff', '#fffff2ff', '#fffff1ff', '#fffff0ff', '#ffffefff', '#ffffeeff', '#ffffedff', '#ffffecff', '#ffffebff', '#ffffeaff', '#ffffe9ff', '#ffffe8ff', '#ffffe7ff', '#ffffe6ff', '#ffffe5ff', '#ffffe4ff', '#ffffe3ff', '#ffffe2ff', '#ffffe1ff', '#ffffe0ff', '#ffffdfff', '#ffffdeff', '#ffffddff', '#ffffdcff', '#ffffdbff', '#ffffdaff', '#ffffd9ff', '#ffffd7ff', '#ffffd6ff', '#ffffd5ff', '#ffffd4ff', '#ffffd3ff', '#ffffd2ff', '#ffffd1ff', '#ffffd0ff', '#ffffcfff', '#ffffceff', '#ffffcdff', '#ffffccff', '#ffffcbff', '#ffffcaff', '#ffffc9ff', '#ffffc8ff', '#ffffc7ff', '#ffffc6ff', '#ffffc5ff', '#ffffc4ff', '#ffffc3ff', '#ffffc2ff', '#ffffc1ff', '#ffffc0ff', '#ffffbfff', '#ffffbeff', '#ffffbdff', '#ffffbcff', '#ffffbbff', '#ffffbaff', '#ffffb9ff', '#ffffb8ff', '#ffffb7ff', '#ffffb6ff', '#ffffb5ff', '#ffffb4ff', '#ffffb3ff', '#ffffb2ff', '#ffffb0ff', '#ffffafff', '#ffffaeff', '#ffffadff', '#ffffacff', '#ffffabff', '#ffffaaff', '#ffffa9ff', '#ffffa8ff', '#ffffa7ff', '#ffffa6ff', '#ffffa5ff', '#ffffa4ff', '#ffffa3ff', '#ffffa2ff', '#ffffa1ff', '#ffffa0ff', '#ffff9fff', '#ffff9eff', '#ffff9dff', '#ffff9cff', '#ffff9bff', '#ffff9aff', '#ffff99ff', '#ffff98ff', '#ffff97ff', '#ffff96ff', '#ffff95ff', '#ffff94ff', '#ffff93ff', '#ffff92ff', '#ffff91ff', '#ffff90ff', '#ffff8fff', '#ffff8eff', '#ffff8dff', '#ffff8cff', '#ffff8bff', '#ffff8aff', '#ffff88ff', '#ffff87ff', '#ffff86ff', '#ffff85ff', '#ffff84ff', '#ffff83ff', '#ffff82ff', '#ffff81ff', '#ffff80ff', '#ffff7fff', '#ffff7eff', '#ffff7dff', '#ffff7cff', '#ffff7bff', '#ffff7aff', '#ffff79ff', '#ffff78ff', '#ffff77ff', '#ffff76ff', '#ffff75ff', '#ffff74ff', '#ffff73ff', '#ffff72ff', '#ffff71ff', '#ffff70ff', '#ffff6fff', '#ffff6eff', '#ffff6dff', '#ffff6cff', '#ffff6bff', '#ffff6aff', '#ffff69ff', '#ffff68ff', '#ffff67ff', '#ffff66ff', '#ffff65ff', '#ffff64ff', '#ffff63ff', '#ffff61ff', '#ffff60ff', '#ffff5fff', '#ffff5eff', '#ffff5dff', '#ffff5cff', '#ffff5bff', '#ffff5aff', '#ffff59ff', '#ffff58ff', '#ffff57ff', '#ffff56ff', '#ffff55ff', '#ffff54ff', '#ffff53ff', '#ffff52ff', '#ffff51ff', '#ffff50ff', '#ffff4fff', '#ffff4eff', '#ffff4dff', '#ffff4cff', '#ffff4bff', '#ffff4aff', '#ffff49ff', '#ffff48ff', '#ffff47ff', '#ffff46ff', '#ffff45ff', '#ffff44ff', '#ffff43ff', '#ffff42ff', '#ffff41ff', '#ffff40ff', '#ffff3fff', '#ffff3eff', '#ffff3dff', '#ffff3cff', '#ffff3aff', '#ffff39ff', '#ffff38ff', '#ffff37ff', '#ffff36ff', '#ffff35ff', '#ffff34ff', '#ffff33ff', '#ffff32ff', '#ffff31ff', '#ffff30ff', '#ffff2fff', '#ffff2eff', '#ffff2dff', '#ffff2cff', '#ffff2bff', '#ffff2aff', '#ffff29ff', '#ffff28ff', '#ffff27ff', '#ffff26ff', '#ffff25ff', '#ffff24ff', '#ffff23ff', '#ffff22ff', '#ffff21ff', '#ffff20ff', '#ffff1fff', '#ffff1eff', '#ffff1dff', '#ffff1cff', '#ffff1bff', '#ffff1aff', '#ffff19ff', '#ffff18ff', '#ffff17ff', '#ffff16ff', '#ffff15ff', '#ffff14ff', '#ffff12ff', '#ffff11ff', '#ffff10ff', '#ffff0fff', '#ffff0eff', '#ffff0dff', '#ffff0cff', '#ffff0bff', '#ffff0aff', '#ffff09ff', '#ffff08ff', '#ffff07ff', '#ffff06ff', '#ffff05ff', '#ffff04ff', '#ffff03ff', '#ffff02ff', '#ffff01ff', '#ffff00ff', '#ffff00ff', '#fffe00ff', '#fffd00ff', '#fffc00ff', '#fffb00ff', '#fffa00ff', '#fff900ff', '#fff800ff', '#fff700ff', '#fff600ff', '#fff500ff', '#fff400ff', '#fff300ff', '#fff200ff', '#fff100ff', '#fff000ff', '#ffef00ff', '#ffee00ff', '#ffed00ff', '#ffeb00ff', '#ffea00ff', '#ffe900ff', '#ffe800ff', '#ffe700ff', '#ffe600ff', '#ffe500ff', '#ffe400ff', '#ffe300ff', '#ffe200ff', '#ffe100ff', '#ffe000ff', '#ffdf00ff', '#ffde00ff', '#ffdd00ff', '#ffdc00ff', '#ffdb00ff', '#ffda00ff', '#ffd900ff', '#ffd800ff', '#ffd700ff', '#ffd600ff', '#ffd500ff', '#ffd400ff', '#ffd300ff', '#ffd200ff', '#ffd100ff', '#ffd000ff', '#ffcf00ff', '#ffce00ff', '#ffcd00ff', '#ffcc00ff', '#ffcb00ff', '#ffca00ff', '#ffc900ff', '#ffc800ff', '#ffc700ff', '#ffc600ff', '#ffc500ff', '#ffc300ff', '#ffc200ff', '#ffc100ff', '#ffc000ff', '#ffbf00ff', '#ffbe00ff', '#ffbd00ff', '#ffbc00ff', '#ffbb00ff', '#ffba00ff', '#ffb900ff', '#ffb800ff', '#ffb700ff', '#ffb600ff', '#ffb500ff', '#ffb400ff', '#ffb300ff', '#ffb200ff', '#ffb100ff', '#ffb000ff', '#ffaf00ff', '#ffae00ff', '#ffad00ff', '#ffac00ff', '#ffab00ff', '#ffaa00ff', '#ffa900ff', '#ffa800ff', '#ffa700ff', '#ffa600ff', '#ffa500ff', '#ffa400ff', '#ffa300ff', '#ffa200ff', '#ffa100ff', '#ffa000ff', '#ff9f00ff', '#ff9e00ff', '#ff9c00ff', '#ff9b00ff', '#ff9a00ff', '#ff9900ff', '#ff9800ff', '#ff9700ff', '#ff9600ff', '#ff9500ff', '#ff9400ff', '#ff9300ff', '#ff9200ff', '#ff9100ff', '#ff9000ff', '#ff8f00ff', '#ff8e00ff', '#ff8d00ff', '#ff8c00ff', '#ff8b00ff', '#ff8a00ff', '#ff8900ff', '#ff8800ff', '#ff8700ff', '#ff8600ff', '#ff8500ff', '#ff8400ff', '#ff8300ff', '#ff8200ff', '#ff8100ff', '#ff8000ff', '#ff7f00ff', '#ff7e00ff', '#ff7d00ff', '#ff7c00ff', '#ff7b00ff', '#ff7a00ff', '#ff7900ff', '#ff7800ff', '#ff7700ff', '#ff7500ff', '#ff7400ff', '#ff7300ff', '#ff7200ff', '#ff7100ff', '#ff7000ff', '#ff6f00ff', '#ff6e00ff', '#ff6d00ff', '#ff6c00ff', '#ff6b00ff', '#ff6a00ff', '#ff6900ff', '#ff6800ff', '#ff6700ff', '#ff6600ff', '#ff6500ff', '#ff6400ff', '#ff6300ff', '#ff6200ff', '#ff6100ff', '#ff6000ff', '#ff5f00ff', '#ff5e00ff', '#ff5d00ff', '#ff5c00ff', '#ff5b00ff', '#ff5a00ff', '#ff5900ff', '#ff5800ff', '#ff5700ff', '#ff5600ff', '#ff5500ff', '#ff5400ff', '#ff5300ff', '#ff5200ff', '#ff5100ff', '#ff5000ff', '#ff4f00ff', '#ff4d00ff', '#ff4c00ff', '#ff4b00ff', '#ff4a00ff', '#ff4900ff', '#ff4800ff', '#ff4700ff', '#ff4600ff', '#ff4500ff', '#ff4400ff', '#ff4300ff', '#ff4200ff', '#ff4100ff', '#ff4000ff', '#ff3f00ff', '#ff3e00ff', '#ff3d00ff', '#ff3c00ff', '#ff3b00ff', '#ff3a00ff', '#ff3900ff', '#ff3800ff', '#ff3700ff', '#ff3600ff', '#ff3500ff', '#ff3400ff', '#ff3300ff', '#ff3200ff', '#ff3100ff', '#ff3000ff', '#ff2f00ff', '#ff2e00ff', '#ff2d00ff', '#ff2c00ff', '#ff2b00ff', '#ff2a00ff', '#ff2900ff', '#ff2800ff', '#ff2600ff', '#ff2500ff', '#ff2400ff', '#ff2300ff', '#ff2200ff', '#ff2100ff', '#ff2000ff', '#ff1f00ff', '#ff1e00ff', '#ff1d00ff', '#ff1c00ff', '#ff1b00ff', '#ff1a00ff', '#ff1900ff', '#ff1800ff', '#ff1700ff', '#ff1600ff', '#ff1500ff', '#ff1400ff', '#ff1300ff', '#ff1200ff', '#ff1100ff', '#ff1000ff', '#ff0f00ff', '#ff0e00ff', '#ff0d00ff', '#ff0c00ff', '#ff0b00ff', '#ff0a00ff', '#ff0900ff', '#ff0800ff', '#ff0700ff', '#ff0600ff', '#ff0500ff', '#ff0400ff', '#ff0300ff', '#ff0200ff', '#ff0100ff', '#ff0000ff']);
+    
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.x = d3.scale.linear()
+              .domain([0.0, 71.0])
+              .range([0, 450 - 50]);
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.legend = L.control({position: 'topright'});
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.legend.onAdd = function (map) {var div = L.DomUtil.create('div', 'legend'); return div};
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.legend.addTo(map_87212c9317e49b7c532775a39a2c7816);
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.xAxis = d3.svg.axis()
+        .scale(color_map_bf614bbd04c6f8d9e92c8edffa78fa90.x)
+        .orient("top")
+        .tickSize(1)
+        .tickValues([0.0, 35.5, 71.0]);
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.svg = d3.select(".legend.leaflet-control").append("svg")
+        .attr("id", 'legend')
+        .attr("width", 450)
+        .attr("height", 40);
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.g = color_map_bf614bbd04c6f8d9e92c8edffa78fa90.svg.append("g")
+        .attr("class", "key")
+        .attr("fill", "black")
+        .attr("transform", "translate(25,16)");
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.g.selectAll("rect")
+        .data(color_map_bf614bbd04c6f8d9e92c8edffa78fa90.color.range().map(function(d, i) {
+          return {
+            x0: i ? color_map_bf614bbd04c6f8d9e92c8edffa78fa90.x(color_map_bf614bbd04c6f8d9e92c8edffa78fa90.color.domain()[i - 1]) : color_map_bf614bbd04c6f8d9e92c8edffa78fa90.x.range()[0],
+            x1: i < color_map_bf614bbd04c6f8d9e92c8edffa78fa90.color.domain().length ? color_map_bf614bbd04c6f8d9e92c8edffa78fa90.x(color_map_bf614bbd04c6f8d9e92c8edffa78fa90.color.domain()[i]) : color_map_bf614bbd04c6f8d9e92c8edffa78fa90.x.range()[1],
+            z: d
+          };
+        }))
+      .enter().append("rect")
+        .attr("height", 40 - 30)
+        .attr("x", function(d) { return d.x0; })
+        .attr("width", function(d) { return d.x1 - d.x0; })
+        .style("fill", function(d) { return d.z; });
+
+    color_map_bf614bbd04c6f8d9e92c8edffa78fa90.g.call(color_map_bf614bbd04c6f8d9e92c8edffa78fa90.xAxis).append("text")
+        .attr("class", "caption")
+        .attr("y", 21)
+        .attr("fill", "black")
+        .text("Number of vehicles (n_vehicles_work)");
+    
+            var feature_group_679e5a1624aeca00f8d9f056918161e4 = L.featureGroup(
+                {}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+    
+            var rectangle_2ae7fc8784b392ad4a2c3ec8ca8b4576 = L.rectangle(
+                [[8.965739755378113, 38.63936451876394], [9.009899885450594, 38.683873553670054]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe9ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_2afad45b1d8060de001169b7e1129745 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_493e1f31b82e5d3c3567a87206fb2f40 = $(`<div id="html_493e1f31b82e5d3c3567a87206fb2f40" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_2afad45b1d8060de001169b7e1129745.setContent(html_493e1f31b82e5d3c3567a87206fb2f40);
+            
+        
+
+        rectangle_2ae7fc8784b392ad4a2c3ec8ca8b4576.bindPopup(popup_2afad45b1d8060de001169b7e1129745)
+        ;
+
+        
+    
+    
+            var rectangle_2e72184904463f991c3b5b683688e8bb = L.rectangle(
+                [[8.921660898794752, 38.683873553670054], [8.965815787080833, 38.7283718561157]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffc7ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_fdc8dcb001ea59b5a2f031471b8f8073 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ac63148ee0918e134750306a682e6e17 = $(`<div id="html_ac63148ee0918e134750306a682e6e17" style="width: 100.0%; height: 100.0%;">Number of vehicles: 5</div>`)[0];
+                popup_fdc8dcb001ea59b5a2f031471b8f8073.setContent(html_ac63148ee0918e134750306a682e6e17);
+            
+        
+
+        rectangle_2e72184904463f991c3b5b683688e8bb.bindPopup(popup_fdc8dcb001ea59b5a2f031471b8f8073)
+        ;
+
+        
+    
+    
+            var rectangle_f45cd4d663efda32044cf26bbebbeebb = L.rectangle(
+                [[8.965780444727844, 38.683835300412134], [9.009935404499071, 38.72833915124168]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffa4ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_d091124837433272501d74b543bf7e5e = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_e6feeb61440dbdca34848a2faab6405d = $(`<div id="html_e6feeb61440dbdca34848a2faab6405d" style="width: 100.0%; height: 100.0%;">Number of vehicles: 8</div>`)[0];
+                popup_d091124837433272501d74b543bf7e5e.setContent(html_e6feeb61440dbdca34848a2faab6405d);
+            
+        
+
+        rectangle_f45cd4d663efda32044cf26bbebbeebb.bindPopup(popup_d091124837433272501d74b543bf7e5e)
+        ;
+
+        
+    
+    
+            var rectangle_56bc7c5509fa9033585255bad74c0117 = L.rectangle(
+                [[9.009899885450594, 38.68379685160476], [9.05405491624774, 38.728306278421954]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff49ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_536f1f9517150441ae4aa80c0c9df206 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_e803d9041e222967615fd945f15ced29 = $(`<div id="html_e803d9041e222967615fd945f15ced29" style="width: 100.0%; height: 100.0%;">Number of vehicles: 16</div>`)[0];
+                popup_536f1f9517150441ae4aa80c0c9df206.setContent(html_e803d9041e222967615fd945f15ced29);
+            
+        
+
+        rectangle_56bc7c5509fa9033585255bad74c0117.bindPopup(popup_536f1f9517150441ae4aa80c0c9df206)
+        ;
+
+        
+    
+    
+            var rectangle_259f940008a8b6bf33dd4d03fb363516 = L.rectangle(
+                [[9.054019220462683, 38.683758207131866], [9.098174321826976, 38.728273237557346]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe9ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_cedb525d5745e1260715bdb0692a294f = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ea0659415de4d1b64c85466c1267cf84 = $(`<div id="html_ea0659415de4d1b64c85466c1267cf84" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_cedb525d5745e1260715bdb0692a294f.setContent(html_ea0659415de4d1b64c85466c1267cf84);
+            
+        
+
+        rectangle_259f940008a8b6bf33dd4d03fb363516.bindPopup(popup_cedb525d5745e1260715bdb0692a294f)
+        ;
+
+        
+    
+    
+            var rectangle_aa1bbb3b0027207ec3c593f02ba002e1 = L.rectangle(
+                [[8.877576237236347, 38.7283718561157], [8.921725909816118, 38.7728594807324]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffbbff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_73e54616092b5273f212bb3b0ca0d1bf = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_383c76293bf4c0bf01860536d30b1b1b = $(`<div id="html_383c76293bf4c0bf01860536d30b1b1b" style="width: 100.0%; height: 100.0%;">Number of vehicles: 6</div>`)[0];
+                popup_73e54616092b5273f212bb3b0ca0d1bf.setContent(html_383c76293bf4c0bf01860536d30b1b1b);
+            
+        
+
+        rectangle_aa1bbb3b0027207ec3c593f02ba002e1.bindPopup(popup_73e54616092b5273f212bb3b0ca0d1bf)
+        ;
+
+        
+    
+    
+            var rectangle_e3b570cea15657560e7219214dc5ae0a = L.rectangle(
+                [[8.921696064493137, 38.72833915124168], [8.965845782331586, 38.77283226928161]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff99ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_1d775c7ffd8e41a616ca5d42779b2697 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_17d1abbe521dd2316e437231401445a4 = $(`<div id="html_17d1abbe521dd2316e437231401445a4" style="width: 100.0%; height: 100.0%;">Number of vehicles: 9</div>`)[0];
+                popup_1d775c7ffd8e41a616ca5d42779b2697.setContent(html_17d1abbe521dd2316e437231401445a4);
+            
+        
+
+        rectangle_e3b570cea15657560e7219214dc5ae0a.bindPopup(popup_1d775c7ffd8e41a616ca5d42779b2697)
+        ;
+
+        
+    
+    
+            var rectangle_f52bb3644fbdab264ae2614b06dfb28d = L.rectangle(
+                [[8.965815787080833, 38.728306278421954], [9.00996554971229, 38.77280491745652]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffa00ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_e65a26d6f059d515bda16704e0f9ac3b = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a74a9be6220f5c9cec1ae5b5e51602a3 = $(`<div id="html_a74a9be6220f5c9cec1ae5b5e51602a3" style="width: 100.0%; height: 100.0%;">Number of vehicles: 23</div>`)[0];
+                popup_e65a26d6f059d515bda16704e0f9ac3b.setContent(html_a74a9be6220f5c9cec1ae5b5e51602a3);
+            
+        
+
+        rectangle_f52bb3644fbdab264ae2614b06dfb28d.bindPopup(popup_e65a26d6f059d515bda16704e0f9ac3b)
+        ;
+
+        
+    
+    
+            var rectangle_113b3fa9ad5580cc552eda0cd2b1f2dd = L.rectangle(
+                [[9.009935404499071, 38.728273237557346], [9.054085211458297, 38.77277742517461]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_b92a5572cb53abed67b9631f0987a4de = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_f68e560ba736c8c037023aea81c043c3 = $(`<div id="html_f68e560ba736c8c037023aea81c043c3" style="width: 100.0%; height: 100.0%;">Number of vehicles: 45</div>`)[0];
+                popup_b92a5572cb53abed67b9631f0987a4de.setContent(html_f68e560ba736c8c037023aea81c043c3);
+            
+        
+
+        rectangle_113b3fa9ad5580cc552eda0cd2b1f2dd.bindPopup(popup_b92a5572cb53abed67b9631f0987a4de)
+        ;
+
+        
+    
+    
+            var rectangle_87801211ba2e1220161103eae1e97c49 = L.rectangle(
+                [[9.05405491624774, 38.72824002854811], [9.098204767069932, 38.77274979235292]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffddff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_1ddf6f5d28c990d3d7d23375b58f2524 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_aed23cb7314397991efe0a0b6f5975f4 = $(`<div id="html_aed23cb7314397991efe0a0b6f5975f4" style="width: 100.0%; height: 100.0%;">Number of vehicles: 3</div>`)[0];
+                popup_1ddf6f5d28c990d3d7d23375b58f2524.setContent(html_aed23cb7314397991efe0a0b6f5975f4);
+            
+        
+
+        rectangle_87801211ba2e1220161103eae1e97c49.bindPopup(popup_1ddf6f5d28c990d3d7d23375b58f2524)
+        ;
+
+        
+    
+    
+            var rectangle_86979d6a4811eb2ba92c293357f49b4d = L.rectangle(
+                [[8.833485851381887, 38.7728594807324], [8.877630334352466, 38.81733648215402]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff4ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_dbb58c4e8614348dc7b6cd34c9050927 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_1046cabd7eff9203f97151dbca65311b = $(`<div id="html_1046cabd7eff9203f97151dbca65311b" style="width: 100.0%; height: 100.0%;">Number of vehicles: 1</div>`)[0];
+                popup_dbb58c4e8614348dc7b6cd34c9050927.setContent(html_1046cabd7eff9203f97151dbca65311b);
+            
+        
+
+        rectangle_86979d6a4811eb2ba92c293357f49b4d.bindPopup(popup_dbb58c4e8614348dc7b6cd34c9050927)
+        ;
+
+        
+    
+    
+            var rectangle_366f8d299376c088f7ce619faa09d72d = L.rectangle(
+                [[8.877605932666073, 38.77283226928161], [8.921750434674623, 38.81731470919699]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffb0ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_d879343ceac62ba025a2b4bf7aa93baa = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a0cc02ba3d345ddd0680aaffb08bc8d6 = $(`<div id="html_a0cc02ba3d345ddd0680aaffb08bc8d6" style="width: 100.0%; height: 100.0%;">Number of vehicles: 7</div>`)[0];
+                popup_d879343ceac62ba025a2b4bf7aa93baa.setContent(html_a0cc02ba3d345ddd0680aaffb08bc8d6);
+            
+        
+
+        rectangle_366f8d299376c088f7ce619faa09d72d.bindPopup(popup_d879343ceac62ba025a2b4bf7aa93baa)
+        ;
+
+        
+    
+    
+            var rectangle_32c28112a54ff4eae4ba62099152a8c7 = L.rectangle(
+                [[8.921725909816118, 38.77280491745652], [8.965870430390565, 38.81729282340483]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe9ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_d6f2c2bb32cde56154bf9b89cb7f0769 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_bbfb82951113c47db8c119dba2989718 = $(`<div id="html_bbfb82951113c47db8c119dba2989718" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_d6f2c2bb32cde56154bf9b89cb7f0769.setContent(html_bbfb82951113c47db8c119dba2989718);
+            
+        
+
+        rectangle_32c28112a54ff4eae4ba62099152a8c7.bindPopup(popup_d6f2c2bb32cde56154bf9b89cb7f0769)
+        ;
+
+        
+    
+    
+            var rectangle_4515a45419aaf31836e8ca89d389dde6 = L.rectangle(
+                [[8.965845782331586, 38.77277742517461], [9.009990321000249, 38.81727082471154]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff05ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_65c0cde52aa94c79e90ed6bdbe581031 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_53615df167691f0a0bdb99e4048a61bb = $(`<div id="html_53615df167691f0a0bdb99e4048a61bb" style="width: 100.0%; height: 100.0%;">Number of vehicles: 22</div>`)[0];
+                popup_65c0cde52aa94c79e90ed6bdbe581031.setContent(html_53615df167691f0a0bdb99e4048a61bb);
+            
+        
+
+        rectangle_4515a45419aaf31836e8ca89d389dde6.bindPopup(popup_65c0cde52aa94c79e90ed6bdbe581031)
+        ;
+
+        
+    
+    
+            var rectangle_c604dd9ade25e00fabf221583f331bdc = L.rectangle(
+                [[9.00996554971229, 38.77274979235292], [9.054110106003897, 38.817248713050745]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff05ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_409288d0ed6a66cf3994bd89cc209360 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_53474556ff3dfec95bfb297dbb99dbba = $(`<div id="html_53474556ff3dfec95bfb297dbb99dbba" style="width: 100.0%; height: 100.0%;">Number of vehicles: 22</div>`)[0];
+                popup_409288d0ed6a66cf3994bd89cc209360.setContent(html_53474556ff3dfec95bfb297dbb99dbba);
+            
+        
+
+        rectangle_c604dd9ade25e00fabf221583f331bdc.bindPopup(popup_409288d0ed6a66cf3994bd89cc209360)
+        ;
+
+        
+    
+    
+            var rectangle_735b639e8689119fdd2b96825b2d0577 = L.rectangle(
+                [[9.054085211458297, 38.77272201890802], [9.098229784901982, 38.81722648835572]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe9ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_8173ec305c6c65db338aca9f8ac27a07 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_94023f6299129c9de325d20e5fc7f09a = $(`<div id="html_94023f6299129c9de325d20e5fc7f09a" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_8173ec305c6c65db338aca9f8ac27a07.setContent(html_94023f6299129c9de325d20e5fc7f09a);
+            
+        
+
+        rectangle_735b639e8689119fdd2b96825b2d0577.bindPopup(popup_8173ec305c6c65db338aca9f8ac27a07)
+        ;
+
+        
+    
+    
+            var rectangle_f06312790b558da6231ed0391c9ab423 = L.rectangle(
+                [[8.877630334352466, 38.81729282340483], [8.921769638995453, 38.86177005096534]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_be2bd0e106aca40ef0494ceb7e7dff8f = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_43718af42baa57f6f8bec16713b550ec = $(`<div id="html_43718af42baa57f6f8bec16713b550ec" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_be2bd0e106aca40ef0494ceb7e7dff8f.setContent(html_43718af42baa57f6f8bec16713b550ec);
+            
+        
+
+        rectangle_f06312790b558da6231ed0391c9ab423.bindPopup(popup_be2bd0e106aca40ef0494ceb7e7dff8f)
+        ;
+
+        
+    
+    
+            var rectangle_9127bc6fdaad554667b2c5b86d953810 = L.rectangle(
+                [[8.921750434674623, 38.81727082471154], [8.96588973118419, 38.86175349089809]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fffff4ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_bc26eadcde53baaa03beec4d0c57b953 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_f090d6abc8f4c85a452be88bddb01228 = $(`<div id="html_f090d6abc8f4c85a452be88bddb01228" style="width: 100.0%; height: 100.0%;">Number of vehicles: 1</div>`)[0];
+                popup_bc26eadcde53baaa03beec4d0c57b953.setContent(html_f090d6abc8f4c85a452be88bddb01228);
+            
+        
+
+        rectangle_9127bc6fdaad554667b2c5b86d953810.bindPopup(popup_bc26eadcde53baaa03beec4d0c57b953)
+        ;
+
+        
+    
+    
+            var rectangle_fd750f1f4c8f2def4fb6e2f0cfc377d5 = L.rectangle(
+                [[8.965870430390565, 38.817248713050745], [9.010009718288995, 38.86173684540325]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffe9ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_830d2a6a2bd6ebf96cfa59703923e3fa = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_7bd8c57e3caf148d71a979e49609ec9a = $(`<div id="html_7bd8c57e3caf148d71a979e49609ec9a" style="width: 100.0%; height: 100.0%;">Number of vehicles: 2</div>`)[0];
+                popup_830d2a6a2bd6ebf96cfa59703923e3fa.setContent(html_7bd8c57e3caf148d71a979e49609ec9a);
+            
+        
+
+        rectangle_fd750f1f4c8f2def4fb6e2f0cfc377d5.bindPopup(popup_830d2a6a2bd6ebf96cfa59703923e3fa)
+        ;
+
+        
+    
+    
+            var rectangle_a7283cd1e51143785eb8406263bf0a67 = L.rectangle(
+                [[9.009990321000249, 38.81722648835573], [9.054129599810205, 38.861720114430575]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffff49ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_a93c75a5d2b895b8b27516245108eb0e = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_1b4474b159aefa6e25ce97e8eeca344d = $(`<div id="html_1b4474b159aefa6e25ce97e8eeca344d" style="width: 100.0%; height: 100.0%;">Number of vehicles: 16</div>`)[0];
+                popup_a93c75a5d2b895b8b27516245108eb0e.setContent(html_1b4474b159aefa6e25ce97e8eeca344d);
+            
+        
+
+        rectangle_a7283cd1e51143785eb8406263bf0a67.bindPopup(popup_a93c75a5d2b895b8b27516245108eb0e)
+        ;
+
+        
+    
+    
+            var rectangle_43c6138d35165014ac829cb6690eafed = L.rectangle(
+                [[9.054110106003897, 38.8172041505594], [9.098249375248413, 38.8617032979296]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_1492698f35ab138731ffeae868828cf2 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_39beaa9a6acb295668b73f177462de08 = $(`<div id="html_39beaa9a6acb295668b73f177462de08" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_1492698f35ab138731ffeae868828cf2.setContent(html_39beaa9a6acb295668b73f177462de08);
+            
+        
+
+        rectangle_43c6138d35165014ac829cb6690eafed.bindPopup(popup_1492698f35ab138731ffeae868828cf2)
+        ;
+
+        
+    
+    
+            var rectangle_1c2e22c92a2735fbde8aaed126a4d63c = L.rectangle(
+                [[8.921769638995453, 38.86173684540325], [8.965903684654847, 38.90621424417376]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_02c7a28a5ebd58e569af4128db8d86a6 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_94abebe763e89c0a25b81cc4e62566d7 = $(`<div id="html_94abebe763e89c0a25b81cc4e62566d7" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_02c7a28a5ebd58e569af4128db8d86a6.setContent(html_94abebe763e89c0a25b81cc4e62566d7);
+            
+        
+
+        rectangle_1c2e22c92a2735fbde8aaed126a4d63c.bindPopup(popup_02c7a28a5ebd58e569af4128db8d86a6)
+        ;
+
+        
+    
+    
+            var rectangle_41907b15214ea756984dcb9802bf1664 = L.rectangle(
+                [[8.96588973118419, 38.861720114430575], [9.010023741520614, 38.90620295192778]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffffff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_5d7e1c579fe4b68e539f114daed2433b = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_872dda2a6c5451cf7b1efca9612ca219 = $(`<div id="html_872dda2a6c5451cf7b1efca9612ca219" style="width: 100.0%; height: 100.0%;">Number of vehicles: 0</div>`)[0];
+                popup_5d7e1c579fe4b68e539f114daed2433b.setContent(html_872dda2a6c5451cf7b1efca9612ca219);
+            
+        
+
+        rectangle_41907b15214ea756984dcb9802bf1664.bindPopup(popup_5d7e1c579fe4b68e539f114daed2433b)
+        ;
+
+        
+    
+    
+            var rectangle_5b2f7566ccee0653c726d0e184fec24d = L.rectangle(
+                [[9.010009718288995, 38.8617032979296], [9.054143692819013, 38.90619160169394]],
+                {"bubblingMouseEvents": true, "color": null, "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffffb0ff", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_679e5a1624aeca00f8d9f056918161e4);
+        
+    
+        var popup_40cc716ec0bb019c0e3cef233028ea45 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_2b44eb00114e1633b5bce094efb59a35 = $(`<div id="html_2b44eb00114e1633b5bce094efb59a35" style="width: 100.0%; height: 100.0%;">Number of vehicles: 7</div>`)[0];
+                popup_40cc716ec0bb019c0e3cef233028ea45.setContent(html_2b44eb00114e1633b5bce094efb59a35);
+            
+        
+
+        rectangle_5b2f7566ccee0653c726d0e184fec24d.bindPopup(popup_40cc716ec0bb019c0e3cef233028ea45)
+        ;
+
+        
+    
+    
+    var color_map_c465973c589dd9942831f8f8b6e0891d = {};
+
+    
+    color_map_c465973c589dd9942831f8f8b6e0891d.color = d3.scale.threshold()
+              .domain([0.0, 0.09018036072144289, 0.18036072144288579, 0.27054108216432865, 0.36072144288577157, 0.45090180360721444, 0.5410821643286573, 0.6312625250501002, 0.7214428857715431, 0.811623246492986, 0.9018036072144289, 0.9919839679358717, 1.0821643286573146, 1.1723446893787575, 1.2625250501002003, 1.3527054108216432, 1.4428857715430863, 1.5330661322645291, 1.623246492985972, 1.7134268537074149, 1.8036072144288577, 1.8937875751503006, 1.9839679358717435, 2.0741482965931866, 2.164328657314629, 2.2545090180360723, 2.344689378757515, 2.434869739478958, 2.5250501002004007, 2.6152304609218437, 2.7054108216432864, 2.7955911823647295, 2.8857715430861726, 2.975951903807615, 3.0661322645290583, 3.156312625250501, 3.246492985971944, 3.3366733466933867, 3.4268537074148298, 3.5170340681362724, 3.6072144288577155, 3.697394789579158, 3.787575150300601, 3.8777555110220443, 3.967935871743487, 4.05811623246493, 4.148296593186373, 4.238476953907815, 4.328657314629258, 4.4188376753507015, 4.509018036072145, 4.599198396793587, 4.68937875751503, 4.779559118236473, 4.869739478957916, 4.959919839679359, 5.050100200400801, 5.140280561122244, 5.2304609218436875, 5.320641282565131, 5.410821643286573, 5.501002004008016, 5.591182364729459, 5.681362725450902, 5.771543086172345, 5.861723446893787, 5.95190380761523, 6.0420841683366735, 6.132264529058117, 6.222444889779559, 6.312625250501002, 6.402805611222445, 6.492985971943888, 6.58316633266533, 6.673346693386773, 6.763527054108216, 6.8537074148296595, 6.943887775551103, 7.034068136272545, 7.124248496993988, 7.214428857715431, 7.304609218436874, 7.394789579158316, 7.484969939879759, 7.575150300601202, 7.6653306613226455, 7.755511022044089, 7.845691382765531, 7.935871743486974, 8.026052104208416, 8.11623246492986, 8.206412825651302, 8.296593186372746, 8.386773547094188, 8.47695390781563, 8.567134268537075, 8.657314629258517, 8.74749498997996, 8.837675350701403, 8.927855711422845, 9.01803607214429, 9.108216432865731, 9.198396793587174, 9.288577154308618, 9.37875751503006, 9.468937875751504, 9.559118236472946, 9.649298597194388, 9.739478957915832, 9.829659318637274, 9.919839679358718, 10.01002004008016, 10.100200400801603, 10.190380761523047, 10.280561122244489, 10.370741482965931, 10.460921843687375, 10.551102204408817, 10.641282565130261, 10.731462925851703, 10.821643286573146, 10.91182364729459, 11.002004008016032, 11.092184368737476, 11.182364729458918, 11.27254509018036, 11.362725450901804, 11.452905811623246, 11.54308617234469, 11.633266533066132, 11.723446893787575, 11.813627254509019, 11.90380761523046, 11.993987975951903, 12.084168336673347, 12.17434869739479, 12.264529058116233, 12.354709418837675, 12.444889779559118, 12.535070140280562, 12.625250501002004, 12.715430861723448, 12.80561122244489, 12.895791583166332, 12.985971943887776, 13.076152304609218, 13.16633266533066, 13.256513026052104, 13.346693386773547, 13.43687374749499, 13.527054108216433, 13.617234468937875, 13.707414829659319, 13.797595190380761, 13.887775551102205, 13.977955911823647, 14.06813627254509, 14.158316633266534, 14.248496993987976, 14.338677354709418, 14.428857715430862, 14.519038076152304, 14.609218436873748, 14.69939879759519, 14.789579158316633, 14.879759519038076, 14.969939879759519, 15.060120240480963, 15.150300601202405, 15.240480961923847, 15.330661322645291, 15.420841683366733, 15.511022044088177, 15.60120240480962, 15.691382765531062, 15.781563126252506, 15.871743486973948, 15.96192384769539, 16.052104208416832, 16.142284569138276, 16.23246492985972, 16.322645290581164, 16.412825651302605, 16.50300601202405, 16.593186372745492, 16.683366733466933, 16.773547094188377, 16.86372745490982, 16.95390781563126, 17.044088176352705, 17.13426853707415, 17.22444889779559, 17.314629258517034, 17.404809619238478, 17.49498997995992, 17.585170340681362, 17.675350701402806, 17.76553106212425, 17.85571142284569, 17.945891783567134, 18.03607214428858, 18.12625250501002, 18.216432865731463, 18.306613226452907, 18.396793587174347, 18.48697394789579, 18.577154308617235, 18.66733466933868, 18.75751503006012, 18.847695390781563, 18.937875751503007, 19.028056112224448, 19.118236472945892, 19.208416833667336, 19.298597194388776, 19.38877755511022, 19.478957915831664, 19.569138276553105, 19.65931863727455, 19.749498997995993, 19.839679358717436, 19.929859719438877, 20.02004008016032, 20.110220440881765, 20.200400801603205, 20.29058116232465, 20.380761523046093, 20.470941883767534, 20.561122244488978, 20.65130260521042, 20.741482965931862, 20.831663326653306, 20.92184368737475, 21.012024048096194, 21.102204408817634, 21.19238476953908, 21.282565130260522, 21.372745490981963, 21.462925851703407, 21.55310621242485, 21.64328657314629, 21.733466933867735, 21.82364729458918, 21.91382765531062, 22.004008016032063, 22.094188376753507, 22.18436873747495, 22.274549098196392, 22.364729458917836, 22.45490981963928, 22.54509018036072, 22.635270541082164, 22.725450901803608, 22.81563126252505, 22.905811623246493, 22.995991983967937, 23.08617234468938, 23.17635270541082, 23.266533066132265, 23.35671342685371, 23.44689378757515, 23.537074148296593, 23.627254509018037, 23.717434869739478, 23.80761523046092, 23.897795591182366, 23.987975951903806, 24.07815631262525, 24.168336673346694, 24.258517034068138, 24.34869739478958, 24.438877755511022, 24.529058116232466, 24.619238476953907, 24.70941883767535, 24.799599198396795, 24.889779559118235, 24.97995991983968, 25.070140280561123, 25.160320641282564, 25.250501002004007, 25.34068136272545, 25.430861723446895, 25.521042084168336, 25.61122244488978, 25.701402805611224, 25.791583166332664, 25.881763527054108, 25.971943887775552, 26.062124248496993, 26.152304609218437, 26.24248496993988, 26.33266533066132, 26.422845691382765, 26.51302605210421, 26.603206412825653, 26.693386773547093, 26.783567134268537, 26.87374749498998, 26.96392785571142, 27.054108216432866, 27.14428857715431, 27.23446893787575, 27.324649298597194, 27.414829659318638, 27.50501002004008, 27.595190380761522, 27.685370741482966, 27.77555110220441, 27.86573146292585, 27.955911823647295, 28.04609218436874, 28.13627254509018, 28.226452905811623, 28.316633266533067, 28.406813627254508, 28.49699398797595, 28.587174348697395, 28.677354709418836, 28.76753507014028, 28.857715430861724, 28.947895791583168, 29.03807615230461, 29.128256513026052, 29.218436873747496, 29.308617234468937, 29.39879759519038, 29.488977955911825, 29.579158316633265, 29.66933867735471, 29.759519038076153, 29.849699398797597, 29.939879759519037, 30.03006012024048, 30.120240480961925, 30.210420841683366, 30.30060120240481, 30.390781563126254, 30.480961923847694, 30.571142284569138, 30.661322645290582, 30.751503006012022, 30.841683366733466, 30.93186372745491, 31.022044088176354, 31.112224448897795, 31.20240480961924, 31.292585170340683, 31.382765531062123, 31.472945891783567, 31.56312625250501, 31.65330661322645, 31.743486973947896, 31.83366733466934, 31.92384769539078, 32.014028056112224, 32.104208416833664, 32.19438877755511, 32.28456913827655, 32.37474949899799, 32.46492985971944, 32.55511022044088, 32.64529058116233, 32.73547094188377, 32.82565130260521, 32.91583166332666, 33.0060120240481, 33.09619238476954, 33.186372745490985, 33.276553106212425, 33.366733466933866, 33.45691382765531, 33.547094188376754, 33.637274549098194, 33.72745490981964, 33.81763527054108, 33.90781563126252, 33.99799599198397, 34.08817635270541, 34.17835671342685, 34.2685370741483, 34.35871743486974, 34.44889779559118, 34.53907815631263, 34.62925851703407, 34.71943887775551, 34.809619238476955, 34.899799599198396, 34.98997995991984, 35.08016032064128, 35.170340681362724, 35.26052104208417, 35.35070140280561, 35.44088176352705, 35.5310621242485, 35.62124248496994, 35.71142284569138, 35.80160320641283, 35.89178356713427, 35.98196392785571, 36.07214428857716, 36.1623246492986, 36.25250501002004, 36.342685370741485, 36.432865731462925, 36.523046092184366, 36.61322645290581, 36.703406813627254, 36.793587174348694, 36.88376753507014, 36.97394789579158, 37.06412825651302, 37.15430861723447, 37.24448897795591, 37.33466933867736, 37.4248496993988, 37.51503006012024, 37.605210420841686, 37.69539078156313, 37.78557114228457, 37.875751503006015, 37.965931863727455, 38.056112224448896, 38.14629258517034, 38.236472945891784, 38.326653306613224, 38.41683366733467, 38.50701402805611, 38.59719438877755, 38.687374749499, 38.77755511022044, 38.86773547094188, 38.95791583166333, 39.04809619238477, 39.13827655310621, 39.22845691382766, 39.3186372745491, 39.408817635270545, 39.498997995991985, 39.589178356713425, 39.67935871743487, 39.76953907815631, 39.859719438877754, 39.9498997995992, 40.04008016032064, 40.13026052104208, 40.22044088176353, 40.31062124248497, 40.40080160320641, 40.49098196392786, 40.5811623246493, 40.67134268537074, 40.76152304609219, 40.85170340681363, 40.94188376753507, 41.032064128256515, 41.122244488977955, 41.212424849699396, 41.30260521042084, 41.392785571142284, 41.482965931863724, 41.57314629258517, 41.66332665330661, 41.75350701402806, 41.8436873747495, 41.93386773547094, 42.02404809619239, 42.11422845691383, 42.20440881763527, 42.294589178356716, 42.38476953907816, 42.4749498997996, 42.565130260521045, 42.655310621242485, 42.745490981963925, 42.83567134268537, 42.92585170340681, 43.016032064128254, 43.1062124248497, 43.19639278557114, 43.28657314629258, 43.37675350701403, 43.46693386773547, 43.55711422845691, 43.64729458917836, 43.7374749498998, 43.82765531062124, 43.91783567134269, 44.00801603206413, 44.098196392785574, 44.188376753507015, 44.278557114228455, 44.3687374749499, 44.45891783567134, 44.549098196392784, 44.63927855711423, 44.72945891783567, 44.81963927855711, 44.90981963927856, 45.0])
+              .range(['#ffffffff', '#fffffeff', '#fffffdff', '#fffffcff', '#fffffbff', '#fffffaff', '#fffff9ff', '#fffff8ff', '#fffff7ff', '#fffff6ff', '#fffff5ff', '#fffff4ff', '#fffff3ff', '#fffff2ff', '#fffff1ff', '#fffff0ff', '#ffffefff', '#ffffeeff', '#ffffedff', '#ffffecff', '#ffffebff', '#ffffeaff', '#ffffe9ff', '#ffffe8ff', '#ffffe7ff', '#ffffe6ff', '#ffffe5ff', '#ffffe4ff', '#ffffe3ff', '#ffffe2ff', '#ffffe1ff', '#ffffe0ff', '#ffffdfff', '#ffffdeff', '#ffffddff', '#ffffdcff', '#ffffdbff', '#ffffdaff', '#ffffd9ff', '#ffffd7ff', '#ffffd6ff', '#ffffd5ff', '#ffffd4ff', '#ffffd3ff', '#ffffd2ff', '#ffffd1ff', '#ffffd0ff', '#ffffcfff', '#ffffceff', '#ffffcdff', '#ffffccff', '#ffffcbff', '#ffffcaff', '#ffffc9ff', '#ffffc8ff', '#ffffc7ff', '#ffffc6ff', '#ffffc5ff', '#ffffc4ff', '#ffffc3ff', '#ffffc2ff', '#ffffc1ff', '#ffffc0ff', '#ffffbfff', '#ffffbeff', '#ffffbdff', '#ffffbcff', '#ffffbbff', '#ffffbaff', '#ffffb9ff', '#ffffb8ff', '#ffffb7ff', '#ffffb6ff', '#ffffb5ff', '#ffffb4ff', '#ffffb3ff', '#ffffb2ff', '#ffffb0ff', '#ffffafff', '#ffffaeff', '#ffffadff', '#ffffacff', '#ffffabff', '#ffffaaff', '#ffffa9ff', '#ffffa8ff', '#ffffa7ff', '#ffffa6ff', '#ffffa5ff', '#ffffa4ff', '#ffffa3ff', '#ffffa2ff', '#ffffa1ff', '#ffffa0ff', '#ffff9fff', '#ffff9eff', '#ffff9dff', '#ffff9cff', '#ffff9bff', '#ffff9aff', '#ffff99ff', '#ffff98ff', '#ffff97ff', '#ffff96ff', '#ffff95ff', '#ffff94ff', '#ffff93ff', '#ffff92ff', '#ffff91ff', '#ffff90ff', '#ffff8fff', '#ffff8eff', '#ffff8dff', '#ffff8cff', '#ffff8bff', '#ffff8aff', '#ffff88ff', '#ffff87ff', '#ffff86ff', '#ffff85ff', '#ffff84ff', '#ffff83ff', '#ffff82ff', '#ffff81ff', '#ffff80ff', '#ffff7fff', '#ffff7eff', '#ffff7dff', '#ffff7cff', '#ffff7bff', '#ffff7aff', '#ffff79ff', '#ffff78ff', '#ffff77ff', '#ffff76ff', '#ffff75ff', '#ffff74ff', '#ffff73ff', '#ffff72ff', '#ffff71ff', '#ffff70ff', '#ffff6fff', '#ffff6eff', '#ffff6dff', '#ffff6cff', '#ffff6bff', '#ffff6aff', '#ffff69ff', '#ffff68ff', '#ffff67ff', '#ffff66ff', '#ffff65ff', '#ffff64ff', '#ffff63ff', '#ffff61ff', '#ffff60ff', '#ffff5fff', '#ffff5eff', '#ffff5dff', '#ffff5cff', '#ffff5bff', '#ffff5aff', '#ffff59ff', '#ffff58ff', '#ffff57ff', '#ffff56ff', '#ffff55ff', '#ffff54ff', '#ffff53ff', '#ffff52ff', '#ffff51ff', '#ffff50ff', '#ffff4fff', '#ffff4eff', '#ffff4dff', '#ffff4cff', '#ffff4bff', '#ffff4aff', '#ffff49ff', '#ffff48ff', '#ffff47ff', '#ffff46ff', '#ffff45ff', '#ffff44ff', '#ffff43ff', '#ffff42ff', '#ffff41ff', '#ffff40ff', '#ffff3fff', '#ffff3eff', '#ffff3dff', '#ffff3cff', '#ffff3aff', '#ffff39ff', '#ffff38ff', '#ffff37ff', '#ffff36ff', '#ffff35ff', '#ffff34ff', '#ffff33ff', '#ffff32ff', '#ffff31ff', '#ffff30ff', '#ffff2fff', '#ffff2eff', '#ffff2dff', '#ffff2cff', '#ffff2bff', '#ffff2aff', '#ffff29ff', '#ffff28ff', '#ffff27ff', '#ffff26ff', '#ffff25ff', '#ffff24ff', '#ffff23ff', '#ffff22ff', '#ffff21ff', '#ffff20ff', '#ffff1fff', '#ffff1eff', '#ffff1dff', '#ffff1cff', '#ffff1bff', '#ffff1aff', '#ffff19ff', '#ffff18ff', '#ffff17ff', '#ffff16ff', '#ffff15ff', '#ffff14ff', '#ffff12ff', '#ffff11ff', '#ffff10ff', '#ffff0fff', '#ffff0eff', '#ffff0dff', '#ffff0cff', '#ffff0bff', '#ffff0aff', '#ffff09ff', '#ffff08ff', '#ffff07ff', '#ffff06ff', '#ffff05ff', '#ffff04ff', '#ffff03ff', '#ffff02ff', '#ffff01ff', '#ffff00ff', '#ffff00ff', '#fffe00ff', '#fffd00ff', '#fffc00ff', '#fffb00ff', '#fffa00ff', '#fff900ff', '#fff800ff', '#fff700ff', '#fff600ff', '#fff500ff', '#fff400ff', '#fff300ff', '#fff200ff', '#fff100ff', '#fff000ff', '#ffef00ff', '#ffee00ff', '#ffed00ff', '#ffeb00ff', '#ffea00ff', '#ffe900ff', '#ffe800ff', '#ffe700ff', '#ffe600ff', '#ffe500ff', '#ffe400ff', '#ffe300ff', '#ffe200ff', '#ffe100ff', '#ffe000ff', '#ffdf00ff', '#ffde00ff', '#ffdd00ff', '#ffdc00ff', '#ffdb00ff', '#ffda00ff', '#ffd900ff', '#ffd800ff', '#ffd700ff', '#ffd600ff', '#ffd500ff', '#ffd400ff', '#ffd300ff', '#ffd200ff', '#ffd100ff', '#ffd000ff', '#ffcf00ff', '#ffce00ff', '#ffcd00ff', '#ffcc00ff', '#ffcb00ff', '#ffca00ff', '#ffc900ff', '#ffc800ff', '#ffc700ff', '#ffc600ff', '#ffc500ff', '#ffc300ff', '#ffc200ff', '#ffc100ff', '#ffc000ff', '#ffbf00ff', '#ffbe00ff', '#ffbd00ff', '#ffbc00ff', '#ffbb00ff', '#ffba00ff', '#ffb900ff', '#ffb800ff', '#ffb700ff', '#ffb600ff', '#ffb500ff', '#ffb400ff', '#ffb300ff', '#ffb200ff', '#ffb100ff', '#ffb000ff', '#ffaf00ff', '#ffae00ff', '#ffad00ff', '#ffac00ff', '#ffab00ff', '#ffaa00ff', '#ffa900ff', '#ffa800ff', '#ffa700ff', '#ffa600ff', '#ffa500ff', '#ffa400ff', '#ffa300ff', '#ffa200ff', '#ffa100ff', '#ffa000ff', '#ff9f00ff', '#ff9e00ff', '#ff9c00ff', '#ff9b00ff', '#ff9a00ff', '#ff9900ff', '#ff9800ff', '#ff9700ff', '#ff9600ff', '#ff9500ff', '#ff9400ff', '#ff9300ff', '#ff9200ff', '#ff9100ff', '#ff9000ff', '#ff8f00ff', '#ff8e00ff', '#ff8d00ff', '#ff8c00ff', '#ff8b00ff', '#ff8a00ff', '#ff8900ff', '#ff8800ff', '#ff8700ff', '#ff8600ff', '#ff8500ff', '#ff8400ff', '#ff8300ff', '#ff8200ff', '#ff8100ff', '#ff8000ff', '#ff7f00ff', '#ff7e00ff', '#ff7d00ff', '#ff7c00ff', '#ff7b00ff', '#ff7a00ff', '#ff7900ff', '#ff7800ff', '#ff7700ff', '#ff7500ff', '#ff7400ff', '#ff7300ff', '#ff7200ff', '#ff7100ff', '#ff7000ff', '#ff6f00ff', '#ff6e00ff', '#ff6d00ff', '#ff6c00ff', '#ff6b00ff', '#ff6a00ff', '#ff6900ff', '#ff6800ff', '#ff6700ff', '#ff6600ff', '#ff6500ff', '#ff6400ff', '#ff6300ff', '#ff6200ff', '#ff6100ff', '#ff6000ff', '#ff5f00ff', '#ff5e00ff', '#ff5d00ff', '#ff5c00ff', '#ff5b00ff', '#ff5a00ff', '#ff5900ff', '#ff5800ff', '#ff5700ff', '#ff5600ff', '#ff5500ff', '#ff5400ff', '#ff5300ff', '#ff5200ff', '#ff5100ff', '#ff5000ff', '#ff4f00ff', '#ff4d00ff', '#ff4c00ff', '#ff4b00ff', '#ff4a00ff', '#ff4900ff', '#ff4800ff', '#ff4700ff', '#ff4600ff', '#ff4500ff', '#ff4400ff', '#ff4300ff', '#ff4200ff', '#ff4100ff', '#ff4000ff', '#ff3f00ff', '#ff3e00ff', '#ff3d00ff', '#ff3c00ff', '#ff3b00ff', '#ff3a00ff', '#ff3900ff', '#ff3800ff', '#ff3700ff', '#ff3600ff', '#ff3500ff', '#ff3400ff', '#ff3300ff', '#ff3200ff', '#ff3100ff', '#ff3000ff', '#ff2f00ff', '#ff2e00ff', '#ff2d00ff', '#ff2c00ff', '#ff2b00ff', '#ff2a00ff', '#ff2900ff', '#ff2800ff', '#ff2600ff', '#ff2500ff', '#ff2400ff', '#ff2300ff', '#ff2200ff', '#ff2100ff', '#ff2000ff', '#ff1f00ff', '#ff1e00ff', '#ff1d00ff', '#ff1c00ff', '#ff1b00ff', '#ff1a00ff', '#ff1900ff', '#ff1800ff', '#ff1700ff', '#ff1600ff', '#ff1500ff', '#ff1400ff', '#ff1300ff', '#ff1200ff', '#ff1100ff', '#ff1000ff', '#ff0f00ff', '#ff0e00ff', '#ff0d00ff', '#ff0c00ff', '#ff0b00ff', '#ff0a00ff', '#ff0900ff', '#ff0800ff', '#ff0700ff', '#ff0600ff', '#ff0500ff', '#ff0400ff', '#ff0300ff', '#ff0200ff', '#ff0100ff', '#ff0000ff']);
+    
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.x = d3.scale.linear()
+              .domain([0.0, 45.0])
+              .range([0, 450 - 50]);
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.legend = L.control({position: 'topright'});
+    color_map_c465973c589dd9942831f8f8b6e0891d.legend.onAdd = function (map) {var div = L.DomUtil.create('div', 'legend'); return div};
+    color_map_c465973c589dd9942831f8f8b6e0891d.legend.addTo(map_87212c9317e49b7c532775a39a2c7816);
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.xAxis = d3.svg.axis()
+        .scale(color_map_c465973c589dd9942831f8f8b6e0891d.x)
+        .orient("top")
+        .tickSize(1)
+        .tickValues([0.0, 22.5, 45.0]);
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.svg = d3.select(".legend.leaflet-control").append("svg")
+        .attr("id", 'legend')
+        .attr("width", 450)
+        .attr("height", 40);
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.g = color_map_c465973c589dd9942831f8f8b6e0891d.svg.append("g")
+        .attr("class", "key")
+        .attr("fill", "black")
+        .attr("transform", "translate(25,16)");
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.g.selectAll("rect")
+        .data(color_map_c465973c589dd9942831f8f8b6e0891d.color.range().map(function(d, i) {
+          return {
+            x0: i ? color_map_c465973c589dd9942831f8f8b6e0891d.x(color_map_c465973c589dd9942831f8f8b6e0891d.color.domain()[i - 1]) : color_map_c465973c589dd9942831f8f8b6e0891d.x.range()[0],
+            x1: i < color_map_c465973c589dd9942831f8f8b6e0891d.color.domain().length ? color_map_c465973c589dd9942831f8f8b6e0891d.x(color_map_c465973c589dd9942831f8f8b6e0891d.color.domain()[i]) : color_map_c465973c589dd9942831f8f8b6e0891d.x.range()[1],
+            z: d
+          };
+        }))
+      .enter().append("rect")
+        .attr("height", 40 - 30)
+        .attr("x", function(d) { return d.x0; })
+        .attr("width", function(d) { return d.x1 - d.x0; })
+        .style("fill", function(d) { return d.z; });
+
+    color_map_c465973c589dd9942831f8f8b6e0891d.g.call(color_map_c465973c589dd9942831f8f8b6e0891d.xAxis).append("text")
+        .attr("class", "caption")
+        .attr("y", 21)
+        .attr("fill", "black")
+        .text("Number of vehicles (n_vehicles_poi)");
+    
+            var layer_control_599cf0b68917eef2af368aa8f5bb5792 = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_f569888df5d80e8be9641ed5e6052572,
+                },
+                overlays :  {
+                    "Administrative boundary" : geo_json_5adf5b685fa2f8195194a89970f7ca15,
+                    "Number of vehicles charging at Home" : feature_group_1b8da661fdaceb2ee17728faf9096e0c,
+                    "Number of vehicles charging at Work" : feature_group_a1e2de1b18abfc08941630049c9ed40d,
+                    "Number of vehicles charging at POIs" : feature_group_679e5a1624aeca00f8d9f056918161e4,
+                },
+            };
+            L.control.layers(
+                layer_control_599cf0b68917eef2af368aa8f5bb5792.base_layers,
+                layer_control_599cf0b68917eef2af368aa8f5bb5792.overlays,
+                {"autoZIndex": true, "collapsed": true, "position": "topright"}
+            ).addTo(map_87212c9317e49b7c532775a39a2c7816);
+        
+</script>
+</html>

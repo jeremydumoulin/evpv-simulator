@@ -64,32 +64,23 @@ $ conda activate evpv-env
 $ pip install git+https://github.com/jeremydumoulin/evpv-simulator.git
 ```
 
-![](docs/installation.gif)
-
 ## Usage
 
-The evpv-simulator model can be run in two ways:
+After installation, you can run the **EVPV model in command-line mode**. This is ideal for users who are not familiar with Python or who want to quickly conduct a simple case study.
 
-1. **Basic Usage (command-line mode)**: Ideal for users who are not familiar with Python or who want to conduct a basic case study using a simple configuration file to specify the input parameters
-2. **Advanced Usage**: Suitable for users who prefer to import and use the evpv-simulator model as python modules in their own scripts or need to conduct more advanced analyses (such as parametric studies, integrating the evpv-simulator with other Python packages, ...).
+First, create a configuration file by copying an existing example such as the [Addis Ababa config file](https://github.com/jeremydumoulin/evpv-simulator/tree/main/examples/Basic_AddisAbaba_ConfigFile). Update it with your own input values and ensure that all required geospatial input data is available (see the config file and `input/` folder for guidance).
+> :bulb: We recommend starting with the Addis Ababa example to get familiar with the process.  
+> :bulb: Need help in gathering the needed geospatial inputs? See the next section.
 
-### Basic Usage
-
-To run the evpv-simulator in command-line mode, follow these steps:
-
-1. **Open a Terminal**: Use a terminal application, such as Anaconda Prompt.
-2. **Activate the conda environment** 
-3. **Create a configuration file for your case study**: Create a Python file (e.g., `config.py`) and populate it with your specific input values. Note that some input parameters are georeferenced data files (e.g., population raster). To see all required and optional parameters, refer to the `examples/Basic_AddisAbaba_ConfigFile/config.py` file. You can either clone this file to suit your needs or run it first to familiarize yourself with the inputs and outputs.
-4. **Ensure that your terminal is opened in the directory where the config file is located, OR specify the absolute path to the input/output directories in the config file.**
-5. **Run the EV-PV command-line script**: Execute the `evpv.py` script (depending on your Python installation, you may need to use `python3` instead of `python`):
-   ```bash
-   evpv
-   ```
-6. **Provide configuration file path**: When prompted, enter the path to your configuration file, such as the basic example:
-   ```bash
-   Enter the path to the python configuration file: C:\Users\(...)\config.py
-   ```
-7. **Check Outputs**: When to code is running, various output values will appear in the terminal. Once the simulation is complete, you will find all output files in the output directory you specified in your configuration file.
+Once your config file is ready, open a terminal, activate your conda environment (optional), and run:
+```bash
+evpv
+```
+You’ll be prompted to enter the path to your config file:
+```bash
+Enter the path to the python configuration file: C:\Users\(...)\config.py
+```
+> :warning: Use absolute paths in the config file, or start the terminal in the same directory to use relative paths.
 
 ![](docs/usage.gif)
 
