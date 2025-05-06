@@ -20,11 +20,12 @@ Langage = python 3
 
 1. [Overview of the Model](#overview-of-the-model)
 2. [Installation](#installation)
-3. [Usage](#usage)
-4. [Standout Features & Limitations](#standout-features--limitations)
-5. [Scientific Publications](#scientific-publications)
-6. [Acknowledgment](#acknowledgment)
-7. [License](#license)
+3. [Basic Usage](#basic-usage)
+4. [Advanced Usage](#advanced-usage)
+5. [Standout Features & Limitations](#standout-features--limitations)
+6. [Scientific Publications](#scientific-publications)
+7. [Acknowledgment](#acknowledgment)
+8. [License](#license)
 
 ## Overview of the model
 
@@ -63,7 +64,7 @@ $ conda activate evpv-env
 $ pip install git+https://github.com/jeremydumoulin/evpv-simulator.git
 ```
 
-## Usage
+## Basic Usage
 
 After installation, you can run the **EVPV model in command-line mode**. This is ideal for users who are not familiar with Python or who want to quickly conduct a simple case study.
 
@@ -83,20 +84,29 @@ $ Enter the path to the python configuration file: C:\Users\(...)\config.py
 
 > Here is an animation showing the step-by-step run process for the **Addis Ababa example**: ![](docs/usage.gif)
 
+### Input parameters and required geospatial data files
 
-### Where can I get the needed Geospatial Data?
+All input parameters are defined and explained in the configuration file you copied.
 
-To run the model, you will need the following four types of geospatial input data:
-
+In addition to numerical and model-specific parameters, you'll need to provide paths to the following four geospatial data files:
 - **Region of interest**: A GeoJSON file defining the boundary of your study area. For most administrative regions, you can download this from the [GADM dataset](https://gadm.org/).
-
 - **Residential population**: A `.tif` raster file showing population density, in the WGS84 coordinate system. We recommend using the [GHS-POP dataset](https://human-settlement.emergency.copernicus.eu/download.php?ds=pop) at the lowest available resolution.
-
 - **List of workplaces**: A CSV file with the following columns: `name`, `latitude`, `longitude`, and `weight`. You can generate this manually from local data or automatically extract it from OpenStreetMap using the helper script in `scripts/extract_pois_from_osm.py`.
-
 - **List of POIs (Points of Interest)**: Same format and process as for workplaces. Use the same script but with modified inputs.
 
-### Using evpv classes in python scripts (advanced usage)
+
+### Model Outputs
+After running the simulation, the model generates output files organized into three main subfolders:
+
+| Subfolder              | Contents Type         | Description                                                                                      |
+|------------------------|-----------------------|--------------------------------------------------------------------------------------------------|
+| `Mobility/`            | `.csv`, `.html`       | Data and interactive maps related to the mobility demand simulation. Includes vehicle flows, travel distances, and aggregated data for the region of interest. |
+| `ChargingDemand/`      | `.csv`, `.html`       | Charging demand outputs, including spatial and temporal demand per vehicle and per traffic zone. Also includes HTML maps for visualization. |
+| `EVPV/`                | `.csv`                | PV production curves and EV–PV complementarity indicators. |
+
+> Output file names may vary depending on the configuration file used. In addition to the output files, note that you will also find a .log file in the output directory.
+
+## Advanced usage
 
 Advanced users can write custom Python scripts by importing and interacting with core classes from the `evpv/` module:
 
