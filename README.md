@@ -69,8 +69,8 @@ $ pip install git+https://github.com/jeremydumoulin/evpv-simulator.git
 After installation, you can run the **EVPV model in command-line mode**. This is ideal for users who are not familiar with Python or who want to quickly conduct a simple case study.
 
 First, create a configuration file by copying an existing example such as the [Addis Ababa config file](https://github.com/jeremydumoulin/evpv-simulator/tree/main/examples/Basic_AddisAbaba_ConfigFile). Update it with your own input values and ensure that all required geospatial input data is available (see the config file and `input/` folder for guidance).
-> :bulb: We recommend starting with the Addis Ababa example to get familiar with the process.  
-> :bulb: Need help in gathering the needed geospatial inputs? See the next section.
+> :bulb: We recommend starting by running the Addis Ababa example to get familiar with the workflow. The easiest way to access all necessary files is to download the full GitHub repository as a ZIP file, extract it and copy the contents of the Addis Ababa example folder into the directory of your choice.
+> :bulb: Need help in gathering the needed geospatial data for your own case study? See the next section.
 
 Once your config file is ready, open a terminal, activate your conda environment (optional), and run:
 ```bash
