@@ -104,8 +104,6 @@ After running the simulation, the model generates output files organized into th
 | `ChargingDemand/`      | `.csv`, `.html`       | Charging demand outputs, including spatial and temporal demand per vehicle and per traffic zone. Also includes HTML maps for visualization. |
 | `EVPV/`                | `.csv`                | PV production curves and EV–PV complementarity indicators. |
 
-> Output file names may vary depending on the configuration file used. In addition to the output files, note that you will also find a .log file in the output directory.
-
 ## Advanced usage
 
 Advanced users can write custom Python scripts by importing and interacting with core classes from the `evpv/` module:
