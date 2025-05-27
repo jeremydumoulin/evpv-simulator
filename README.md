@@ -5,12 +5,12 @@
 </center>
 
 ---
-> :warning: **WARNING: THIS REPOSITORY HAS MOVED** :warning: 
->  
-> :round_pushpin: This repository is no longer maintained and has been **moved to a new location**.  
-> **New Repository:** [https://github.com/evpv-simulator](https://github.com/evpv-simulator)  
->  
-> Head over to the new repository to stay up to date with the latest changes and releases.
+:warning: **WARNING: THIS REPOSITORY HAS MOVED** :warning: 
+
+:round_pushpin: This repository is no longer maintained and has been **moved to a new location**.  
+**New Repository:** [https://github.com/evpv-simulator](https://github.com/evpv-simulator)  
+ 
+Head over to the new repository to stay up to date with the latest changes and releases.
 ---
 
 **The EVPV-simulator (Electric Vehicles - PhotoVoltaics Simulator) model is an open-source Python tool designed to calculate the spatio-temporal charging needs of privately-owned electric vehicles (EVs) and the potential for locally installed solar photovoltaics (PV) to meet these needs. The tool is primarily suited for modeling mobility demand in cities on weekdays, for which it enables the endogenous computation of daily mobility demand by combining georeferenced data with state-of-the-art spatial trip distribution models. For PV generation, it relies on the PVLib toolbox and integrates various PV installation archetypes (e.g., rooftop, free-standing PV, etc.)..**
